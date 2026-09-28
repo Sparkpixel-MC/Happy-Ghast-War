@@ -1,0 +1,207 @@
+commands:
+  main-list:
+    - '<gold>▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬'
+    - '<green>插件指令'
+    - '<yellow>/gw gui <gray> - <aqua>打开游戏菜单'
+    - '<yellow>/gw leave <gray> - <aqua>离开游戏'
+    - '<yellow>/gw join <世界名称> <gray> - <aqua>加入游戏'
+    - '<yellow>/gw status <gray> - <aqua>查看场地状态'
+    - '<yellow>/gw stats <gray> - <aqua>查看个人统计'
+    - '<yellow>/gw admin <gray> - <aqua>查看管理员指令'
+  admin-list:
+    - '<gold>▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬'
+    - '<green>管理员指令'
+    - '<yellow>/gw admin create <世界名称> <显示名称> <gray> - <aqua>创建游戏'
+    - '<yellow>/gw admin setwait <gray> - <aqua>设置游戏等待位置'
+    - '<yellow>/gw admin setcenter <gray> - <aqua>设置游戏中心位置'
+    - '<yellow>/gw admin setlobby <gray> - <aqua>设置服务器大厅'
+    - '<yellow>/gw admin setspawn <队伍ID> <gray> - <aqua>设置队伍重生点'
+    - '<yellow>/gw admin setghastspawn <队伍ID> <gray> - <aqua>设置队伍乐魂重生点'
+    - '<yellow>/gw admin setradius <半径> <gray> - <aqua>设置地图初始边界半径'
+    - '<yellow>/gw admin settargetradius <半径> <gray> - <aqua>设置缩圈后的半径'
+    - '<yellow>/gw admin setghastamount <数量> <gray> - <aqua>设置每队乐魂数量'
+    - '<yellow>/gw admin disable <gray> - <aqua>暂时禁用地图'
+    - '<yellow>/gw admin enable <gray> - <aqua>启用地图'
+    - '<yellow>/gw admin backup <世界名称> <gray> - <aqua>备份地图(需确保目标世界无玩家)'
+    - '<yellow>/gw admin addchest <gray> - <aqua>添加物资箱子(视线对准箱子)'
+    - '<yellow>/gw admin removechest <gray> - <aqua>移除物资箱子(视线对准箱子)'
+    - '<yellow>/gw admin addzone <类型> <gray> - <aqua>添加中立资源据点(iron/copper/coal/wood)'
+    - '<yellow>/gw admin removezone <gray> - <aqua>移除中立资源据点(视线对准据点中心)'
+    - '<yellow>/gw admin resetgame <gray> - <aqua>强制重置当前对局'
+    - '<yellow>/gw admin upgradeghastarmor <gray> - <aqua>升级骑乘中乐魂的护甲'
+  party-list:
+    - '<gold>▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬'
+    - '<green>队伍指令：'
+    - '<yellow>/party create <gray>- <aqua>创建队伍'
+    - '<yellow>/party invite <玩家> <gray>- <aqua>邀请玩家'
+    - '<yellow>/party accept <玩家> <gray>- <aqua>接受邀请'
+    - '<yellow>/party decline <玩家> <gray>- <aqua>拒绝邀请'
+    - '<yellow>/party leave <gray>- <aqua>离开队伍'
+    - '<yellow>/party kick <玩家> <gray>- <aqua>踢出玩家'
+    - '<yellow>/party transfer <玩家> <gray>- <aqua>转让队长'
+    - '<yellow>/party disband <gray>- <aqua>解散队伍'
+    - '<yellow>/party info <gray>- <aqua>查看队伍信息'
+  importWorld: '<green>正在尝试导入世界...'
+  importFailed: '<red>导入失败,世界不存在！'
+  gameCreateSuccess: '<green>游戏创建成功！'
+  gameNotFound: '<red>游戏未找到！'
+  missRequireData: '<red>缺少必要参数！'
+  teamNotFound: '<red>队伍未找到，注意区分大小写！'
+  setSuccess: '<green>设置成功！'
+  availableTeams: '<yellow>可用队伍：RED(红)、BLUE(蓝)、GREEN(绿)、YELLOW(黄)、WHITE(白)、AQUA(青)、GOLD(金)、PURPLE(紫)'
+  use-arena-lobby: '<red>你不可以将游戏区域设为大厅！'
+  target-empty: '<red>请注视目标方块后再试!'
+  type-not-chest: '<red>目标方块必须是箱子！'
+  cant-select-game: '<red>你不可以在节点服务器选择游戏。若需选择其他游戏，请先<gray>/gw leave'
+  join-spectator: '<yellow>你已以旁观者加入，使用<gray>/gw leave<yellow>离开游戏!'
+  lobby-not-allow: '<yellow>你不能将大厅设在竞技场内！'
+upgrade:
+  iron-ingot: '铁锭'
+  oak-log: '原木'
+  netherite-ingot: '合金'
+  coal: '煤炭'
+  copper-ingot: '铜锭'
+  snow: '雪块'
+  gui-title: '<dark_gray>核心商店'
+  item-now: '<gray>当前: <yellow>{0}'
+  item-next: '<gray>下一级: <green>{0}'
+  item-price: '<gold>价格: '
+game:
+  getMinPlayers: '<green>游戏将在 {time} 后开始！'
+  game-cancel-message: '<red>人数过少！倒计时已停止'
+  arena-start-countdown-title: ' '
+  arena-start-countdown-subtitle-5: '<yellow>❺'
+  arena-start-countdown-subtitle-4: '<yellow>❹'
+  arena-start-countdown-subtitle-3: '<red>❸'
+  arena-start-countdown-subtitle-2: '<red>❷'
+  arena-start-countdown-subtitle-1: '<red>❶'
+  player-join-game: '<yellow>{name} 加入了游戏'
+  player-leave-game: '<yellow>{name} 离开了游戏'
+  game-start-title: '<green>游戏开始'
+  game-start-subtitle: '<green>活到最后！'
+  game-start-message: '<green>游戏开始'
+  ghast-kill-chat: |2
+
+    <white><bold>乐魂死亡 > {0}{1}队的乐魂<gray>被{2}{3}<gray>杀死了！
+  respawn-unavailable-title: '<red>乐魂全部死亡'
+  respawn-unavailable-subtitle: '<red>你将无法复活'
+  respawn-title: '<red>你死了'
+  respawn-subtitle: '<green>3秒后复活'
+  cant-respawn-title: '<red>游戏结束'
+  cant-respawn-subtitle: '<yellow>你已无法复活'
+  reward-add: '<green> +{0}'
+  team-eliminated: |2
+    
+    <white><bold>队伍团灭 > {0}{1}队<red>已被团灭！
+  end-game-over-title: '<red><bold>游戏结束！'
+  end-victory-title: '<gold><bold>胜利！'
+  end-winner-team: '{0}{1}队<green>赢得了这场游戏！'
+  null-player: '无玩家'
+  end-top-chat: |-
+    <green>▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+    <white>                                   <bold>乐魂战
+    <reset>
+    {0}{1}队<gray> - {2}
+    <reset>
+    <reset>
+    <yellow>                          <bold>击杀第一名 <gray>- {firstName} - {firstKills}
+    <gold>                          <bold>击杀第二名 <gray>- {secondName} - {secondKills}
+    <red>                          <bold>击杀第三名 <gray>- {thirdName} - {thirdKills}
+    <reset>
+    <green>▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+  player-die-void-regular: '{0}{1}<gray>掉进了虚空。'
+  player-die-void-final: '{0}{1}<gray>掉进了虚空。 
+    <aqua><bold>最终击杀！'
+  player-die-knocked-void-regular: '{0}{1}<gray>被{2}{3}<gray>丢进了虚空。'
+  player-die-knocked-void-final: '{0}{1}<gray>被{2}{3}<gray>丢进了虚空。
+    <aqua><bold>最终击杀！'
+  player-die-knocked-fall-regular: '{0}{1}<gray>被{2}{3}<gray>推下了悬崖。'
+  player-die-knocked-fall-final: '{0}{1}<gray>被{2}{3}<gray>推下了悬崖。
+    <aqua><bold>最终击杀！'
+  player-die-bomb-regular: '{0}{1}<gray>被{2}{3}<gray>炸死了。'
+  player-die-bomb-final: '{0}{1}<gray>被{2}{3}<gray>炸死了。
+    <aqua><bold>最终击杀！'
+  player-die-bomb2-regular: '{0}{1}<gray>爆炸了。'
+  player-die-bomb2-final: '{0}{1}<gray>爆炸了。 
+    <aqua><bold>最终击杀！'
+  player-die-attack-regular: '{0}{1}<gray>被{2}{3}<gray>击杀。'
+  player-die-attack-final: '{0}{1}<gray>被{2}{3}<gray>击杀。
+    <aqua><bold>最终击杀！'
+  player-die-unknown-regular: '{0}{1}<gray>死了。'
+  player-die-unknown-final: '{0}{1}<gray>死了。 
+    <aqua><bold>最终击杀！'
+  player-die-shoot-regular: '{0}{1}<gray>被{2}{3}<gray>射死了！'
+  player-die-shoot-final: '{0}{1}<gray>被{2}{3}<gray>射死了！
+    <aqua><bold>最终击杀！'
+  arena-close: '<yellow>本场游戏将在15秒后关闭！'
+  protect-ghast: '<dark_red>你不可以攻击己方乐魂！'
+  enter-other-ghast: '<dark_red>你不可以乘坐其他队伍的乐魂！'
+  party-too-large: '<red>队伍规模过大！'
+  party-not-enough-space: "<red>当前游戏没有足够的空间容纳你的整个队伍"
+  airdrop-warning: '<red><bold>【空投警报】<reset> 空投即将降落于 <yellow>{x}, {y}, {z}<red> 附近！'
+  neutral-zone-mining: '<yellow>中立矿脉 > {0}{1}队 <gray>正在开采中立矿脉！'
+  private-zone-locked: '<red>这是 {0}{1}队 <red>的领地资源，你不能开采！'
+  kill-streak-2: '{0}{1} <gray>完成了 <white>双杀<gray>！'
+  kill-streak-3: '{0}{1} <gold>连续击杀 <yellow>3 <gold>人！'
+  kill-streak-5: '{0}{1} <red>火力全开，<yellow>5 <red>连击杀！'
+  kill-streak-8: '{0}{1} <dark_red><bold>势不可挡！<yellow>8 <dark_red><bold>连击杀！'
+bossbar:
+  develop: "发育阶段 剩余<yellow><bold>{0}s"
+  battle: "<yellow><bold>{0}s<reset>后开始缩圈"
+  reduce: "缩圈中<yellow><bold>{0}s"
+  ultimate: "所有乐魂将在 <yellow><bold>{0}s <reset>死亡"
+border:
+  shrink-start: '<red>缩圈开始！请尽快进入安全区域！'
+  shrink-stop: '<green>缩圈已停止！'
+  outside-damage: '<red>你处于圈外！每秒受到 {damage} 点伤害，距离安全区域 {distance} 格'
+item:
+  lobby-bed-name: '<yellow>返回大厅'
+  lobby-bed-lore:
+    - '<green>点击返回游戏大厅'
+party:
+  invite-sent: '<gray>{inviter}<yellow>邀请<gray>{target}<yellow>加入小队'
+  invite-received: '<gray>{inviter}<yellow>邀请你加入<gray>{party}<yellow>小队'
+  player-joined: '<gray>{player}<yellow>已加入小队'
+  invite-declined: '<gray>{player}<yellow>拒绝了邀请'
+  player-kicked: '<gray>{kicker}<red>已将<gray>{player}<red>移除小队'
+  player-left: '<gray>{player}离开了小队'
+  leadership-transferred: '<gray>{oldLeader}<yellow>已将队长移交给<gray>{newLeader}'
+  disbanded: '<gray>{player}已将小队解散'
+  chat-format: '[小队][{player}]: {message}'
+  unable-use-in-game: '<red>队伍指令不能在游戏中使用！'
+scoreboard:
+  title: '<yellow><bold>乐魂战'
+  team: '队'
+  waiting:
+    - '<gray>{date} <dark_gray>{server}'
+    - ''
+    - '<white>地图：<green>{map}'
+    - ''
+    - '<white>玩家数：<green>{on}/{max}'
+    - ''
+    - '<white>等待中...'
+    - ''
+    - '<yellow>{serverIp}'
+  starting:
+    - '<gray>{date} <dark_gray>{server}'
+    - ''
+    - '<white>地图：<green>{map}'
+    - ''
+    - '<white>玩家数：<green>{on}/{max}'
+    - ''
+    - '<white> <green>{time} <white>秒后开始'
+    - ''
+    - '<yellow>{serverIp}'
+  playing:
+    - '<gray>{date} <dark_gray>{server}'
+    - ''
+    - '{team1}'
+    - '{team2}'
+    - '{team3}'
+    - '{team4}'
+    - '{team5}'
+    - '{team6}'
+    - '{team7}'
+    - '{team8}'
+    - ''
+    - '<yellow>{serverIp}'

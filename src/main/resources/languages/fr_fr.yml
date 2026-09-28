@@ -1,0 +1,202 @@
+# fr_fr.yml (法语)
+commands:
+  main-list:
+    - '<gold>▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬'
+    - '<green>Commandes du Plugin'
+    - '<yellow>/gw gui <gray> - <aqua>Ouvrir le Menu du Jeu'
+    - '<yellow>/gw leave <gray> - <aqua>Quitter le Jeu'
+    - '<yellow>/gw join <Nom du Monde> <gray> - <aqua>Rejoindre le Jeu'
+    - '<yellow>/gw admin <gray> - <aqua>Voir les Commandes Admin'
+  admin-list:
+    - '<gold>▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬'
+    - '<green>Commandes Administrateur'
+    - '<yellow>/gw admin create <Nom du Monde> <Nom d''Affichage> <gray> - <aqua>Créer un Jeu'
+    - '<yellow>/gw admin setwait <gray> - <aqua>Définir le Lobby d''Attente'
+    - '<yellow>/gw admin setcenter <gray> - <aqua>Définir le Centre du Jeu'
+    - '<yellow>/gw admin setlobby <gray> - <aqua>Définir le Lobby du Serveur'
+    - '<yellow>/gw admin setspawn <ID d''Équipe> <gray> - <aqua>Définir le Spawn de l''Équipe'
+    - '<yellow>/gw admin setghastspawn <ID d''Équipe> <gray> - <aqua>Définir le Spawn du Ghast de l''Équipe'
+    - '<yellow>/gw admin setradius <Rayon> <gray> - <aqua>Définir le Rayon Initial de la Bordure'
+    - '<yellow>/gw admin settargetradius <Rayon> <gray> - <aqua>Définir le Rayon de la Bordure Réduite'
+    - '<yellow>/gw admin setghastamount <Quantité> <gray> - <aqua>Définir le Nombre de Ghasts par Équipe'
+    - '<yellow>/gw admin disable <gray> - <aqua>Désactiver Temporairement la Carte'
+    - '<yellow>/gw admin enable <gray> - <aqua>Activer la Carte'
+    - '<yellow>/gw admin backup <Nom du Monde> <gray> - <aqua>Sauvegarder la Carte (Assurez-vous qu''il n''y a pas de joueurs)'
+    - '<yellow>/gw admin addchest <gray> - <aqua>Ajouter un Coffre de Butin (Viser un coffre)'
+    - '<yellow>/gw admin removechest <gray> - <aqua>Supprimer un Coffre de Butin (Viser un coffre)'
+  party-list:
+    - '<gold>▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬'
+    - '<green>Commandes d''Équipe :'
+    - '<yellow>/party create <gray>- <aqua>Créer une Équipe'
+    - '<yellow>/party invite <Joueur> <gray>- <aqua>Inviter un Joueur'
+    - '<yellow>/party accept <Joueur> <gray>- <aqua>Accepter l''Invitation'
+    - '<yellow>/party decline <Joueur> <gray>- <aqua>Refuser l''Invitation'
+    - '<yellow>/party leave <gray>- <aqua>Quitter l''Équipe'
+    - '<yellow>/party kick <Joueur> <gray>- <aqua>Expulser un Joueur'
+    - '<yellow>/party transfer <Joueur> <gray>- <aqua>Transférer le Leadership'
+    - '<yellow>/party disband <gray>- <aqua>Dissoudre l''Équipe'
+    - '<yellow>/party info <gray>- <aqua>Voir les Informations de l''Équipe'
+  importWorld: '<green>Tentative d''importation du monde...'
+  importFailed: '<red>Échec de l''importation, le monde n''existe pas !'
+  gameCreateSuccess: '<green>Jeu créé avec succès !'
+  gameNotFound: '<red>Jeu non trouvé !'
+  missRequireData: '<red>Paramètres requis manquants !'
+  teamNotFound: '<red>Équipe non trouvée, vérifiez la casse !'
+  setSuccess: '<green>Paramétrage réussi !'
+  availableTeams: '<yellow>Équipes disponibles : ROUGE, BLEU, VERT, JAUNE, BLANC, CYAN, OR, VIOLET'
+  use-arena-lobby: '<red>Vous ne pouvez pas définir l''arène comme lobby !'
+  target-empty: '<red>Veuillez regarder un bloc cible !'
+  type-not-chest: '<red>Le bloc cible doit être un coffre !'
+  cant-select-game: '<red>Vous ne pouvez pas sélectionner un jeu sur ce serveur nœud. Utilisez d''abord <gray>/gw leave<red>.'
+  join-spectator: '<yellow>Vous avez rejoint en tant que spectateur. Utilisez <gray>/gw leave<yellow> pour quitter !'
+  lobby-not-allow: '<yellow>Vous ne pouvez pas définir le lobby dans l’arène !'
+upgrade:
+  iron-ingot: 'Lingot de Fer'
+  oak-log: 'Bûche de Chêne'
+  netherite-ingot: 'Lingot de Netherite'
+  coal: 'Charbon'
+  copper-ingot: 'Lingot de Cuivre'
+  snow: 'Bloc de Neige'
+  gui-title: '<dark_gray>Boutique Principale'
+  item-now: '<gray>Actuel : <yellow>{0}'
+  item-next: '<gray>Niveau Suivant : <green>{0}'
+  item-price: '<gold>Prix : '
+game:
+  getMinPlayers: '<green>Le jeu commence dans {time} !'
+  game-cancel-message: '<red>Pas assez de joueurs ! Compte à rebours arrêté.'
+  arena-start-countdown-title: ' '
+  arena-start-countdown-subtitle-5: '<yellow>❺'
+  arena-start-countdown-subtitle-4: '<yellow>❹'
+  arena-start-countdown-subtitle-3: '<red>❸'
+  arena-start-countdown-subtitle-2: '<red>❷'
+  arena-start-countdown-subtitle-1: '<red>❶'
+  player-join-game: '<yellow>{name} a rejoint le jeu'
+  player-leave-game: '<yellow>{name} a quitté le jeu'
+  game-start-title: '<green>Début du Jeu'
+  game-start-subtitle: '<green>Soyez le dernier survivant !'
+  game-start-message: '<green>Début du Jeu'
+  ghast-kill-chat: |2
+    
+    <white><bold>Ghast Tué > Le Ghast de l''équipe {0}{1}<gray> a été tué par {2}{3}<gray> !
+  respawn-unavailable-title: '<red>Tous les Ghasts sont Morts'
+  respawn-unavailable-subtitle: '<red>Vous ne pouvez pas réapparaître'
+  respawn-title: '<red>Vous êtes mort'
+  respawn-subtitle: '<green>Réapparition dans 3 secondes'
+  cant-respawn-title: '<red>Jeu Terminé'
+  cant-respawn-subtitle: '<yellow>Vous ne pouvez plus réapparaître'
+  reward-add: '<green> +{0}'
+  team-eliminated: |2
+    
+    <white><bold>Équipe Éliminée > L''équipe {0}{1} <red>a été éliminée !
+  end-game-over-title: '<red><bold>Jeu Terminé !'
+  end-victory-title: '<gold><bold>Victoire !'
+  end-winner-team: 'L''équipe {0}{1} <green>a remporté le jeu !'
+  null-player: 'Aucun Joueur'
+  end-top-chat: |-
+    <green>▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+    <white>                                   <bold>Guerre des Ghasts
+    <reset>
+    Équipe {0}{1}<gray> - {2}
+    <reset>
+    <reset>
+    <yellow>                          <bold>Meilleur Tueur #1 <gray>- {firstName} - {firstKills}
+    <gold>                          <bold>Meilleur Tueur #2 <gray>- {secondName} - {secondKills}
+    <red>                          <bold>Meilleur Tueur #3 <gray>- {thirdName} - {thirdKills}
+    <reset>
+    <green>▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+  player-die-void-regular: '{0}{1}<gray> est tombé dans le vide.'
+  player-die-void-final: '{0}{1}<gray> est tombé dans le vide. 
+    <aqua><bold>Élimination Finale !'
+  player-die-knocked-void-regular: '{0}{1}<gray> a été poussé dans le vide par {2}{3}<gray>.'
+  player-die-knocked-void-final: '{0}{1}<gray> a été poussé dans le vide par {2}{3}<gray>. 
+    <aqua><bold>Élimination Finale !'
+  player-die-knocked-fall-regular: '{0}{1}<gray> a été poussé d''une falaise par {2}{3}<gray>.'
+  player-die-knocked-fall-final: '{0}{1}<gray> a été poussé d''une falaise par {2}{3}<gray>. 
+    <aqua><bold>Élimination Finale !'
+  player-die-bomb-regular: '{0}{1}<gray> a été explosé par {2}{3}<gray>.'
+  player-die-bomb-final: '{0}{1}<gray> a été explosé par {2}{3}<gray>. 
+    <aqua><bold>Élimination Finale !'
+  player-die-bomb2-regular: '{0}{1}<gray> a explosé.'
+  player-die-bomb2-final: '{0}{1}<gray> a explosé. 
+    <aqua><bold>Élimination Finale !'
+  player-die-attack-regular: '{0}{1}<gray> a été tué par {2}{3}<gray>.'
+  player-die-attack-final: '{0}{1}<gray> a été tué par {2}{3}<gray>. 
+    <aqua><bold>Élimination Finale !'
+  player-die-unknown-regular: '{0}{1}<gray> est mort.'
+  player-die-unknown-final: '{0}{1}<gray> est mort. 
+    <aqua><bold>Élimination Finale !'
+  player-die-shoot-regular: '{0}{1}<gray> a été abattu par {2}{3}<gray> !'
+  player-die-shoot-final: '{0}{1}<gray> a été abattu par {2}{3}<gray> ! 
+    <aqua><bold>Élimination Finale !'
+  arena-close: '<yellow>Cette partie se terminera dans 15 secondes !'
+  protect-ghast: '<dark_red>Vous ne pouvez pas attaquer le Ghast de votre équipe !'
+  enter-other-ghast: '<dark_red>Vous ne pouvez pas monter le Ghast d''une autre équipe !'
+  party-too-large: '<red>L''équipe est trop grande !'
+  party-not-enough-space: "<red>Ce jeu n''a pas assez d''espace pour toute votre équipe"
+  airdrop-warning: '<red><bold>[AIRDROP]<reset> Un largage arrive près de <yellow>{x}, {y}, {z}<red> !'
+  neutral-zone-mining: '<yellow>Veine Neutre > {0}{1} Équipe <gray>exploite la veine neutre !'
+  private-zone-locked: '<red>Ceci est la ressource du territoire de {0}{1} Équipe<red> ! Vous ne pouvez pas l''extraire !'
+  kill-streak-2: '{0}{1} <gray>vient de réaliser un <white>double meurtre<gray> !'
+  kill-streak-3: '{0}{1} <gold>en série - <yellow>3 <gold>éliminations !'
+  kill-streak-5: '{0}{1} <red>imparable - <yellow>5 <red>éliminations !'
+  kill-streak-8: '{0}{1} <dark_red><bold>DIVIN ! <yellow>8 <dark_red><bold>éliminations !'
+bossbar:
+  develop: "Phase de Développement <yellow><bold>{0}s<reset> restantes"
+  battle: "La bordure rétrécit dans <yellow><bold>{0}s"
+  reduce: "Bordure rétrécissante <yellow><bold>{0}s"
+  ultimate: "Tous les Ghasts mourront dans <yellow><bold>{0}s"
+border:
+  shrink-start: '<red>La bordure rétrécit ! Rejoignez rapidement la zone sûre !'
+  shrink-stop: '<green>Le rétrécissement de la bordure est arrêté !'
+  outside-damage: '<red>Vous êtes hors de la bordure ! {damage} dégâts par seconde, à {distance} blocs de la zone sûre'
+item:
+  lobby-bed-name: '<yellow>Retour au Lobby'
+  lobby-bed-lore:
+    - '<green>Cliquez pour retourner au lobby'
+party:
+  invite-sent: '<gray>{inviter}<yellow> a invité <gray>{target}<yellow> à l''équipe'
+  invite-received: '<gray>{inviter}<yellow> vous a invité à l''équipe <gray>{party}<yellow>'
+  player-joined: '<gray>{player}<yellow> a rejoint l''équipe'
+  invite-declined: '<gray>{player}<yellow> a refusé l''invitation'
+  player-kicked: '<gray>{kicker}<red> a expulsé <gray>{player}<red> de l''équipe'
+  player-left: '<gray>{player} a quitté l''équipe'
+  leadership-transferred: '<gray>{oldLeader}<yellow> a transféré le leadership à <gray>{newLeader}'
+  disbanded: '<gray>{player} a dissous l''équipe'
+  chat-format: '[Équipe][{player}]: {message}'
+  unable-use-in-game: '<red>Les commandes d''équipe ne peuvent pas être utilisées en jeu !'
+scoreboard:
+  title: '<yellow><bold>Guerre des Ghasts'
+  team: 'Équipe'
+  waiting:
+    - '<gray>{date} <dark_gray>{server}'
+    - ''
+    - '<white>Carte : <green>{map}'
+    - ''
+    - '<white>Joueurs : <green>{on}/{max}'
+    - ''
+    - '<white>En attente...'
+    - ''
+    - '<yellow>{serverIp}'
+  starting:
+    - '<gray>{date} <dark_gray>{server}'
+    - ''
+    - '<white>Carte : <green>{map}'
+    - ''
+    - '<white>Joueurs : <green>{on}/{max}'
+    - ''
+    - '<white>Début dans <green>{time} <white>secondes'
+    - ''
+    - '<yellow>{serverIp}'
+  playing:
+    - '<gray>{date} <dark_gray>{server}'
+    - ''
+    - '{team1}'
+    - '{team2}'
+    - '{team3}'
+    - '{team4}'
+    - '{team5}'
+    - '{team6}'
+    - '{team7}'
+    - '{team8}'
+    - ''
+    - '<yellow>{serverIp}'

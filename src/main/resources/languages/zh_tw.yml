@@ -1,0 +1,202 @@
+# zh_tw.yml
+commands:
+  main-list:
+    - '<gold>▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬'
+    - '<green>插件指令'
+    - '<yellow>/gw gui <gray> - <aqua>開啟遊戲選單'
+    - '<yellow>/gw leave <gray> - <aqua>離開遊戲'
+    - '<yellow>/gw join <世界名稱> <gray> - <aqua>加入遊戲'
+    - '<yellow>/gw admin <gray> - <aqua>檢視管理員指令'
+  admin-list:
+    - '<gold>▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬'
+    - '<green>管理員指令'
+    - '<yellow>/gw admin create <世界名稱> <顯示名稱> <gray> - <aqua>建立遊戲'
+    - '<yellow>/gw admin setwait <gray> - <aqua>設定遊戲等待位置'
+    - '<yellow>/gw admin setcenter <gray> - <aqua>設定遊戲中心位置'
+    - '<yellow>/gw admin setlobby <gray> - <aqua>設定伺服器大廳'
+    - '<yellow>/gw admin setspawn <隊伍ID> <gray> - <aqua>設定隊伍重生點'
+    - '<yellow>/gw admin setghastspawn <隊伍ID> <gray> - <aqua>設定隊伍樂魂重生點'
+    - '<yellow>/gw admin setradius <半徑> <gray> - <aqua>設定地圖初始邊界半徑'
+    - '<yellow>/gw admin settargetradius <半徑> <gray> - <aqua>設定縮圈後的半徑'
+    - '<yellow>/gw admin setghastamount <數量> <gray> - <aqua>設定每隊樂魂數量'
+    - '<yellow>/gw admin disable <gray> - <aqua>暫時停用地圖'
+    - '<yellow>/gw admin enable <gray> - <aqua>啟用地圖'
+    - '<yellow>/gw admin backup <世界名稱> <gray> - <aqua>備份地圖(需確保目標世界無玩家)'
+    - '<yellow>/gw admin addchest <gray> - <aqua>添加物資箱子(視線對準箱子)'
+    - '<yellow>/gw admin removechest <gray> - <aqua>移除物資箱子(視線對準箱子)'
+  party-list:
+    - '<gold>▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬'
+    - '<green>隊伍指令：'
+    - '<yellow>/party create <gray>- <aqua>建立隊伍'
+    - '<yellow>/party invite <玩家> <gray>- <aqua>邀請玩家'
+    - '<yellow>/party accept <玩家> <gray>- <aqua>接受邀請'
+    - '<yellow>/party decline <玩家> <gray>- <aqua>拒絕邀請'
+    - '<yellow>/party leave <gray>- <aqua>離開隊伍'
+    - '<yellow>/party kick <玩家> <gray>- <aqua>踢出玩家'
+    - '<yellow>/party transfer <玩家> <gray>- <aqua>轉讓隊長'
+    - '<yellow>/party disband <gray>- <aqua>解散隊伍'
+    - '<yellow>/party info <gray>- <aqua>檢視隊伍資訊'
+  importWorld: '<green>正在嘗試匯入世界...'
+  importFailed: '<red>匯入失敗，世界不存在！'
+  gameCreateSuccess: '<green>遊戲建立成功！'
+  gameNotFound: '<red>遊戲未找到！'
+  missRequireData: '<red>缺少必要參數！'
+  teamNotFound: '<red>隊伍未找到，注意區分大小寫！'
+  setSuccess: '<green>設定成功！'
+  availableTeams: '<yellow>可用隊伍：RED(紅)、BLUE(藍)、GREEN(綠)、YELLOW(黃)、WHITE(白)、AQUA(青)、GOLD(金)、PURPLE(紫)'
+  use-arena-lobby: '<red>你不可以將遊戲區域設為大廳！'
+  target-empty: '<red>請注視目標方塊後再試!'
+  type-not-chest: '<red>目標方塊必須是箱子！'
+  cant-select-game: '<red>你不可以在節點伺服器選擇遊戲。若需選擇其他遊戲，請先<gray>/gw leave'
+  join-spectator: '<yellow>你已以旁觀者加入，使用<gray>/gw leave<yellow>離開遊戲!'
+  lobby-not-allow: '<yellow>你不能將大廳設在競技場內！'
+upgrade:
+  iron-ingot: '鐵錠'
+  oak-log: '原木'
+  netherite-ingot: '合金'
+  coal: '煤炭'
+  copper-ingot: '銅錠'
+  snow: '雪塊'
+  gui-title: '<dark_gray>核心商店'
+  item-now: '<gray>當前: <yellow>{0}'
+  item-next: '<gray>下一級: <green>{0}'
+  item-price: '<gold>價格: '
+game:
+  getMinPlayers: '<green>遊戲將在 {time} 後開始！'
+  game-cancel-message: '<red>人數過少！倒數計時已停止'
+  arena-start-countdown-title: ' '
+  arena-start-countdown-subtitle-5: '<yellow>❺'
+  arena-start-countdown-subtitle-4: '<yellow>❹'
+  arena-start-countdown-subtitle-3: '<red>❸'
+  arena-start-countdown-subtitle-2: '<red>❷'
+  arena-start-countdown-subtitle-1: '<red>❶'
+  player-join-game: '<yellow>{name} 加入了遊戲'
+  player-leave-game: '<yellow>{name} 離開了遊戲'
+  game-start-title: '<green>遊戲開始'
+  game-start-subtitle: '<green>活到最後！'
+  game-start-message: '<green>遊戲開始'
+  ghast-kill-chat: |2
+    
+    <white><bold>樂魂死亡 > {0}{1}隊的樂魂<gray>被{2}{3}<gray>殺死了！
+  respawn-unavailable-title: '<red>樂魂全部死亡'
+  respawn-unavailable-subtitle: '<red>你將無法復活'
+  respawn-title: '<red>你死了'
+  respawn-subtitle: '<green>3秒後復活'
+  cant-respawn-title: '<red>遊戲結束'
+  cant-respawn-subtitle: '<yellow>你已無法復活'
+  reward-add: '<green> +{0}'
+  team-eliminated: |2
+    
+    <white><bold>隊伍團滅 > {0}{1}隊<red>已被團滅！
+  end-game-over-title: '<red><bold>遊戲結束！'
+  end-victory-title: '<gold><bold>勝利！'
+  end-winner-team: '{0}{1}隊<green>贏得了這場遊戲！'
+  null-player: '無玩家'
+  end-top-chat: |-
+    <green>▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+    <white>                                   <bold>樂魂戰
+    <reset>
+    {0}{1}隊<gray> - {2}
+    <reset>
+    <reset>
+    <yellow>                          <bold>擊殺第一名 <gray>- {firstName} - {firstKills}
+    <gold>                          <bold>擊殺第二名 <gray>- {secondName} - {secondKills}
+    <red>                          <bold>擊殺第三名 <gray>- {thirdName} - {thirdKills}
+    <reset>
+    <green>▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+  player-die-void-regular: '{0}{1}<gray>掉進了虛空。'
+  player-die-void-final: '{0}{1}<gray>掉進了虛空。 
+    <aqua><bold>最終擊殺！'
+  player-die-knocked-void-regular: '{0}{1}<gray>被{2}{3}<gray>丟進了虛空。'
+  player-die-knocked-void-final: '{0}{1}<gray>被{2}{3}<gray>丟進了虛空。 
+    <aqua><bold>最終擊殺！'
+  player-die-knocked-fall-regular: '{0}{1}<gray>被{2}{3}<gray>推下了懸崖。'
+  player-die-knocked-fall-final: '{0}{1}<gray>被{2}{3}<gray>推下了懸崖。 
+    <aqua><bold>最終擊殺！'
+  player-die-bomb-regular: '{0}{1}<gray>被{2}{3}<gray>炸死了。'
+  player-die-bomb-final: '{0}{1}<gray>被{2}{3}<gray>炸死了。 
+    <aqua><bold>最終擊殺！'
+  player-die-bomb2-regular: '{0}{1}<gray>爆炸了。'
+  player-die-bomb2-final: '{0}{1}<gray>爆炸了。 
+    <aqua><bold>最終擊殺！'
+  player-die-attack-regular: '{0}{1}<gray>被{2}{3}<gray>擊殺。'
+  player-die-attack-final: '{0}{1}<gray>被{2}{3}<gray>擊殺。 
+    <aqua><bold>最終擊殺！'
+  player-die-unknown-regular: '{0}{1}<gray>死了。'
+  player-die-unknown-final: '{0}{1}<gray>死了。 
+    <aqua><bold>最終擊殺！'
+  player-die-shoot-regular: '{0}{1}<gray>被{2}{3}<gray>射死了！'
+  player-die-shoot-final: '{0}{1}<gray>被{2}{3}<gray>射死了！ 
+    <aqua><bold>最終擊殺！'
+  arena-close: '<yellow>本場遊戲將在15秒後關閉！'
+  protect-ghast: '<dark_red>你不可以攻擊己方樂魂！'
+  enter-other-ghast: '<dark_red>你不可以乘坐其他隊伍的樂魂！'
+  party-too-large: '<red>隊伍規模過大！'
+  party-not-enough-space: "<red>當前遊戲沒有足夠的空間容納你的整個隊伍"
+  airdrop-warning: '<red><bold>【空投警報】<reset> 空投即將降落的 <yellow>{x}, {y}, {z}<red> 附近！'
+  neutral-zone-mining: '<yellow>中立礦脈 > {0}{1}隊 <gray>正在開採中立礦脈！'
+  private-zone-locked: '<red>這是 {0}{1}隊 <red>的領地資源，你不能開採！'
+  kill-streak-2: '{0}{1} <gray>完成了 <white>雙殺<gray>！'
+  kill-streak-3: '{0}{1} <gold>連續擊殺 <yellow>3 <gold>人！'
+  kill-streak-5: '{0}{1} <red>火力全開，<yellow>5 <red>連擊殺！'
+  kill-streak-8: '{0}{1} <dark_red><bold>勢不可擋！<yellow>8 <dark_red><bold>連擊殺！'
+bossbar:
+  develop: "發育階段 剩餘<yellow><bold>{0}s"
+  battle: "<yellow><bold>{0}s<reset>後開始縮圈"
+  reduce: "縮圈中<yellow><bold>{0}s"
+  ultimate: "所有樂魂將在 <yellow><bold>{0}s <reset>死亡"
+border:
+  shrink-start: '<red>縮圈開始！請盡快進入安全區域！'
+  shrink-stop: '<green>縮圈已停止！'
+  outside-damage: '<red>你處於圈外！每秒受到 {damage} 點傷害，距離安全區域 {distance} 格'
+item:
+  lobby-bed-name: '<yellow>返回大廳'
+  lobby-bed-lore:
+    - '<green>點擊返回遊戲大廳'
+party:
+  invite-sent: '<gray>{inviter}<yellow>邀請<gray>{target}<yellow>加入小隊'
+  invite-received: '<gray>{inviter}<yellow>邀請你加入<gray>{party}<yellow>小隊'
+  player-joined: '<gray>{player}<yellow>已加入小隊'
+  invite-declined: '<gray>{player}<yellow>拒絕了邀請'
+  player-kicked: '<gray>{kicker}<red>已將<gray>{player}<red>移除小隊'
+  player-left: '<gray>{player}離開了小隊'
+  leadership-transferred: '<gray>{oldLeader}<yellow>已將隊長移交給<gray>{newLeader}'
+  disbanded: '<gray>{player}已將小隊解散'
+  chat-format: '[小隊][{player}]: {message}'
+  unable-use-in-game: '<red>隊伍指令不能在遊戲中使用！'
+scoreboard:
+  title: '<yellow><bold>樂魂戰'
+  team: '隊'
+  waiting:
+    - '<gray>{date} <dark_gray>{server}'
+    - ''
+    - '<white>地圖：<green>{map}'
+    - ''
+    - '<white>玩家人數：<green>{on}/{max}'
+    - ''
+    - '<white>等待中...'
+    - ''
+    - '<yellow>{serverIp}'
+  starting:
+    - '<gray>{date} <dark_gray>{server}'
+    - ''
+    - '<white>地圖：<green>{map}'
+    - ''
+    - '<white>玩家人數：<green>{on}/{max}'
+    - ''
+    - '<white> <green>{time} <white>秒後開始'
+    - ''
+    - '<yellow>{serverIp}'
+  playing:
+    - '<gray>{date} <dark_gray>{server}'
+    - ''
+    - '{team1}'
+    - '{team2}'
+    - '{team3}'
+    - '{team4}'
+    - '{team5}'
+    - '{team6}'
+    - '{team7}'
+    - '{team8}'
+    - ''
+    - '<yellow>{serverIp}'

@@ -1,0 +1,202 @@
+# ru_ru.yml (俄语)
+commands:
+  main-list:
+    - '<gold>▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬'
+    - '<green>Команды плагина'
+    - '<yellow>/gw gui <gray> - <aqua>Открыть меню игры'
+    - '<yellow>/gw leave <gray> - <aqua>Покинуть игру'
+    - '<yellow>/gw join <Название мира> <gray> - <aqua>Присоединиться к игре'
+    - '<yellow>/gw admin <gray> - <aqua>Просмотр команд администратора'
+  admin-list:
+    - '<gold>▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬'
+    - '<green>Команды администратора'
+    - '<yellow>/gw admin create <Название мира> <Отображаемое имя> <gray> - <aqua>Создать игру'
+    - '<yellow>/gw admin setwait <gray> - <aqua>Установить лобби ожидания'
+    - '<yellow>/gw admin setcenter <gray> - <aqua>Установить центр игры'
+    - '<yellow>/gw admin setlobby <gray> - <aqua>Установить лобби сервера'
+    - '<yellow>/gw admin setspawn <ID команды> <gray> - <aqua>Установить точку возрождения команды'
+    - '<yellow>/gw admin setghastspawn <ID команды> <gray> - <aqua>Установить точку возрождения гаста команды'
+    - '<yellow>/gw admin setradius <Радиус> <gray> - <aqua>Установить начальный радиус границы мира'
+    - '<yellow>/gw admin settargetradius <Радиус> <gray> - <aqua>Установить радиус суженной границы'
+    - '<yellow>/gw admin setghastamount <Количество> <gray> - <aqua>Установить количество гастов на команду'
+    - '<yellow>/gw admin disable <gray> - <aqua>Временно отключить карту'
+    - '<yellow>/gw admin enable <gray> - <aqua>Включить карту'
+    - '<yellow>/gw admin backup <Название мира> <gray> - <aqua>Создать резервную копию карты (Убедитесь, что в целевом мире нет игроков)'
+    - '<yellow>/gw admin addchest <gray> - <aqua>Добавить сундук с лутом (Нацельтесь на сундук)'
+    - '<yellow>/gw admin removechest <gray> - <aqua>Удалить сундук с лутом (Нацельтесь на сундук)'
+  party-list:
+    - '<gold>▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬'
+    - '<green>Команды отряда:'
+    - '<yellow>/party create <gray>- <aqua>Создать отряд'
+    - '<yellow>/party invite <Игрок> <gray>- <aqua>Пригласить игрока'
+    - '<yellow>/party accept <Игрок> <gray>- <aqua>Принять приглашение'
+    - '<yellow>/party decline <Игрок> <gray>- <aqua>Отклонить приглашение'
+    - '<yellow>/party leave <gray>- <aqua>Покинуть отряд'
+    - '<yellow>/party kick <Игрок> <gray>- <aqua>Выгнать игрока'
+    - '<yellow>/party transfer <Игрок> <gray>- <aqua>Передать лидерство'
+    - '<yellow>/party disband <gray>- <aqua>Распустить отряд'
+    - '<yellow>/party info <gray>- <aqua>Просмотреть информацию об отряде'
+  importWorld: '<green>Попытка импорта мира...'
+  importFailed: '<red>Импорт не удался, мир не существует!'
+  gameCreateSuccess: '<green>Игра успешно создана!'
+  gameNotFound: '<red>Игра не найдена!'
+  missRequireData: '<red>Отсутствуют необходимые параметры!'
+  teamNotFound: '<red>Команда не найдена, обратите внимание на регистр!'
+  setSuccess: '<green>Настройка успешна!'
+  availableTeams: '<yellow>Доступные команды: КРАСНАЯ, СИНЯЯ, ЗЕЛЕНАЯ, ЖЕЛТАЯ, БЕЛАЯ, БИРЮЗОВАЯ, ЗОЛОТАЯ, ФИОЛЕТОВАЯ'
+  use-arena-lobby: '<red>Вы не можете установить арену в качестве лобби!'
+  target-empty: '<red>Пожалуйста, посмотрите на целевой блок!'
+  type-not-chest: '<red>Целевой блок должен быть сундуком!'
+  cant-select-game: '<red>Вы не можете выбрать игру на этом нод-сервере. Сначала используйте <gray>/gw leave<red>.'
+  join-spectator: '<yellow>Вы присоединились как наблюдатель. Используйте <gray>/gw leave<yellow>, чтобы выйти!'
+  lobby-not-allow: '<yellow>Вы не можете установить лобби на арене!'
+upgrade:
+  iron-ingot: 'Железный слиток'
+  oak-log: 'Дубовое бревно'
+  netherite-ingot: 'Незеритовый слиток'
+  coal: 'Уголь'
+  copper-ingot: 'Медный слиток'
+  snow: 'Снежный блок'
+  gui-title: '<dark_gray>Главный магазин'
+  item-now: '<gray>Текущий: <yellow>{0}'
+  item-next: '<gray>Следующий уровень: <green>{0}'
+  item-price: '<gold>Цена: '
+game:
+  getMinPlayers: '<green>Игра начнется через {time}!'
+  game-cancel-message: '<red>Недостаточно игроков! Обратный отсчет остановлен.'
+  arena-start-countdown-title: ' '
+  arena-start-countdown-subtitle-5: '<yellow>❺'
+  arena-start-countdown-subtitle-4: '<yellow>❹'
+  arena-start-countdown-subtitle-3: '<red>❸'
+  arena-start-countdown-subtitle-2: '<red>❷'
+  arena-start-countdown-subtitle-1: '<red>❶'
+  player-join-game: '<yellow>{name} присоединился к игре'
+  player-leave-game: '<yellow>{name} покинул игру'
+  game-start-title: '<green>Начало игры'
+  game-start-subtitle: '<green>Оставайтесь последним!'
+  game-start-message: '<green>Начало игры'
+  ghast-kill-chat: |2
+    
+    <white><bold>Гаст убит > Гаст команды {0}{1}<gray> был убит {2}{3}<gray>!
+  respawn-unavailable-title: '<red>Все гасты мертвы'
+  respawn-unavailable-subtitle: '<red>Вы не можете возродиться'
+  respawn-title: '<red>Вы умерли'
+  respawn-subtitle: '<green>Возрождение через 3 секунды'
+  cant-respawn-title: '<red>Игра окончена'
+  cant-respawn-subtitle: '<yellow>Вы больше не можете возродиться'
+  reward-add: '<green> +{0}'
+  team-eliminated: |2
+    
+    <white><bold>Команда уничтожена > Команда {0}{1} <red>была уничтожена!
+  end-game-over-title: '<red><bold>Игра окончена!'
+  end-victory-title: '<gold><bold>Победа!'
+  end-winner-team: 'Команда {0}{1} <green>выиграла игру!'
+  null-player: 'Нет игрока'
+  end-top-chat: |-
+    <green>▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+    <white>                                   <bold>Война гастов
+    <reset>
+    Команда {0}{1}<gray> - {2}
+    <reset>
+    <reset>
+    <yellow>                          <bold>Лучший убийца #1 <gray>- {firstName} - {firstKills}
+    <gold>                          <bold>Лучший убийца #2 <gray>- {secondName} - {secondKills}
+    <red>                          <bold>Лучший убийца #3 <gray>- {thirdName} - {thirdKills}
+    <reset>
+    <green>▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+  player-die-void-regular: '{0}{1}<gray> упал в пустоту.'
+  player-die-void-final: '{0}{1}<gray> упал в пустоту. 
+    <aqua><bold>Финальное убийство!'
+  player-die-knocked-void-regular: '{0}{1}<gray> был сброшен в пустоту {2}{3}<gray>.'
+  player-die-knocked-void-final: '{0}{1}<gray> был сброшен в пустоту {2}{3}<gray>. 
+    <aqua><bold>Финальное убийство!'
+  player-die-knocked-fall-regular: '{0}{1}<gray> был сброшен с обрыва {2}{3}<gray>.'
+  player-die-knocked-fall-final: '{0}{1}<gray> был сброшен с обрыва {2}{3}<gray>. 
+    <aqua><bold>Финальное убийство!'
+  player-die-bomb-regular: '{0}{1}<gray> был взорван {2}{3}<gray>.'
+  player-die-bomb-final: '{0}{1}<gray> был взорван {2}{3}<gray>. 
+    <aqua><bold>Финальное убийство!'
+  player-die-bomb2-regular: '{0}{1}<gray> взорвался.'
+  player-die-bomb2-final: '{0}{1}<gray> взорвался. 
+    <aqua><bold>Финальное убийство!'
+  player-die-attack-regular: '{0}{1}<gray> был убит {2}{3}<gray>.'
+  player-die-attack-final: '{0}{1}<gray> был убит {2}{3}<gray>. 
+    <aqua><bold>Финальное убийство!'
+  player-die-unknown-regular: '{0}{1}<gray> умер.'
+  player-die-unknown-final: '{0}{1}<gray> умер. 
+    <aqua><bold>Финальное убийство!'
+  player-die-shoot-regular: '{0}{1}<gray> был застрелен {2}{3}<gray>!'
+  player-die-shoot-final: '{0}{1}<gray> был застрелен {2}{3}<gray>! 
+    <aqua><bold>Финальное убийство!'
+  arena-close: '<yellow>Эта игра закроется через 15 секунд!'
+  protect-ghast: '<dark_red>Вы не можете атаковать гаста своей команды!'
+  enter-other-ghast: '<dark_red>Вы не можете оседлать гаста другой команды!'
+  party-too-large: '<red>Отряд слишком большой!'
+  party-not-enough-space: "<red>В этой игре недостаточно места для всего вашего отряда"
+  airdrop-warning: '<red><bold>[АИРДРОП]<reset> Снабжение скоро упадёт рядом с <yellow>{x}, {y}, {z}<red>!'
+  neutral-zone-mining: '<yellow>Нейтральная жила > {0}{1} команда <gray>добывает нейтральную жилу!'
+  private-zone-locked: '<red>Это территориальный ресурс команды {0}{1}<red>! Вы не можете его добывать!'
+  kill-streak-2: '{0}{1} <gray>совершает <white>двойное убийство<gray>!'
+  kill-streak-3: '{0}{1} <gold>в кураже - <yellow>3 <gold>убийства!'
+  kill-streak-5: '{0}{1} <red>непреодолим - <yellow>5 <red>убийств!'
+  kill-streak-8: '{0}{1} <dark_red><bold>БОГ ВОЙНЫ! <yellow>8 <dark_red><bold>убийств!'
+bossbar:
+  develop: "Фаза развития <yellow><bold>{0}с<reset> осталось"
+  battle: "Граница сожмется через <yellow><bold>{0}с"
+  reduce: "Сжатие границы <yellow><bold>{0}с"
+  ultimate: "Все гасты умрут через <yellow><bold>{0}с"
+border:
+  shrink-start: '<red>Граница сжимается! Скорее вернитесь в безопасную зону!'
+  shrink-stop: '<green>Сжатие границы остановлено!'
+  outside-damage: '<red>Вы за границей! Вы получаете {damage} урона в секунду, до безопасной зоны {distance} блоков'
+item:
+  lobby-bed-name: '<yellow>Вернуться в лобби'
+  lobby-bed-lore:
+    - '<green>Нажмите, чтобы вернуться в лобби'
+party:
+  invite-sent: '<gray>{inviter}<yellow> пригласил <gray>{target}<yellow> в отряд'
+  invite-received: '<gray>{inviter}<yellow> пригласил вас в отряд <gray>{party}<yellow>'
+  player-joined: '<gray>{player}<yellow> присоединился к отряду'
+  invite-declined: '<gray>{player}<yellow> отклонил приглашение'
+  player-kicked: '<gray>{kicker}<red> выгнал <gray>{player}<red> из отряда'
+  player-left: '<gray>{player} покинул отряд'
+  leadership-transferred: '<gray>{oldLeader}<yellow> передал лидерство <gray>{newLeader}'
+  disbanded: '<gray>{player} распустил отряд'
+  chat-format: '[Отряд][{player}]: {message}'
+  unable-use-in-game: '<red>Команды отряда нельзя использовать в игре!'
+scoreboard:
+  title: '<yellow><bold>Война гастов'
+  team: 'Команда'
+  waiting:
+    - '<gray>{date} <dark_gray>{server}'
+    - ''
+    - '<white>Карта: <green>{map}'
+    - ''
+    - '<white>Игроки: <green>{on}/{max}'
+    - ''
+    - '<white>Ожидание...'
+    - ''
+    - '<yellow>{serverIp}'
+  starting:
+    - '<gray>{date} <dark_gray>{server}'
+    - ''
+    - '<white>Карта: <green>{map}'
+    - ''
+    - '<white>Игроки: <green>{on}/{max}'
+    - ''
+    - '<white>Начало через <green>{time} <white>секунд'
+    - ''
+    - '<yellow>{serverIp}'
+  playing:
+    - '<gray>{date} <dark_gray>{server}'
+    - ''
+    - '{team1}'
+    - '{team2}'
+    - '{team3}'
+    - '{team4}'
+    - '{team5}'
+    - '{team6}'
+    - '{team7}'
+    - '{team8}'
+    - ''
+    - '<yellow>{serverIp}'

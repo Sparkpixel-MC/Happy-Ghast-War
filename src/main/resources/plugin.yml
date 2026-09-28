@@ -1,0 +1,37 @@
+name: HappyGhastWar
+version: 1.0-beta
+main: me.wang.happyGhastWar.HappyGhastWar
+api-version: 1.21
+description: A Ghast Warfare game
+author: Wang
+softdepend:
+  - SlimeWorldManager
+  - AdvancedSlimePaper
+  - TAB
+commands:
+  ghastwar:
+    description: Main command for HappyGhastWar
+    usage: /<command>
+    aliases:
+      - gw
+  party:
+    description: Party management command
+    usage: /<command>
+    aliases:
+      - p
+permissions:
+  happyghastwar.admin:
+    description: Admin permissions
+    default: op
+  happyghastwar.join:
+    description: Allow joining games
+    default: true
+  happyghastwar.leave:
+    description: Allow leaving games
+    default: true
+  happyghastwar.create:
+    description: Allow creating arenas
+    default: op
+  happyghastwar.setup:
+    description: Allow arena setup
+    default: op
