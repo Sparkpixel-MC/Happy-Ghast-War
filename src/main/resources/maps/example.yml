@@ -1,6 +1,39 @@
-name: 'Test'
+# 竞技场配置示例（真正生效的配置在 plugins/HappyGhastWar/arenas/<世界名>.yml）
+# 用 /gw admin create <slime世界名> <显示名> 生成，再用
+# /gw admin setwait / setcenter / setradius / setspawn / setghastspawn ... 补全点位
+name: 'Example'
+
+worldName: 'example'
 
 game:
-  teams: 4
-  teamSize: 4
-  timeCount: 60
+  teams: 4          # 队伍数量
+  teamSize: 4       # 每队人数上限
+  timeCount: 60     # 开局倒计时（秒）
+  ghast-amount: 2   # 每队乐魂数量
+  radius: 100       # 初始毒圈半径
+  target-radius: 20 # 缩圈目标半径
+  resource-respawn: 45      # 普通资源重生时间（秒）
+  border-damage: 1.0        # 圈外每秒伤害
+  starter-kit: 'modest'     # 开局资源: none=不发 / modest=少量启动资源 / full=旧版大量资源
+  private-zone-radius: 30   # 距队出生点此距离内=私有资源区(普通恢复速度)，其余=中立区/中岛(恢复更快+广播)
+  private-zone-lock: false  # true=私有区仅本队可开采
+  center: 'example,0,64,0'  # 毒圈中心: 世界,x,y,z
+
+bossbar:
+  develop: 180    # 开发期（秒）
+  battle: 240     # 战斗期（秒）
+  reduce: 600     # 缩圈期（秒）
+  ultimate: 300   # 终局期（秒）
+
+chests: []        # 战利品箱: ['世界,x,y,z', ...]
+neutralZones: []  # 中立资源据点: ['世界,x,y,z,iron', ...]
+
+team:
+  RED: 'example,10,64,10'
+  BLUE: 'example,-10,64,-10'
+
+ghast:
+  RED: 'example,10,68,10'
+  BLUE: 'example,-10,68,-10'
+
+wait: 'example,0,64,20'

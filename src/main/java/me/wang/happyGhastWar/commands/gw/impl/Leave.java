@@ -4,37 +4,35 @@ import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import me.wang.happyGhastWar.HappyGhastWar;
 import me.wang.happyGhastWar.arena.Arena;
-import me.wang.happyGhastWar.arena.ArenaConfig;
 import me.wang.happyGhastWar.commands.gw.GWCommand;
 import me.wang.happyGhastWar.game.party.Party;
-import me.wang.happyGhastWar.game.party.PartyManager;
-import me.wang.happyGhastWar.game.team.TeamDivider;
-import org.bukkit.ChatColor;
+import me.wang.happyGhastWar.util.Text;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class Leave extends GWCommand {
     public Leave(){
-        super("leave", true, new String[0]);
+        super("leave", true);
     }
 
     public void evaluate(HappyGhastWar ghastWar, Player player, String s, List<String> params) {
         World world = player.getWorld();
-        if (!ghastWar.arenas.containsKey(world.getName())){
-            player.sendMessage(ghastWar.language.getContent("commands.gameNotFound"));
+        if (!HappyGhastWar.arenas.containsKey(world.getName())){
+            Text.send(player, HappyGhastWar.language.getContent("commands.gameNotFound"));
             return;
         }
 
-        Arena arena = ghastWar.arenas.get(world.getName());
-        ArenaConfig arenaConfig = arena.getArenaConfig();
+        Arena arena = HappyGhastWar.arenas.get(world.getName());
 
         Party party = HappyGhastWar.getInstance().getPartyManager().getParty(player);
-        PartyManager partyManager = HappyGhastWar.getInstance().getPartyManager();
+        HappyGhastWar.getInstance();
 
         if (party != null && party.isLeader(player)) {
+
             // 队长加入，检查整个Party
             List<Player> partyMembers = party.getOnlineMembers();
 
@@ -47,7 +45,12 @@ public class Leave extends GWCommand {
             // 如果是Party成员但不是队长，检查队长是否已经加入
             if (party != null && !party.isLeader(player)) {
                 if (arena.getPlayers().contains(party.getLeader())) {
-                    player.sendMessage(ChatColor.RED + "请等待队长 " + party.getLeader().getName() + " 先离开游戏!");
+                    player.sendMessage(
+                            Component.text("请等待队长 ")
+                                    .append(Component.text(party.getLeader().getName()))
+                                    .append(Component.text(" 先离开游戏!"))
+                                    .color(NamedTextColor.RED)
+                    );
                     return;
                 }
             }

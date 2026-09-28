@@ -27,9 +27,18 @@ public class ProxyDataEvent implements Listener {
 
     @EventHandler
     public void proxydata(ClientDataReceiveEvent e){
-        JsonObject jsonObject = JsonParser.parseString(e.getData()).getAsJsonObject();
-        switch (jsonObject.get("type").getAsString()){
-            case "join" -> joinMap.put(jsonObject.get("player").getAsString(),jsonObject);
+        try {
+            JsonObject jsonObject = JsonParser.parseString(e.getData()).getAsJsonObject();
+            if (!jsonObject.has("type")) return;
+            switch (jsonObject.get("type").getAsString()){
+                case "join" -> {
+                    if (jsonObject.has("player")) {
+                        joinMap.put(jsonObject.get("player").getAsString(),jsonObject);
+                    }
+                }
+            }
+        } catch (Exception ex) {
+            ghastWar.getLogger().warning("Received malformed proxy data: " + e.getData());
         }
     }
 
@@ -42,11 +51,16 @@ public class ProxyDataEvent implements Listener {
     }
 
     public void handleJoin(JsonObject jsonObject){
-        Bukkit.getServer().getLogger().info(Bukkit.getServer().getOnlinePlayers().toString());
-        Player player = Bukkit.getPlayer(UUID.fromString(jsonObject.get("player").getAsString()));
+        Player player;
+        try {
+            player = Bukkit.getPlayer(UUID.fromString(jsonObject.get("player").getAsString()));
+        } catch (Exception ex) {
+            ghastWar.getLogger().warning("Invalid join payload, missing player uuid.");
+            return;
+        }
+        if (player == null) return;
         if (!HappyGhastWar.arenas.containsKey(jsonObject.get("arena").getAsString())) return;
         Arena arena = HappyGhastWar.arenas.get(jsonObject.get("arena").getAsString());
-        player.teleport(arena.getArenaConfig().getWait());
         arena.internalAddPlayer(player);
     }
 }

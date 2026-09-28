@@ -2,25 +2,42 @@ package me.wang.happyGhastWar.events.player;
 
 import me.wang.happyGhastWar.HappyGhastWar;
 import me.wang.happyGhastWar.arena.Arena;
-import me.wang.happyGhastWar.game.player.PlayerData;
-import me.wang.happyGhastWar.game.team.Team;
-import me.wang.happyGhastWar.util.Language;
-import org.bukkit.Bukkit;
+import me.wang.happyGhastWar.game.stats.GameStatistics;
+import me.wang.happyGhastWar.util.SoundUtil;
+import me.wang.happyGhastWar.util.Text;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.inventory.ItemStack;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
+import java.util.UUID;
+
+/**
+ * 击杀奖励与击杀特效。
+ * <p>
+ * 死亡消息、击杀数记录与复活逻辑由 {@link PlayerDeath} 负责，
+ * 本监听器只做三件事：击杀奖励、连杀公告、统计记录，避免与 PlayerDeath 双计。
+ */
 public class PlayerKill implements Listener {
 
-    private HappyGhastWar ghastWar;
+    private final HappyGhastWar ghastWar;
+
+    /** 连杀计数：killer -> 当前连杀数 */
+    private final Map<UUID, Integer> killStreaks = new HashMap<>();
+
+    /** 连杀公告阈值 */
+    private static final int[] STREAK_THRESHOLDS = {2, 3, 5, 8};
 
     public PlayerKill(HappyGhastWar ghastWar){
         this.ghastWar = ghastWar;
     }
 
-    @Deprecated
     @EventHandler
     public void death(PlayerDeathEvent e){
         if (!HappyGhastWar.arenas.containsKey(e.getEntity().getLocation().getWorld().getName())) return;
@@ -28,94 +45,82 @@ public class PlayerKill implements Listener {
         if (!arena.isEnable()) return;
         if (arena.status != Arena.GameStatus.PLAYING) return;
         if (!arena.getPlayers().contains(e.getEntity())) return;
-        Team team = null;
+
         Player killer = e.getEntity().getKiller();
         Player victim = e.getEntity();
-        String killer_color = "";
-        String killer_name = "";
-        for (Team team1 : arena.getTeams()){
-            if (team1.getPlayers().contains(e.getEntity())){
-                team = team1;
-            }
-            if (killer != null){
-                if (team1.getPlayers().contains(killer)){
-                    killer_color = team1.getTeams().getColor().toString();
-                    killer_name = killer.getDisplayName();
-                }
-            }
-        }
-        if (team == null) return;
+        GameStatistics statistics = arena.getStatistics();
 
+        // 被击杀者连杀清零
+        killStreaks.remove(victim.getUniqueId());
 
-
-        Bukkit.getServer().getLogger().info((killer != null)+"");
-
-        if (killer != null){
-            PlayerData data = arena.getPlayerDatas().get(killer);
-            if (data != null){
-                data.addKill(1);
-                arena.getPlayerDatas().put(killer,data);
-            }
+        if (killer == null || killer.getUniqueId().equals(victim.getUniqueId())) {
+            return;
         }
 
-        Language language = HappyGhastWar.language;
-        String message = !team.isCanRespawn() ? language.getContent("game.player-die-unknown-final") : language.getContent("game.player-die-unknown-regular");
-        EntityDamageEvent damageEvent = e.getEntity().getLastDamageCause();
+        // 击杀统计（PlayerData.kills 在 PlayerDeath 中记录）
+        if (statistics != null) {
+            statistics.recordKill(killer);
+        }
 
-        if (damageEvent != null) {
-            if (damageEvent.getCause() == EntityDamageEvent.DamageCause.ENTITY_EXPLOSION) {
+        // 击杀奖励：随机 2~5 个铁锭或 1 个下界合金碎片
+        Random random = new Random();
+        int rewardType = random.nextInt(3); // 0: 铁锭(2-5个), 1: 铁锭(2-5个), 2: 下界合金碎片(1个)
 
-                if (killer == null) {
-                    message = !team.isCanRespawn() ? language.getContent("game.player-die-bomb2-final") : language.getContent("game.player-die-bomb2-regular");
-                } else {
-                    if (killer != victim) {
-                        message = !team.isCanRespawn() ? language.getContent("game.player-die-bomb-final") : language.getContent("game.player-die-bomb-regular");
-                    } else {
-                        message = !team.isCanRespawn() ? language.getContent("game.player-die-bomb-final") : language.getContent("game.player-die-bomb-regular");
-                    }
-                }
+        if (rewardType < 2) {
+            // 66% 概率获得铁锭
+            int ironAmount = random.nextInt(4) + 2; // 2-5个
+            ItemStack ironReward = new ItemStack(org.bukkit.Material.IRON_INGOT, ironAmount);
+            killer.getInventory().addItem(ironReward);
+            Text.send(killer, "<yellow>击杀奖励：+" + ironAmount + " 个铁锭");
+        } else {
+            // 33% 概率获得下界合金碎片
+            ItemStack alloyReward = new ItemStack(org.bukkit.Material.NETHERITE_SCRAP, 1);
+            killer.getInventory().addItem(alloyReward);
+            Text.send(killer, "<gold>击杀奖励：+1 个下界合金碎片");
+        }
 
-            } else if (damageEvent.getCause() == EntityDamageEvent.DamageCause.VOID) {
+        // 击杀音效和粒子特效
+        SoundUtil.play(killer, "player-kill", Sound.ENTITY_PLAYER_ATTACK_CRIT, 1.0f, 1.2f);
+        killer.getWorld().spawnParticle(Particle.FLAME, killer.getLocation().add(0, 1, 0), 10, 0.5, 0.5, 0.5, 0);
 
-                if (killer == null) {
-                    message = !team.isCanRespawn() ? language.getContent("game.player-die-void-final") : language.getContent("game.player-die-void-regular");
-                } else {
-                    if (killer != victim) {
-                        message = !team.isCanRespawn() ? language.getContent("game.player-die-knocked-void-final") : language.getContent("game.player-die-knocked-void-regular");
-                    } else {
-                        message = !team.isCanRespawn() ? language.getContent("game.player-die-void-final") : language.getContent("game.player-die-void-regular");
-                    }
-                }
-            } else if (damageEvent.getCause() == EntityDamageEvent.DamageCause.ENTITY_ATTACK) {
-                if (killer != null) {
-                    message = !team.isCanRespawn() ? language.getContent("game.player-die-attack-final") : language.getContent("game.player-die-attack-regular");
-                }
-            } else if (damageEvent.getCause() == EntityDamageEvent.DamageCause.PROJECTILE) {
-                if (killer != null) {
-                    message = !team.isCanRespawn() ? language.getContent("game.player-die-shoot-final") : language.getContent("game.player-die-shoot-regular");
-                }
-            } else if (damageEvent.getCause() == EntityDamageEvent.DamageCause.FALL) {
+        // 连杀公告
+        int streak = killStreaks.getOrDefault(killer.getUniqueId(), 0) + 1;
+        killStreaks.put(killer.getUniqueId(), streak);
+        announceStreak(arena, killer, streak);
+    }
 
-                if (killer != null && killer.getUniqueId().equals(victim.getUniqueId())) killer = null;
-                if (killer != null) {
-                    if (killer != victim) {
-                        message = !team.isCanRespawn() ? language.getContent("game.player-die-knocked-fall-final") : language.getContent("game.player-die-knocked-fall-regular");
-                    } else {
-                        message = !team.isCanRespawn() ? language.getContent("game.player-die-void-final") : language.getContent("game.player-die-void-regular");
-                    }
-                }
+    private void announceStreak(Arena arena, Player killer, int streak) {
+        String key = null;
+        for (int threshold : STREAK_THRESHOLDS) {
+            if (streak == threshold) {
+                key = "game.kill-streak-" + threshold;
+                break;
             }
         }
+        if (key == null) return;
 
-        e.setDeathMessage(null);
-        message = message
-                .replace("{0}",team.getTeams().getColor().toString())
-                .replace("{1}",victim.getDisplayName())
-                .replace("{2}",killer_color)
-                .replace("{3}",killer_name);
-        for (Player player : arena.getPlayers()){
-            player.sendMessage(message);
+        String color = "";
+        var team = arena.getPlayerTeam(killer);
+        if (team != null) {
+            color = team.getTeams().getColor().toString();
         }
 
+        for (Player player : arena.getPlayers()) {
+            String message = ghastWar.getLanguage(player).getContent(key)
+                    .replace("{0}", color)
+                    .replace("{1}", killer.getName());
+            Text.send(player, message);
+        }
+    }
+
+    /** 玩家退出/换世界时清理连杀计数 */
+    @EventHandler
+    public void quit(org.bukkit.event.player.PlayerQuitEvent e) {
+        killStreaks.remove(e.getPlayer().getUniqueId());
+    }
+
+    @EventHandler
+    public void changeWorld(org.bukkit.event.player.PlayerChangedWorldEvent e) {
+        killStreaks.remove(e.getPlayer().getUniqueId());
     }
 }

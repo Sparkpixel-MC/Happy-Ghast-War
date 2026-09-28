@@ -1,53 +1,63 @@
 package me.wang.happyGhastWar.scoreboard;
 
+import me.neznamy.tab.api.TabAPI;
+import me.neznamy.tab.api.TabPlayer;
 import me.wang.happyGhastWar.HappyGhastWar;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
-import org.bukkit.scoreboard.Team;
 
-import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.stream.Collectors;
 
+/**
+ * 基于 TAB 插件管理的计分板。
+ * <p>
+ * 侧边栏 (sidebar) 优先交给 TAB 的 ScoreboardManager 渲染（TAB-API 6.1.2，
+ * 文本使用 TAB 支持的 legacy '§' 颜色格式）。当 TAB 未安装或其 scoreboard
+ * 功能关闭（{@code getScoreboardManager()} 返回 null）时，自动回退为
+ * Bukkit 原生 Objective 侧边栏，保证无 TAB 环境下计分板仍可用。
+ * <p>
+ * {@link #getScoreboard()} 返回的 Bukkit {@link Scoreboard} 同时作为队伍名牌
+ * (name tag) 的数据容器供 {@code TeamDivider} 使用；玩家加入游戏时会被
+ * 切换到该记分板，离开时恢复主记分板。
+ */
 public class GameScoreboard {
     private final HappyGhastWar plugin;
     private final String roomName;
     private final Scoreboard scoreboard;
-    private final Map<Player,Scoreboard> playerScoreboard = new HashMap<>();
+
+    /** TAB 的计分板管理器（TAB scoreboard 功能关闭时为 null，走 Bukkit 回退） */
+    private final me.neznamy.tab.api.scoreboard.ScoreboardManager tabScoreboardManager;
 
     // 游戏状态
     private GameState gameState = GameState.WAITING;
     private int countdownSeconds = 0;
-    private int requiredPlayers = 0;
+    private int requiredPlayers;
     private int currentPlayers = 0;
-    private String serverName = "";
+    private final String serverName;
 
-    private String serverIp = "By lao_wang";
+    private final String serverIp;
 
     private final Map<String, me.wang.happyGhastWar.game.team.Team> teams = new HashMap<>();
 
-    private final Map<Integer, Team> lineTeams = new HashMap<>();
+    /** 当前正在观看该计分板的玩家 */
+    private final Set<Player> players = new LinkedHashSet<>();
 
-    private int currentDisplayedLines = 0;
+    /** 当前展示给玩家的 TAB 自定义计分板（随状态重建） */
+    private me.neznamy.tab.api.scoreboard.Scoreboard currentBoard;
+    private GameState currentBoardState = null;
+
+    /** Bukkit 回退侧边栏的 Objective 名称 */
+    private static final String FALLBACK_OBJECTIVE = "gw_sidebar";
 
     public enum GameState {
         WAITING, COUNTDOWN, PLAYING, ENDING
     }
 
     public GameScoreboard(HappyGhastWar plugin, String roomName, int teamCount, String serverIp) {
-        this.plugin = plugin;
-        this.roomName = roomName;
-        this.requiredPlayers = teamCount;
-        this.serverIp = serverIp;
-        this.scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
-        Objective objective = scoreboard.registerNewObjective("gw", "dummy",
-                ChatColor.YELLOW.toString() + ChatColor.BOLD + "乐魂战");
-        objective.setDisplaySlot(DisplaySlot.SIDEBAR);
-
+        this(plugin, roomName, teamCount, serverIp, "");
     }
 
     public GameScoreboard(HappyGhastWar plugin, String roomName, int teamCount, String serverIp, String serverName) {
@@ -57,49 +67,29 @@ public class GameScoreboard {
         this.serverName = serverName;
         this.serverIp = serverIp;
         this.scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
-        Objective objective = scoreboard.registerNewObjective("gw", "dummy",
-                ChatColor.YELLOW.toString() + ChatColor.BOLD + "乐魂战");
-        objective.setDisplaySlot(DisplaySlot.SIDEBAR);
-
-    }
-
-    /**
-     * 初始化计分板行的Team对象
-     */
-    private void initializeLineTeams(Scoreboard s) {
-        // 最多支持15行（计分板最大行数）
-        for (int i = 1; i <= 15; i++) {
-            String teamName = "line_" + i;
-            Team team = s.registerNewTeam(teamName);
-
-            // 使用唯一的条目标识符
-            String entry = getColorCode(i);
-            team.addEntry(entry);
-
-            lineTeams.put(i, team);
+        me.neznamy.tab.api.scoreboard.ScoreboardManager manager = null;
+        try {
+            manager = TabAPI.getInstance().getScoreboardManager();
+        } catch (Throwable ignored) {
+            // TAB 未安装
         }
-    }
-
-    /**
-     * 获取颜色代码，确保每个条目唯一
-     */
-    private String getColorCode(int index) {
-        // 使用不同的颜色代码确保条目唯一
-        ChatColor[] colors = {
-                ChatColor.BLACK, ChatColor.DARK_BLUE, ChatColor.DARK_GREEN,
-                ChatColor.DARK_AQUA, ChatColor.DARK_RED, ChatColor.DARK_PURPLE,
-                ChatColor.GOLD, ChatColor.GRAY, ChatColor.DARK_GRAY,
-                ChatColor.BLUE, ChatColor.GREEN, ChatColor.AQUA,
-                ChatColor.RED, ChatColor.LIGHT_PURPLE, ChatColor.YELLOW,
-                ChatColor.WHITE, ChatColor.BOLD, ChatColor.MAGIC
-        };
-
-        int colorIndex = (index - 1) % colors.length;
-        return colors[colorIndex].toString() + ChatColor.RESET;
+        this.tabScoreboardManager = manager;
     }
 
     public void init() {
-        // 初始化方法
+        // 重建内部状态（游戏重置时调用）
+        if (currentBoard != null && tabScoreboardManager != null) {
+            try {
+                tabScoreboardManager.removeScoreboard(currentBoard);
+            } catch (IllegalArgumentException ignored) {
+                // 尚未注册过同名计分板
+            }
+        }
+        currentBoard = null;
+        currentBoardState = null;
+        for (Player player : new ArrayList<>(players)) {
+            showTo(player, getLines(player));
+        }
     }
 
     public void addTeam(me.wang.happyGhastWar.game.team.Team team) {
@@ -108,63 +98,119 @@ public class GameScoreboard {
     }
 
     /**
-     * 为玩家创建BedWars风格计分板
+     * 为玩家显示计分板并接管其 Bukkit 记分板（队伍名牌生效）
      */
     public void createScoreboard(Player player) {
-        Scoreboard s = Bukkit.getScoreboardManager().getNewScoreboard();
-        Objective objective = s.registerNewObjective("gw", "dummy",
-                plugin.getLanguage(player).getContent("scoreboard.title"));
-        objective.setDisplaySlot(DisplaySlot.SIDEBAR);
-        initializeLineTeams(s);
-        player.setScoreboard(s);
-        playerScoreboard.put(player,s);
-        updateScoreboard();
+        players.add(player);
+        // 接管玩家的记分板，使 TeamDivider 注册的队伍名牌/碰撞规则生效
+        if (player.getScoreboard() != scoreboard) {
+            player.setScoreboard(scoreboard);
+        }
+        showTo(player, getLines(player));
     }
 
     /**
-     * 移除玩家计分板
+     * 移除玩家计分板并让其恢复默认计分板
      */
     public void removeScoreboard(Player player) {
-
-        playerScoreboard.remove(player);
-        player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
+        players.remove(player);
+        if (tabScoreboardManager != null) {
+            TabPlayer tp = TabAPI.getInstance().getPlayer(player.getUniqueId());
+            if (tp != null) {
+                tabScoreboardManager.resetScoreboard(tp);
+            }
+        } else if (player.getScoreboard() == scoreboard) {
+            player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
+        }
     }
 
     /**
      * 更新所有玩家的计分板
      */
     public void updateAllScoreboards() {
-        updateScoreboard();
+        if (players.isEmpty()) return;
+        // TAB 的计分板是共享结构，以首个观看玩家的语言为准构建
+        Player ref = players.iterator().next();
+        List<String> lines = getLines(ref);
+        for (Player player : new ArrayList<>(players)) {
+            showTo(player, lines);
+        }
+    }
+
+    private void showTo(Player player, List<String> lines) {
+        // 标题同样是 MiniMessage 标签：与行一致，出边界前转 legacy '§'
+        String title = me.wang.happyGhastWar.util.Text.legacy(plugin.getLanguage(player).getContent("scoreboard.title"));
+        if (tabScoreboardManager != null) {
+            showTabBoard(player, title, lines);
+        } else {
+            showBukkitFallback(title, lines);
+        }
     }
 
     /**
-     * 更新计分板
+     * TAB 模式：状态变化时重建计分板，其余时候仅更新标题/行。
      */
-    public void updateScoreboard() {
-        playerScoreboard.forEach(((player, s) -> {
-            if (s == null) return;
+    private void showTabBoard(Player player, String title, List<String> lines) {
+        if (currentBoard == null || currentBoardState != gameState) {
+            if (currentBoard != null) {
+                try {
+                    tabScoreboardManager.removeScoreboard(currentBoard);
+                } catch (IllegalArgumentException ignored) {
+                }
+            }
+            String uniqueName = "gw_" + roomName + "_" + gameState.name().toLowerCase(Locale.ROOT);
+            currentBoard = tabScoreboardManager.createScoreboard(uniqueName, title, new ArrayList<>(lines));
+            currentBoardState = gameState;
+        } else {
+            currentBoard.setTitle(title);
+            currentBoard.setLines(new ArrayList<>(lines));
+        }
 
-            Objective objective = s.getObjective("gw");
-            if (objective == null) return;
-
-            // 获取当前应该显示的内容
-            List<String> currentLines = getCurrentLines(player);
-
-            updateScoreboardLines(objective, currentLines, s);
-        }));
-
+        TabPlayer tp = TabAPI.getInstance().getPlayer(player.getUniqueId());
+        if (tp != null) {
+            tabScoreboardManager.showScoreboard(tp, currentBoard);
+        }
     }
 
     /**
-     * 获取当前应该显示的计分板行
+     * Bukkit 回退模式：无 TAB 时用原生 Objective 渲染侧边栏。
      */
-    private List<String> getCurrentLines(Player player) {
-        return switch (gameState) {
+    private void showBukkitFallback(String title, List<String> lines) {
+        Objective old = scoreboard.getObjective(FALLBACK_OBJECTIVE);
+        if (old != null) {
+            old.unregister();
+        }
+        Objective obj = scoreboard.registerNewObjective(FALLBACK_OBJECTIVE, "dummy", title);
+        obj.setDisplaySlot(DisplaySlot.SIDEBAR);
+
+        int total = Math.min(lines.size(), 15);
+        for (int i = 0; i < total; i++) {
+            String line = lines.get(i);
+            if (line.isEmpty()) {
+                // 空行用不可见色码补齐，保证多条空行互不相同（Bukkit 按 entry 去重）
+                line = "§" + "0123456789abcdef".charAt(i % 16);
+            }
+            // score 越大越靠上：第 i 行（顶部为 0）给 score total-i
+            obj.getScore(limitLength(line, 40)).setScore(total - i);
+        }
+    }
+
+    private String limitLength(String s, int max) {
+        return s.length() <= max ? s : s.substring(0, max);
+    }
+
+    /**
+     * 获取当前应该显示的计分板行（MiniMessage 标签，出边界前统一转 legacy '§'）
+     */
+    private List<String> getLines(Player player) {
+        List<String> lines = switch (gameState) {
             case WAITING -> getWaitingLines(player);
             case COUNTDOWN -> getCountdownLines(player);
             case PLAYING, ENDING -> getPlayingLines(player);
-            default -> new ArrayList<>();
         };
+        // TAB 与 Bukkit Objective 均只接受 legacy '§' 字符串：MiniMessage 标签在此统一转换
+        lines.replaceAll(me.wang.happyGhastWar.util.Text::legacy);
+        return lines;
     }
 
     /**
@@ -172,27 +218,16 @@ public class GameScoreboard {
      */
     private List<String> getWaitingLines(Player player) {
         List<String> lines = plugin.getLanguage(player).getTranslatedList("scoreboard.waiting");
-        String date = getDate("yy/MM/dd");
+        String date = getDate();
         List<String> processedLines = new ArrayList<>();
 
         for (String line : lines) {
-            // 保留空行
-            if (line.isEmpty()) {
-                processedLines.add("");
-                continue;
-            }
-
-            // 处理带颜色的行
-            String processedLine = line.replace("{date}", date)
+            processedLines.add(line.replace("{date}", date)
                     .replace("{server}", serverName)
                     .replace("{map}", roomName)
                     .replace("{on}", String.valueOf(currentPlayers))
                     .replace("{max}", String.valueOf(requiredPlayers))
-                    .replace("{serverIp}", serverIp);
-
-            // 转换颜色代码
-            processedLine = ChatColor.translateAlternateColorCodes('&', processedLine);
-            processedLines.add(processedLine);
+                    .replace("{serverIp}", serverIp));
         }
 
         return processedLines;
@@ -203,28 +238,17 @@ public class GameScoreboard {
      */
     private List<String> getCountdownLines(Player player) {
         List<String> lines = plugin.getLanguage(player).getTranslatedList("scoreboard.starting");
-        String date = getDate("yy/MM/dd");
+        String date = getDate();
         List<String> processedLines = new ArrayList<>();
 
         for (String line : lines) {
-            // 保留空行
-            if (line.isEmpty()) {
-                processedLines.add("");
-                continue;
-            }
-
-            // 处理带颜色的行
-            String processedLine = line.replace("{date}", date)
+            processedLines.add(line.replace("{date}", date)
                     .replace("{server}", serverName)
                     .replace("{map}", roomName)
                     .replace("{on}", String.valueOf(currentPlayers))
                     .replace("{max}", String.valueOf(requiredPlayers))
                     .replace("{time}", String.valueOf(countdownSeconds))
-                    .replace("{serverIp}", serverIp);
-
-            // 转换颜色代码
-            processedLine = ChatColor.translateAlternateColorCodes('&', processedLine);
-            processedLines.add(processedLine);
+                    .replace("{serverIp}", serverIp));
         }
 
         return processedLines;
@@ -235,10 +259,10 @@ public class GameScoreboard {
      */
     private List<String> getPlayingLines(Player player) {
         List<String> lines = plugin.getLanguage(player).getTranslatedList("scoreboard.playing");
-        String date = getDate("yy/MM/dd");
+        String date = getDate();
         List<String> processedLines = new ArrayList<>();
 
-        // 生成所有可能的队伍替换
+        // 生成所有可能的占位符替换
         Map<String, String> replacements = new HashMap<>();
         replacements.put("{date}", date);
         replacements.put("{server}", serverName);
@@ -248,142 +272,54 @@ public class GameScoreboard {
         replacements.put("{time}", String.valueOf(countdownSeconds));
         replacements.put("{serverIp}", serverIp);
 
-        // 为每个可能的队伍位置生成显示内容
+        // 为每个可能的队伍位置生成显示内容；不存在的队伍替换为空串并丢弃该行
         for (int i = 1; i <= 8; i++) {
-            String teamKey = "{team" + i + "}";
-            String teamDisplay = getTeamDisplay(i,player);
-
-            // 如果队伍不存在，标记为要删除
-            if (teamDisplay.equals("Unknown Team")) {
-                // 设置为特殊标记，稍后删除整行
-                replacements.put(teamKey, "__REMOVE_LINE__");
-            } else {
-                replacements.put(teamKey, teamDisplay);
-            }
+            replacements.put("{team" + i + "}", getTeamDisplay(i, player));
         }
 
         for (String line : lines) {
-            // 如果这行是team行且标记为要删除，跳过不添加
-            for (int i = 1; i <= 8; i++) {
-                if (line.contains("{team" + i + "}")) {
-                    if (replacements.get("{team" + i + "}").equals("__REMOVE_LINE__")) {
-                        // 跳过这一行
-                        continue;
-                    }
-                }
-            }
-
-            // 应用所有替换
             String processedLine = line;
             for (Map.Entry<String, String> entry : replacements.entrySet()) {
                 processedLine = processedLine.replace(entry.getKey(), entry.getValue());
             }
 
-            // 如果替换后包含删除标记，也跳过（可能是team行和其他内容的组合）
-            if (processedLine.contains("__REMOVE_LINE__")) {
-                continue;
+            // 整行只包含一个队伍占位符且队伍不存在（替换后为空）时，跳过该行
+            if (processedLine.isEmpty() && line.contains("{team")) {
+                boolean onlyTeam = true;
+                for (int i = 1; i <= 8; i++) {
+                    onlyTeam &= line.equals("{team" + i + "}");
+                }
+                if (onlyTeam) continue;
             }
 
-            // 转换颜色代码
-            processedLine = ChatColor.translateAlternateColorCodes('&', processedLine);
-
-            // 保留空行
             processedLines.add(processedLine);
         }
 
         return processedLines;
     }
 
-    /**
-     * 更新计分板行（使用Team避免闪烁）
-     */
-    private void updateScoreboardLines(Objective objective, List<String> lines, Scoreboard s) {
-        int totalLines = lines.size();
-
-        // 先清除上一次所有行的分数
-        clearPreviousScores(s);
-
-        // 从下往上设置行（计分板分数越高显示越靠上）
-        for (int i = 0; i < totalLines; i++) {
-            String line = lines.get(i);
-            int lineNumber = totalLines - i; // 分数从高到低，第一行分数最高
-
-            Team team = lineTeams.get(lineNumber);
-            if (team != null) {
-                // 处理空行 - 使用空格而不是空字符串
-                if (line.isEmpty()) {
-                    team.setPrefix(" ");
-                    team.setSuffix("");
-                } else if (line.length() > 16) {
-                    // 分割为前缀和后缀
-                    String prefix = line.substring(0, Math.min(16, line.length()));
-                    String suffix = "";
-
-                    // 获取前缀的最后颜色代码
-                    String lastColors = ChatColor.getLastColors(prefix);
-
-                    // 计算剩余部分
-                    if (line.length() > 16) {
-                        int suffixStart = 16;
-                        int suffixEnd = Math.min(32, line.length());
-                        suffix = lastColors + line.substring(suffixStart, suffixEnd);
-                    }
-
-                    team.setPrefix(prefix);
-                    team.setSuffix(suffix);
-                } else {
-                    team.setPrefix(line);
-                    team.setSuffix("");
-                }
-
-                // 设置分数（只有这一行需要显示）
-                objective.getScore(getColorCode(lineNumber)).setScore(lineNumber);
-            }
-        }
-
-        // 记录当前显示的行数
-        currentDisplayedLines = totalLines;
+    private String getDate() {
+        return new java.text.SimpleDateFormat("yy/MM/dd").format(new Date());
     }
 
-    /**
-     * 清除上一次设置的分数
-     */
-    private void clearPreviousScores(Scoreboard s) {
-        Objective objective = s.getObjective("gw");
-        if (objective == null) return;
-
-        // 只清除之前显示的行
-        for (int i = 1; i <= currentDisplayedLines; i++) {
-            String entry = getColorCode(i);
-            s.resetScores(entry);
-        }
-    }
-
-    private String getDate(String f) {
-        Date date = new Date();
-        SimpleDateFormat sdf = new SimpleDateFormat(f);
-        return sdf.format(date);
-    }
-
-    private String getTeamDisplay(int index,Player player) {
+    private String getTeamDisplay(int index, Player player) {
         List<me.wang.happyGhastWar.game.team.Team> teamList = new ArrayList<>(teams.values());
 
         if (index <= teamList.size()) {
             me.wang.happyGhastWar.game.team.Team team = teamList.get(index - 1);
-            String ghastStatus = team.isCanRespawn() ?
-                    ChatColor.GREEN + ChatColor.BOLD.toString() + "✓" :
-                    ChatColor.GRAY + "" + team.getSize();
-            String teamStatus = team.isAlive() ?
-                    "" :
-                    ChatColor.RED + ChatColor.BOLD.toString() + "✗";
-            String teamLine = team.getTeam().getColor() + team.getTeams().getDisplayName() + plugin.getLanguage(player).getContent("scoreboard.team") + " " +
-                    (team.isAlive() ? ghastStatus : "") +
-                    teamStatus;
-            return teamLine;
+            // MiniMessage 颜色标签（出 getLines 边界时统一转 legacy）
+            String colorCode = team.getTeams().getColor();
+            String aliveMark = team.isAlive() ?
+                    (team.isCanRespawn() ? "<green>✔" : "<gray>" + team.getSize()) :
+                    "";
+            String deadMark = team.isAlive() ? "" : "<red>✗";
+            return colorCode + team.getTeams().getDisplayName()
+                    + plugin.getLanguage(player).getContent("scoreboard.team")
+                    + " " + aliveMark + deadMark;
         }
-        return "Unknown Team";
+        // 队伍不存在：返回空串，所在行会被移除
+        return "";
     }
-
 
     /**
      * 更新倒计时 (每秒调用)
@@ -442,19 +378,17 @@ public class GameScoreboard {
                 team1.getSize() == team2.getSize();
     }
 
+    /**
+     * 提供一个 Bukkit 计分板作为队伍名牌 (name tag) 的数据容器。
+     * 该计分板被 {@code TeamDivider} 用于给玩家分色标签；
+     * 无 TAB 时它同时承载回退侧边栏。
+     */
     public Scoreboard getScoreboard() {
         return scoreboard;
     }
 
-    public void update(){
+    public void update() {
         updateAllScoreboards();
-    }
-
-    /**
-     * 获取队伍数据
-     */
-    public me.wang.happyGhastWar.game.team.Team getTeam(String teamName) {
-        return teams.get(teamName);
     }
 
     /**
@@ -465,9 +399,11 @@ public class GameScoreboard {
     }
 
     /**
-     * 获取当前状态
+     * 清空缓存的队伍（Arena.init 完成反注册后调用，
+     * 避免残留旧 Team 对象导致重复反注册或状态错乱）
      */
-    public GameState getGameState() {
-        return gameState;
+    public void clearTeams() {
+        teams.clear();
     }
+
 }

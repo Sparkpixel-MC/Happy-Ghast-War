@@ -1,55 +1,55 @@
 # es_es.yml (西班牙语)
 commands:
   main-list:
-    - '&6▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬'
-    - '&aComandos del Plugin'
-    - '&e/gw gui &7 - &bAbrir Menú del Juego'
-    - '&e/gw leave &7 - &bSalir del Juego'
-    - '&e/gw join <Nombre del Mundo> &7 - &bUnirse al Juego'
-    - '&e/gw admin &7 - &bVer Comandos de Admin'
+    - '<gold>▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬'
+    - '<green>Comandos del Plugin'
+    - '<yellow>/gw gui <gray> - <aqua>Abrir Menú del Juego'
+    - '<yellow>/gw leave <gray> - <aqua>Salir del Juego'
+    - '<yellow>/gw join <Nombre del Mundo> <gray> - <aqua>Unirse al Juego'
+    - '<yellow>/gw admin <gray> - <aqua>Ver Comandos de Admin'
   admin-list:
-    - '&6▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬'
-    - '&aComandos de Administrador'
-    - '&e/gw admin create <Nombre del Mundo> <Nombre para Mostrar> &7 - &bCrear Juego'
-    - '&e/gw admin setwait &7 - &bEstablecer Lobby de Espera'
-    - '&e/gw admin setcenter &7 - &bEstablecer Centro del Juego'
-    - '&e/gw admin setlobby &7 - &bEstablecer Lobby del Servidor'
-    - '&e/gw admin setspawn <ID del Equipo> &7 - &bEstablecer Punto de Spawn del Equipo'
-    - '&e/gw admin setghastspawn <ID del Equipo> &7 - &bEstablecer Spawn del Ghast del Equipo'
-    - '&e/gw admin setradius <Radio> &7 - &bEstablecer Radio Inicial del Borde del Mundo'
-    - '&e/gw admin settargetradius <Radio> &7 - &bEstablecer Radio del Borde Reducido'
-    - '&e/gw admin setghastamount <Cantidad> &7 - &bEstablecer Ghasts por Equipo'
-    - '&e/gw admin disable &7 - &bDeshabilitar Mapa Temporalmente'
-    - '&e/gw admin enable &7 - &bHabilitar Mapa'
-    - '&e/gw admin backup <Nombre del Mundo> &7 - &bRespaldar Mapa (Asegúrate de que no haya jugadores)'
-    - '&e/gw admin addchest &7 - &bAñadir Cofre de Botín (Mirar al cofre)'
-    - '&e/gw admin removechest &7 - &bRemover Cofre de Botín (Mirar al cofre)'
+    - '<gold>▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬'
+    - '<green>Comandos de Administrador'
+    - '<yellow>/gw admin create <Nombre del Mundo> <Nombre para Mostrar> <gray> - <aqua>Crear Juego'
+    - '<yellow>/gw admin setwait <gray> - <aqua>Establecer Lobby de Espera'
+    - '<yellow>/gw admin setcenter <gray> - <aqua>Establecer Centro del Juego'
+    - '<yellow>/gw admin setlobby <gray> - <aqua>Establecer Lobby del Servidor'
+    - '<yellow>/gw admin setspawn <ID del Equipo> <gray> - <aqua>Establecer Punto de Spawn del Equipo'
+    - '<yellow>/gw admin setghastspawn <ID del Equipo> <gray> - <aqua>Establecer Spawn del Ghast del Equipo'
+    - '<yellow>/gw admin setradius <Radio> <gray> - <aqua>Establecer Radio Inicial del Borde del Mundo'
+    - '<yellow>/gw admin settargetradius <Radio> <gray> - <aqua>Establecer Radio del Borde Reducido'
+    - '<yellow>/gw admin setghastamount <Cantidad> <gray> - <aqua>Establecer Ghasts por Equipo'
+    - '<yellow>/gw admin disable <gray> - <aqua>Deshabilitar Mapa Temporalmente'
+    - '<yellow>/gw admin enable <gray> - <aqua>Habilitar Mapa'
+    - '<yellow>/gw admin backup <Nombre del Mundo> <gray> - <aqua>Respaldar Mapa (Asegúrate de que no haya jugadores)'
+    - '<yellow>/gw admin addchest <gray> - <aqua>Añadir Cofre de Botín (Mirar al cofre)'
+    - '<yellow>/gw admin removechest <gray> - <aqua>Remover Cofre de Botín (Mirar al cofre)'
   party-list:
-    - '&6▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬'
-    - '&aComandos de Grupo:'
-    - '&e/party create &7- &bCrear Grupo'
-    - '&e/party invite <Jugador> &7- &bInvitar Jugador'
-    - '&e/party accept <Jugador> &7- &bAceptar Invitación'
-    - '&e/party decline <Jugador> &7- &bRechazar Invitación'
-    - '&e/party leave &7- &bDejar Grupo'
-    - '&e/party kick <Jugador> &7- &bExpulsar Jugador'
-    - '&e/party transfer <Jugador> &7- &bTransferir Liderazgo'
-    - '&e/party disband &7- &bDisolver Grupo'
-    - '&e/party info &7- &bVer Información del Grupo'
-  importWorld: '&aIntentando importar mundo...'
-  importFailed: '&c¡Importación fallida, el mundo no existe!'
-  gameCreateSuccess: '&a¡Juego creado exitosamente!'
-  gameNotFound: '&c¡Juego no encontrado!'
-  missRequireData: '&c¡Faltan parámetros requeridos!'
-  teamNotFound: '&c¡Equipo no encontrado, verifica mayúsculas y minúsculas!'
-  setSuccess: '&a¡Configuración exitosa!'
-  availableTeams: '&eEquipos disponibles: ROJO, AZUL, VERDE, AMARILLO, BLANCO, AGUAMARINA, DORADO, PURPURA'
-  use-arena-lobby: '&c¡No puedes establecer la arena como el lobby!'
-  target-empty: '&c¡Por favor mira a un bloque objetivo!'
-  type-not-chest: '&c¡El bloque objetivo debe ser un cofre!'
-  cant-select-game: '&cNo puedes seleccionar un juego en este servidor nodo. Usa &7/gw leave&c primero.'
-  join-spectator: '&eTe has unido como espectador. Usa &7/gw leave&e para salir!'
-  lobby-not-allow: '&e¡No puedes establecer el lobby dentro de la arena!'
+    - '<gold>▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬'
+    - '<green>Comandos de Grupo:'
+    - '<yellow>/party create <gray>- <aqua>Crear Grupo'
+    - '<yellow>/party invite <Jugador> <gray>- <aqua>Invitar Jugador'
+    - '<yellow>/party accept <Jugador> <gray>- <aqua>Aceptar Invitación'
+    - '<yellow>/party decline <Jugador> <gray>- <aqua>Rechazar Invitación'
+    - '<yellow>/party leave <gray>- <aqua>Dejar Grupo'
+    - '<yellow>/party kick <Jugador> <gray>- <aqua>Expulsar Jugador'
+    - '<yellow>/party transfer <Jugador> <gray>- <aqua>Transferir Liderazgo'
+    - '<yellow>/party disband <gray>- <aqua>Disolver Grupo'
+    - '<yellow>/party info <gray>- <aqua>Ver Información del Grupo'
+  importWorld: '<green>Intentando importar mundo...'
+  importFailed: '<red>¡Importación fallida, el mundo no existe!'
+  gameCreateSuccess: '<green>¡Juego creado exitosamente!'
+  gameNotFound: '<red>¡Juego no encontrado!'
+  missRequireData: '<red>¡Faltan parámetros requeridos!'
+  teamNotFound: '<red>¡Equipo no encontrado, verifica mayúsculas y minúsculas!'
+  setSuccess: '<green>¡Configuración exitosa!'
+  availableTeams: '<yellow>Equipos disponibles: ROJO, AZUL, VERDE, AMARILLO, BLANCO, AGUAMARINA, DORADO, PURPURA'
+  use-arena-lobby: '<red>¡No puedes establecer la arena como el lobby!'
+  target-empty: '<red>¡Por favor mira a un bloque objetivo!'
+  type-not-chest: '<red>¡El bloque objetivo debe ser un cofre!'
+  cant-select-game: '<red>No puedes seleccionar un juego en este servidor nodo. Usa <gray>/gw leave<red> primero.'
+  join-spectator: '<yellow>Te has unido como espectador. Usa <gray>/gw leave<yellow> para salir!'
+  lobby-not-allow: '<yellow>¡No puedes establecer el lobby dentro de la arena!'
 upgrade:
   iron-ingot: 'Lingote de Hierro'
   oak-log: 'Tronco de Roble'
@@ -57,127 +57,138 @@ upgrade:
   coal: 'Carbón'
   copper-ingot: 'Lingote de Cobre'
   snow: 'Bloque de Nieve'
-  gui-title: '&8Tienda Central'
-  item-now: '&7Actual: &e{0}'
-  item-next: '&7Siguiente Nivel: &a{0}'
-  item-price: '&6Precio: '
+  gui-title: '<dark_gray>Tienda Central'
+  item-now: '<gray>Actual: <yellow>{0}'
+  item-next: '<gray>Siguiente Nivel: <green>{0}'
+  item-price: '<gold>Precio: '
 game:
-  getMinPlayers: '&a¡El juego comienza en {time}!'
-  game-cancel-message: '&c¡No hay suficientes jugadores! Cuenta regresiva detenida.'
+  getMinPlayers: '<green>¡El juego comienza en {time}!'
+  game-cancel-message: '<red>¡No hay suficientes jugadores! Cuenta regresiva detenida.'
   arena-start-countdown-title: ' '
-  arena-start-countdown-subtitle-5: '&e❺'
-  arena-start-countdown-subtitle-4: '&e❹'
-  arena-start-countdown-subtitle-3: '&c❸'
-  arena-start-countdown-subtitle-2: '&c❷'
-  arena-start-countdown-subtitle-1: '&c❶'
-  player-join-game: '&e{name} se unió al juego'
-  player-leave-game: '&e{name} abandonó el juego'
-  game-start-title: '&aComienza el Juego'
-  game-start-subtitle: '&a¡Sé el último en pie!'
-  game-start-message: '&aComienza el Juego'
+  arena-start-countdown-subtitle-5: '<yellow>❺'
+  arena-start-countdown-subtitle-4: '<yellow>❹'
+  arena-start-countdown-subtitle-3: '<red>❸'
+  arena-start-countdown-subtitle-2: '<red>❷'
+  arena-start-countdown-subtitle-1: '<red>❶'
+  player-join-game: '<yellow>{name} se unió al juego'
+  player-leave-game: '<yellow>{name} abandonó el juego'
+  game-start-title: '<green>Comienza el Juego'
+  game-start-subtitle: '<green>¡Sé el último en pie!'
+  game-start-message: '<green>Comienza el Juego'
   ghast-kill-chat: |2
     
-    &f&lGhast Eliminado > ¡El Ghast del equipo {0}{1}&7 fue asesinado por {2}{3}&7!
-  respawn-unavailable-title: '&cTodos los Ghasts Muertos'
-  respawn-unavailable-subtitle: '&cNo puedes reaparecer'
-  respawn-title: '&cMoriste'
-  respawn-subtitle: '&aReapareciendo en 3 segundos'
-  cant-respawn-title: '&cJuego Terminado'
-  cant-respawn-subtitle: '&eYa no puedes reaparecer'
-  reward-add: '&a +{0}'
+    <white><bold>Ghast Eliminado > ¡El Ghast del equipo {0}{1}<gray> fue asesinado por {2}{3}<gray>!
+  respawn-unavailable-title: '<red>Todos los Ghasts Muertos'
+  respawn-unavailable-subtitle: '<red>No puedes reaparecer'
+  respawn-title: '<red>Moriste'
+  respawn-subtitle: '<green>Reapareciendo en 3 segundos'
+  cant-respawn-title: '<red>Juego Terminado'
+  cant-respawn-subtitle: '<yellow>Ya no puedes reaparecer'
+  reward-add: '<green> +{0}'
   team-eliminated: |2
     
-    &f&lEquipo Eliminado > ¡El equipo {0}{1} &cha sido eliminado!
-  end-game-over-title: '&c&l¡Juego Terminado!'
-  end-victory-title: '&6&l¡Victoria!'
-  end-winner-team: '¡El equipo {0}{1} &aganó el juego!'
+    <white><bold>Equipo Eliminado > ¡El equipo {0}{1} <red>ha sido eliminado!
+  end-game-over-title: '<red><bold>¡Juego Terminado!'
+  end-victory-title: '<gold><bold>¡Victoria!'
+  end-winner-team: '¡El equipo {0}{1} <green>ganó el juego!'
   null-player: 'Sin Jugador'
   end-top-chat: |-
-    &a▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
-    &f                                   &lGuerra de Ghasts
-    &r
-    Equipo {0}{1}&7 - {2}
-    &r
-    &r
-    &e                          &lAsesino #1 &7- {firstName} - {firstKills}
-    &6                          &lAsesino #2 &7- {secondName} - {secondKills}
-    &c                          &lAsesino #3 &7- {thirdName} - {thirdKills}
-    &r
-    &a▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
-  player-die-void-regular: '{0}{1}&7 cayó al vacío.'
-  player-die-void-final: '{0}{1}&7 cayó al vacío. 
-    &b&l¡Eliminación Final!'
-  player-die-knocked-void-regular: '{0}{1}&7 fue empujado al vacío por {2}{3}&7.'
-  player-die-knocked-void-final: '{0}{1}&7 fue empujado al vacío por {2}{3}&7. 
-    &b&l¡Eliminación Final!'
-  player-die-knocked-fall-regular: '{0}{1}&7 fue empujado por un acantilado por {2}{3}&7.'
-  player-die-knocked-fall-final: '{0}{1}&7 fue empujado por un acantilado por {2}{3}&7. 
-    &b&l¡Eliminación Final!'
-  player-die-bomb-regular: '{0}{1}&7 fue explotado por {2}{3}&7.'
-  player-die-bomb-final: '{0}{1}&7 fue explotado por {2}{3}&7. 
-    &b&l¡Eliminación Final!'
-  player-die-bomb2-regular: '{0}{1}&7 explotó.'
-  player-die-bomb2-final: '{0}{1}&7 explotó. 
-    &b&l¡Eliminación Final!'
-  player-die-attack-regular: '{0}{1}&7 fue asesinado por {2}{3}&7.'
-  player-die-attack-final: '{0}{1}&7 fue asesinado por {2}{3}&7. 
-    &b&l¡Eliminación Final!'
-  player-die-unknown-regular: '{0}{1}&7 murió.'
-  player-die-unknown-final: '{0}{1}&7 murió. 
-    &b&l¡Eliminación Final!'
-  player-die-shoot-regular: '{0}{1}&7 fue disparado por {2}{3}&7!'
-  player-die-shoot-final: '{0}{1}&7 fue disparado por {2}{3}&7! 
-    &b&l¡Eliminación Final!'
-  arena-close: '&e¡Este juego se cerrará en 15 segundos!'
-  protect-ghast: '&4¡No puedes atacar al Ghast de tu equipo!'
-  enter-other-ghast: '&4¡No puedes montar el Ghast de otro equipo!'
-  party-too-large: '&c¡El grupo es demasiado grande!'
-  party-not-enough-space: "&cEste juego no tiene suficiente espacio para todo tu grupo"
+    <green>▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+    <white>                                   <bold>Guerra de Ghasts
+    <reset>
+    Equipo {0}{1}<gray> - {2}
+    <reset>
+    <reset>
+    <yellow>                          <bold>Asesino #1 <gray>- {firstName} - {firstKills}
+    <gold>                          <bold>Asesino #2 <gray>- {secondName} - {secondKills}
+    <red>                          <bold>Asesino #3 <gray>- {thirdName} - {thirdKills}
+    <reset>
+    <green>▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+  player-die-void-regular: '{0}{1}<gray> cayó al vacío.'
+  player-die-void-final: '{0}{1}<gray> cayó al vacío. 
+    <aqua><bold>¡Eliminación Final!'
+  player-die-knocked-void-regular: '{0}{1}<gray> fue empujado al vacío por {2}{3}<gray>.'
+  player-die-knocked-void-final: '{0}{1}<gray> fue empujado al vacío por {2}{3}<gray>. 
+    <aqua><bold>¡Eliminación Final!'
+  player-die-knocked-fall-regular: '{0}{1}<gray> fue empujado por un acantilado por {2}{3}<gray>.'
+  player-die-knocked-fall-final: '{0}{1}<gray> fue empujado por un acantilado por {2}{3}<gray>. 
+    <aqua><bold>¡Eliminación Final!'
+  player-die-bomb-regular: '{0}{1}<gray> fue explotado por {2}{3}<gray>.'
+  player-die-bomb-final: '{0}{1}<gray> fue explotado por {2}{3}<gray>. 
+    <aqua><bold>¡Eliminación Final!'
+  player-die-bomb2-regular: '{0}{1}<gray> explotó.'
+  player-die-bomb2-final: '{0}{1}<gray> explotó. 
+    <aqua><bold>¡Eliminación Final!'
+  player-die-attack-regular: '{0}{1}<gray> fue asesinado por {2}{3}<gray>.'
+  player-die-attack-final: '{0}{1}<gray> fue asesinado por {2}{3}<gray>. 
+    <aqua><bold>¡Eliminación Final!'
+  player-die-unknown-regular: '{0}{1}<gray> murió.'
+  player-die-unknown-final: '{0}{1}<gray> murió. 
+    <aqua><bold>¡Eliminación Final!'
+  player-die-shoot-regular: '{0}{1}<gray> fue disparado por {2}{3}<gray>!'
+  player-die-shoot-final: '{0}{1}<gray> fue disparado por {2}{3}<gray>! 
+    <aqua><bold>¡Eliminación Final!'
+  arena-close: '<yellow>¡Este juego se cerrará en 15 segundos!'
+  protect-ghast: '<dark_red>¡No puedes atacar al Ghast de tu equipo!'
+  enter-other-ghast: '<dark_red>¡No puedes montar el Ghast de otro equipo!'
+  party-too-large: '<red>¡El grupo es demasiado grande!'
+  party-not-enough-space: "<red>Este juego no tiene suficiente espacio para todo tu grupo"
+  airdrop-warning: '<red><bold>[AIRDROP]<reset> ¡Suministro aéreo entrando cerca de <yellow>{x}, {y}, {z}<red>!'
+  neutral-zone-mining: '<yellow>Veta Neutral > {0}{1} Equipo <gray>está minando la veta neutral!'
+  private-zone-locked: '<red>¡Este es el recurso del territorio de {0}{1} Equipo<red>! ¡No puedes minarlo!'
+  kill-streak-2: '{0}{1} <gray>acaba de lograr un <white>doble asesinato<gray>!'
+  kill-streak-3: '{0}{1} <gold>en racha - ¡<yellow>3 <gold>bajas!'
+  kill-streak-5: '{0}{1} <red>imparable - ¡<yellow>5 <red>bajas!'
+  kill-streak-8: '{0}{1} <dark_red><bold>¡DIOS! ¡<yellow>8 <dark_red><bold>bajas!'
 bossbar:
-  develop: "Fase de Desarrollo &e&l{0}s&r restantes"
-  battle: "El borde se reduce en &e&l{0}s"
-  reduce: "Reduciendo borde &e&l{0}s"
-  ultimate: "Todos los Ghasts morirán en &e&l{0}s"
+  develop: "Fase de Desarrollo <yellow><bold>{0}s<reset> restantes"
+  battle: "El borde se reduce en <yellow><bold>{0}s"
+  reduce: "Reduciendo borde <yellow><bold>{0}s"
+  ultimate: "Todos los Ghasts morirán en <yellow><bold>{0}s"
+border:
+  shrink-start: '<red>¡El borde se está reduciendo! ¡Entra en la zona segura!'
+  shrink-stop: '<green>¡La reducción del borde se ha detenido!'
+  outside-damage: '<red>¡Estás fuera del borde! Recibes {damage} de daño por segundo, a {distance} bloques de la zona segura'
 item:
-  lobby-bed-name: '&eVolver al Lobby'
+  lobby-bed-name: '<yellow>Volver al Lobby'
   lobby-bed-lore:
-    - '&aClic para volver al lobby'
+    - '<green>Clic para volver al lobby'
 party:
-  invite-sent: '&7{inviter}&e invitó a &7{target}&e al grupo'
-  invite-received: '&7{inviter}&e te invitó al grupo &7{party}&e'
-  player-joined: '&7{player}&e se unió al grupo'
-  invite-declined: '&7{player}&e rechazó la invitación'
-  player-kicked: '&7{kicker}&c expulsó a &7{player}&c del grupo'
-  player-left: '&7{player} abandonó el grupo'
-  leadership-transferred: '&7{oldLeader}&e transfirió el liderazgo a &7{newLeader}'
-  disbanded: '&7{player} disolvió el grupo'
+  invite-sent: '<gray>{inviter}<yellow> invitó a <gray>{target}<yellow> al grupo'
+  invite-received: '<gray>{inviter}<yellow> te invitó al grupo <gray>{party}<yellow>'
+  player-joined: '<gray>{player}<yellow> se unió al grupo'
+  invite-declined: '<gray>{player}<yellow> rechazó la invitación'
+  player-kicked: '<gray>{kicker}<red> expulsó a <gray>{player}<red> del grupo'
+  player-left: '<gray>{player} abandonó el grupo'
+  leadership-transferred: '<gray>{oldLeader}<yellow> transfirió el liderazgo a <gray>{newLeader}'
+  disbanded: '<gray>{player} disolvió el grupo'
   chat-format: '[Grupo][{player}]: {message}'
-  unable-use-in-game: '&c¡Los comandos de grupo no se pueden usar en el juego!'
+  unable-use-in-game: '<red>¡Los comandos de grupo no se pueden usar en el juego!'
 scoreboard:
-  title: '&e&lGuerra de Ghasts'
+  title: '<yellow><bold>Guerra de Ghasts'
   team: 'Equipo'
   waiting:
-    - '&7{date} &8{server}'
+    - '<gray>{date} <dark_gray>{server}'
     - ''
-    - '&fMapa: &a{map}'
+    - '<white>Mapa: <green>{map}'
     - ''
-    - '&fJugadores: &a{on}/{max}'
+    - '<white>Jugadores: <green>{on}/{max}'
     - ''
-    - '&fEsperando...'
+    - '<white>Esperando...'
     - ''
-    - '&e{serverIp}'
+    - '<yellow>{serverIp}'
   starting:
-    - '&7{date} &8{server}'
+    - '<gray>{date} <dark_gray>{server}'
     - ''
-    - '&fMapa: &a{map}'
+    - '<white>Mapa: <green>{map}'
     - ''
-    - '&fJugadores: &a{on}/{max}'
+    - '<white>Jugadores: <green>{on}/{max}'
     - ''
-    - '&fComenzando en &a{time} &fsegundos'
+    - '<white>Comenzando en <green>{time} <white>segundos'
     - ''
-    - '&e{serverIp}'
+    - '<yellow>{serverIp}'
   playing:
-    - '&7{date} &8{server}'
+    - '<gray>{date} <dark_gray>{server}'
     - ''
     - '{team1}'
     - '{team2}'
@@ -188,4 +199,4 @@ scoreboard:
     - '{team7}'
     - '{team8}'
     - ''
-    - '&e{serverIp}'
+    - '<yellow>{serverIp}'

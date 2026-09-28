@@ -1,24 +1,32 @@
 package me.wang.happyGhastWar.game.upgrade;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import me.wang.happyGhastWar.util.SoundUtil;
+import me.wang.happyGhastWar.util.Text;
 import org.bukkit.block.Block;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.BlockDisplay;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.block.data.BlockData;
 import org.bukkit.util.BoundingBox;
 import org.bukkit.util.Vector;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 /*
- * 熔炉熔炼功能
+ * 熔炉熔炼功能：
+ * 主手拿铁锭 + 副手拿铜锭 + 注视熔炉（方块或乐魂头顶的熔炉 BlockDisplay）
+ * 持续 requiredTicks 后消耗铁+铜，产出一个下界合金锭。
  */
 public class AlloyMaker {
     private final JavaPlugin plugin;
@@ -38,7 +46,6 @@ public class AlloyMaker {
     public void setBlockDisplayCheckDistance(double distance) {
         this.blockDisplayCheckDistance = distance;
     }
-
 
     public double getBlockDisplayCheckDistance() {
         return blockDisplayCheckDistance;
@@ -67,7 +74,6 @@ public class AlloyMaker {
         }
     }
 
-
     public void addPlayer(Player player) {
         if (!playersToCheck.contains(player)) {
             playersToCheck.add(player);
@@ -82,16 +88,13 @@ public class AlloyMaker {
         }
     }
 
-
     public List<Player> getPlayersToCheck() {
         return new ArrayList<>(playersToCheck);
     }
 
-
     public int getPlayerProgress(Player player) {
         return progressMap.getOrDefault(player.getUniqueId(), 0);
     }
-
 
     private void checkAllPlayers() {
         List<Player> playersCopy = new ArrayList<>(playersToCheck);
@@ -99,10 +102,7 @@ public class AlloyMaker {
         for (Player player : playersCopy) {
             if (!player.isOnline()) {
                 // 玩家离线，移除并清理数据
-                playersToCheck.remove(player);
-                progressMap.remove(player.getUniqueId());
-                targetMap.remove(player.getUniqueId());
-                targetLocationMap.remove(player.getUniqueId());
+                removePlayer(player);
                 continue;
             }
 
@@ -110,32 +110,30 @@ public class AlloyMaker {
         }
     }
 
+    /** 视线检测结果 */
+    private record LookResult(boolean valid, Object target, Location location) {
+    }
 
     private LookResult isLookingAtValidTarget(Player player) {
-        UUID uuid = player.getUniqueId();
         Location eyeLocation = player.getEyeLocation();
         Vector direction = eyeLocation.getDirection();
 
-        //检查方块
+        // 检查方块
         Block targetBlock = player.getTargetBlockExact(5); // 5格范围内
         if (targetBlock != null && isFurnaceBlock(targetBlock)) {
             return new LookResult(true, targetBlock, targetBlock.getLocation());
         }
 
-        //检查BlockDisplay实体
+        // 检查BlockDisplay实体
         List<Entity> nearbyEntities = player.getNearbyEntities(
                 blockDisplayCheckDistance,
                 blockDisplayCheckDistance,
                 blockDisplayCheckDistance
         );
-
-        // 按距离排序，优先检查近的实体
         nearbyEntities.sort(Comparator.comparingDouble(e -> e.getLocation().distance(eyeLocation)));
 
         for (Entity entity : nearbyEntities) {
-            if (entity instanceof BlockDisplay) {
-                BlockDisplay blockDisplay = (BlockDisplay) entity;
-
+            if (entity instanceof BlockDisplay blockDisplay) {
                 // 检查BlockDisplay显示的是否为熔炉
                 if (isFurnaceBlockDisplay(blockDisplay)) {
                     // 检查玩家是否真的看着这个BlockDisplay
@@ -148,7 +146,6 @@ public class AlloyMaker {
 
         return new LookResult(false, null, null);
     }
-
 
     private boolean isFurnaceBlock(Block block) {
         Material type = block.getType();
@@ -166,7 +163,6 @@ public class AlloyMaker {
                 material == Material.BLAST_FURNACE ||
                 material == Material.SMOKER;
     }
-
 
     private boolean isLookingAtEntity(Player player, Entity entity, double maxDistance) {
         Location eyeLocation = player.getEyeLocation();
@@ -228,7 +224,6 @@ public class AlloyMaker {
         return tMin > 0 && tMin <= maxDistance;
     }
 
-
     private void checkPlayer(Player player) {
         UUID uuid = player.getUniqueId();
 
@@ -246,13 +241,13 @@ public class AlloyMaker {
 
         // 检查视线是否看着熔炉（方块或BlockDisplay实体）
         LookResult lookResult = isLookingAtValidTarget(player);
-        boolean isLookingAtFurnace = lookResult.isValid;
+        boolean isLookingAtFurnace = lookResult.valid();
 
         // 如果所有条件都满足
         if (hasIronInMainHand && hasCopperInOffHand && isLookingAtFurnace) {
             // 检查是否看着同一个目标
-            Object currentTarget = lookResult.target;
-            Location currentLocation = lookResult.location;
+            Object currentTarget = lookResult.target();
+            Location currentLocation = lookResult.location();
 
             Object lastTarget = targetMap.get(uuid);
             Location lastLocation = targetLocationMap.get(uuid);
@@ -261,15 +256,11 @@ public class AlloyMaker {
 
             if (lastTarget != null && currentTarget != null) {
                 // 如果都是方块，比较位置
-                if (lastTarget instanceof Block && currentTarget instanceof Block) {
-                    Block lastBlock = (Block) lastTarget;
-                    Block currentBlock = (Block) currentTarget;
+                if (lastTarget instanceof Block lastBlock && currentTarget instanceof Block currentBlock) {
                     isSameTarget = lastBlock.getLocation().equals(currentBlock.getLocation());
                 }
                 // 如果都是实体，比较UUID
-                else if (lastTarget instanceof Entity && currentTarget instanceof Entity) {
-                    Entity lastEntity = (Entity) lastTarget;
-                    Entity currentEntity = (Entity) currentTarget;
+                else if (lastTarget instanceof Entity lastEntity && currentTarget instanceof Entity currentEntity) {
                     isSameTarget = lastEntity.getUniqueId().equals(currentEntity.getUniqueId());
                 }
                 // 如果都是位置，比较位置
@@ -309,10 +300,28 @@ public class AlloyMaker {
         }
     }
 
+    private void sendProgressMessage(Player player, int progress) {
+        float percent = progress * 100.0f / requiredTicks;
+        int bars = (int) (percent / 10);
+        String bar = "<green>" + "■".repeat(bars) + "<gray>" + "■".repeat(10 - bars);
+        player.sendActionBar(Text.mm("<gold>熔炼中... " + bar + " <yellow>" + (int) percent + "%"));
+    }
+
+    private void sendInterruptMessage(Player player) {
+        player.sendActionBar(Text.mm("<red>熔炼中断！请保持主手铁锭、副手铜锭并注视熔炉 5 秒。"));
+    }
+
+    private void resetPlayerProgress(Player player) {
+        UUID uuid = player.getUniqueId();
+        progressMap.remove(uuid);
+        targetMap.remove(uuid);
+        targetLocationMap.remove(uuid);
+    }
+
     private void giveAlloyIngot(Player player) {
         // 消耗主手铁锭
         ItemStack mainHand = player.getInventory().getItemInMainHand();
-        if (mainHand != null && mainHand.getType() == Material.IRON_INGOT) {
+        if (mainHand.getType() == Material.IRON_INGOT) {
             if (mainHand.getAmount() > 1) {
                 mainHand.setAmount(mainHand.getAmount() - 1);
             } else {
@@ -322,7 +331,7 @@ public class AlloyMaker {
 
         // 消耗副手铜锭
         ItemStack offHand = player.getInventory().getItemInOffHand();
-        if (offHand != null && offHand.getType() == Material.COPPER_INGOT) {
+        if (offHand.getType() == Material.COPPER_INGOT) {
             if (offHand.getAmount() > 1) {
                 offHand.setAmount(offHand.getAmount() - 1);
             } else {
@@ -330,94 +339,11 @@ public class AlloyMaker {
             }
         }
 
-        // 给予下界合金锭
-        ItemStack netheriteIngot = new ItemStack(Material.NETHERITE_INGOT, 1);
-
-        // 尝试添加到背包
-        Map<Integer, ItemStack> remaining = player.getInventory().addItem(netheriteIngot);
-
-        // 如果背包满了，掉落在地上
-        if (!remaining.isEmpty()) {
-            player.getWorld().dropItemNaturally(player.getLocation(), netheriteIngot);
-            player.sendMessage("§e背包已满，下界合金锭已掉落在地上！");
-        }
-
-        // 播放合成成功音效
-        player.playSound(player.getLocation(), "block.anvil.use", 1.0f, 1.0f);
-
-        // 如果是通过BlockDisplay合成，可以额外播放粒子效果
-        UUID uuid = player.getUniqueId();
-        Object target = targetMap.get(uuid);
-
-    }
-
-
-    private void resetPlayerProgress(Player player) {
-        UUID uuid = player.getUniqueId();
-        progressMap.remove(uuid);
-        targetMap.remove(uuid);
-        targetLocationMap.remove(uuid);
-    }
-
-
-    private void sendProgressMessage(Player player, int currentProgress) {
-        int seconds = currentProgress / 20;
-        int totalSeconds = requiredTicks / 20;
-
-        // 显示进度条
-        StringBuilder progressBar = new StringBuilder(ChatColor.WHITE+"[");
-        int barLength = 20;
-        int progressPercent = (currentProgress * 100) / requiredTicks;
-        int filledLength = (progressPercent * barLength) / 100;
-
-        for (int i = 0; i < barLength; i++) {
-            if (i < filledLength) {
-                progressBar.append(ChatColor.GREEN+"|");
-            } else {
-                progressBar.append(ChatColor.GRAY+"|");
-            }
-        }
-        progressBar.append(ChatColor.WHITE+"]");
-
-        // 发送到动作栏
-        player.sendTitle("",progressBar.toString(),0,30,0);
-    }
-
-    private void sendInterruptMessage(Player player) {
-
-    }
-
-
-    public boolean isRunning() {
-        return taskId != -1;
-    }
-
-    public int getTaskId() {
-        return taskId;
-    }
-
-
-    private static class LookResult {
-        private final boolean isValid;
-        private final Object target; // Block 或 Entity
-        private final Location location;
-
-        public LookResult(boolean isValid, Object target, Location location) {
-            this.isValid = isValid;
-            this.target = target;
-            this.location = location;
-        }
-
-        public boolean isValid() {
-            return isValid;
-        }
-
-        public Object getTarget() {
-            return target;
-        }
-
-        public Location getLocation() {
-            return location;
-        }
+        // 产出一个下界合金锭
+        player.getInventory().addItem(new ItemStack(Material.NETHERITE_INGOT, 1));
+        player.sendActionBar(Text.mm("<green><bold>熔炼完成！获得 1 个下界合金锭"));
+        SoundUtil.play(player, "alloy-done", org.bukkit.Sound.BLOCK_BLASTFURNACE_FIRE_CRACKLE, 1.0f, 1.2f);
+        Location loc = player.getLocation().add(0, 1, 0);
+        player.getWorld().spawnParticle(org.bukkit.Particle.FLAME, loc, 12, 0.3, 0.3, 0.3, 0.01);
     }
 }

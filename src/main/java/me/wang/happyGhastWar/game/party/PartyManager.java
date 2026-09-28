@@ -103,16 +103,19 @@ public class PartyManager {
             return false;
         }
 
-        boolean success = party.kickPlayer(kicker, targetName);
-        if (success) {
-            // 查找被踢出的玩家并从映射中移除
-            for (UUID memberId : party.getMembers().keySet()) {
-                Player member = org.bukkit.Bukkit.getPlayer(memberId);
-                if (member != null && member.getName().equalsIgnoreCase(targetName)) {
-                    playerParties.remove(memberId);
-                    break;
-                }
+        // 先按名字在成员表中解析出被踢玩家的 UUID（kick 成功后该成员已不在 members 里）
+        UUID targetId = null;
+        for (UUID memberId : party.getMembers().keySet()) {
+            Player member = org.bukkit.Bukkit.getPlayer(memberId);
+            if (member != null && member.getName().equalsIgnoreCase(targetName)) {
+                targetId = memberId;
+                break;
             }
+        }
+
+        boolean success = party.kickPlayer(kicker, targetName);
+        if (success && targetId != null) {
+            playerParties.remove(targetId);
         }
 
         return success;

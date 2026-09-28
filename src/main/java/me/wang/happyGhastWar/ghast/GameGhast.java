@@ -1,11 +1,16 @@
 package me.wang.happyGhastWar.ghast;
 
+import me.wang.happyGhastWar.ghast.armor.GhastArmorManager;
+import me.wang.happyGhastWar.ghast.skill.GhastSkillManager;
 import org.bukkit.entity.BlockDisplay;
 import org.bukkit.entity.HappyGhast;
 import org.bukkit.entity.Interaction;
+import org.bukkit.entity.Player;
 import org.bukkit.entity.TextDisplay;
 
 public class GameGhast {
+    private final GhastSkillManager skillManager;
+    private final GhastArmorManager armorManager;
     private final HappyGhast happyGhast;
     private final BlockDisplay blockDisplay;
     private final TextDisplay textDisplay;
@@ -16,11 +21,19 @@ public class GameGhast {
 
     private int snowAmount = 0;
 
-    public GameGhast(HappyGhast happyGhast,BlockDisplay blockDisplay,TextDisplay textDisplay,Interaction interaction){
+    public GameGhast(HappyGhast happyGhast, BlockDisplay blockDisplay, TextDisplay textDisplay,
+                     Interaction interaction, GhastSkillManager skillManager) {
+        this(happyGhast, blockDisplay, textDisplay, interaction, skillManager, null);
+    }
+
+    public GameGhast(HappyGhast happyGhast, BlockDisplay blockDisplay, TextDisplay textDisplay,
+                     Interaction interaction, GhastSkillManager skillManager, GhastArmorManager armorManager) {
         this.blockDisplay = blockDisplay;
         this.interaction = interaction;
         this.happyGhast = happyGhast;
         this.textDisplay = textDisplay;
+        this.skillManager = skillManager;
+        this.armorManager = armorManager;
     }
 
     public int getSnowAmount() {
@@ -45,6 +58,14 @@ public class GameGhast {
 
     public TextDisplay getTextDisplay() {
         return textDisplay;
+    }
+
+    public GhastSkillManager getSkillManager() {
+        return skillManager;
+    }
+
+    public GhastArmorManager getArmorManager() {
+        return armorManager;
     }
 
     public int getArmorLevel() {
@@ -75,8 +96,36 @@ public class GameGhast {
         happyGhast.setHealth(old+h);
     }
 
+    public void useSkill(Player rider) {
+        if (skillManager != null) {
+            skillManager.useSkill(this, rider);
+        }
+    }
+
+    public void upgradeArmor(Player rider) {
+        if (armorManager != null) {
+            armorManager.upgradeGhastArmor(this, rider);
+        } else if (rider != null) {
+            me.wang.happyGhastWar.util.Text.send(rider, "<red>乐魂护甲系统未就绪");
+        }
+    }
+
+    public String getSkillCooldownInfo() {
+        if (skillManager != null) {
+            return skillManager.getCooldownInfo(this);
+        }
+        return "未注册";
+    }
+
+    public String getArmorUpgradeInfo() {
+        if (armorManager != null) {
+            return armorManager.getArmorUpgradeInfo(this);
+        }
+        return "未注册";
+    }
+
     public void unregister(){
-        if (!happyGhast.isDead()){
+        if (happyGhast != null && !happyGhast.isDead()){
             happyGhast.remove();
         }
         if (blockDisplay != null){

@@ -1,8 +1,10 @@
 package me.wang.happyGhastWar.game.party;
 
 import me.wang.happyGhastWar.HappyGhastWar;
+import me.wang.happyGhastWar.util.SoundUtil;
+import me.wang.happyGhastWar.util.Text;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -54,13 +56,13 @@ public class Party {
     public boolean invitePlayer(Player inviter, Player target) {
         // 检查目标是否已经在队伍中
         if (isMember(target)) {
-            inviter.sendMessage(ChatColor.RED + target.getName() + " 已经在队伍中!");
+            Text.send(inviter, "<red>" + target.getName() + " 已经在队伍中!");
             return false;
         }
 
         // 检查目标是否已经有待处理的邀请
         if (pendingInvites.containsKey(target.getUniqueId())) {
-            inviter.sendMessage(ChatColor.YELLOW + target.getName() + " 已经有待处理的邀请!");
+            Text.send(inviter, "<yellow>" + target.getName() + " 已经有待处理的邀请!");
             return false;
         }
 
@@ -72,18 +74,18 @@ public class Party {
         String message = HappyGhastWar.getInstance().getLanguage(inviter).getContent("party.invite-sent")
                 .replace("{inviter}", inviter.getName())
                 .replace("{target}", target.getName());
-        sendMessageToAll(ChatColor.GREEN + message);
+        sendMessageToAll("<green>" + message);
 
         // 发送邀请消息给目标玩家
         String inviteMsg = HappyGhastWar.getInstance().getLanguage(target).getContent("party.invite-received")
                 .replace("{inviter}", inviter.getName())
                 .replace("{party}", partyName);
-        target.sendMessage(ChatColor.GOLD + inviteMsg);
-        target.sendMessage(ChatColor.YELLOW + "使用 " + ChatColor.GREEN + "/party accept " + inviter.getName() + ChatColor.YELLOW + " 接受邀请");
-        target.sendMessage(ChatColor.YELLOW + "使用 " + ChatColor.RED + "/party decline " + inviter.getName() + ChatColor.YELLOW + " 拒绝邀请");
+        Text.send(target, "<gold>" + inviteMsg);
+        Text.send(target, "<yellow>使用 <green>/party accept " + inviter.getName() + "<yellow> 接受邀请");
+        Text.send(target, "<yellow>使用 <red>/party decline " + inviter.getName() + "<yellow> 拒绝邀请");
 
         // 播放声音（如果支持）
-        playSound(target, "ENTITY_EXPERIENCE_ORB_PICKUP");
+        SoundUtil.play(target, "party-notify", Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f);
 
         return true;
     }
@@ -94,14 +96,14 @@ public class Party {
     public boolean acceptInvite(Player player) {
         PartyInvite invite = pendingInvites.get(player.getUniqueId());
         if (invite == null) {
-            player.sendMessage(ChatColor.RED + "没有待处理的邀请!");
+            Text.send(player, "<red>没有待处理的邀请!");
             return false;
         }
 
         // 检查邀请是否过期
         if (System.currentTimeMillis() - invite.getInviteTime() > 120000) { // 2分钟过期
             pendingInvites.remove(player.getUniqueId());
-            player.sendMessage(ChatColor.RED + "邀请已过期!");
+            Text.send(player, "<red>邀请已过期!");
             return false;
         }
 
@@ -112,7 +114,7 @@ public class Party {
         // 发送加入消息
         String joinMessage = HappyGhastWar.getInstance().getLanguage(player).getContent("party.player-joined")
                 .replace("{player}", player.getName());
-        sendMessageToAll(ChatColor.GREEN + joinMessage);
+        sendMessageToAll("<green>" + joinMessage);
 
         return true;
     }
@@ -123,7 +125,7 @@ public class Party {
     public boolean declineInvite(Player player) {
         PartyInvite invite = pendingInvites.remove(player.getUniqueId());
         if (invite == null) {
-            player.sendMessage(ChatColor.RED + "没有待处理的邀请!");
+            Text.send(player, "<red>没有待处理的邀请!");
             return false;
         }
 
@@ -131,10 +133,10 @@ public class Party {
         if (inviter != null && inviter.isOnline()) {
             String declineMsg = HappyGhastWar.getInstance().getLanguage(inviter).getContent("party.invite-declined")
                     .replace("{player}", player.getName());
-            inviter.sendMessage(ChatColor.RED + declineMsg);
+            Text.send(inviter, "<red>" + declineMsg);
         }
 
-        player.sendMessage(ChatColor.YELLOW + "已拒绝组队邀请");
+        Text.send(player, "<yellow>已拒绝组队邀请");
         return true;
     }
 
@@ -144,7 +146,7 @@ public class Party {
     public boolean kickPlayer(Player kicker, String targetName) {
         // 检查权限
         if (members.get(kicker.getUniqueId()) != PartyRole.LEADER) {
-            kicker.sendMessage(ChatColor.RED + "只有队长可以踢出队员!");
+            Text.send(kicker, "<red>只有队长可以踢出队员!");
             return false;
         }
 
@@ -159,13 +161,13 @@ public class Party {
         }
 
         if (target == null) {
-            kicker.sendMessage(ChatColor.RED + "找不到玩家 " + targetName + "!");
+            Text.send(kicker, "<red>找不到玩家 " + targetName + "!");
             return false;
         }
 
         // 不能踢出自己
         if (target.getUniqueId().equals(kicker.getUniqueId())) {
-            kicker.sendMessage(ChatColor.RED + "不能踢出自己!");
+            Text.send(kicker, "<red>不能踢出自己!");
             return false;
         }
 
@@ -176,9 +178,9 @@ public class Party {
         String kickMsg = HappyGhastWar.getInstance().getLanguage(kicker).getContent("party.player-kicked")
                 .replace("{player}", target.getName())
                 .replace("{kicker}", kicker.getName());
-        sendMessageToAll(ChatColor.RED + kickMsg);
+        sendMessageToAll("<red>" + kickMsg);
 
-        target.sendMessage(ChatColor.RED + "你被踢出了队伍!");
+        Text.send(target, "<red>你被踢出了队伍!");
 
         return true;
     }
@@ -210,7 +212,7 @@ public class Party {
 
         String leaveMsg = HappyGhastWar.getInstance().getLanguage(player).getContent("party.player-left")
                 .replace("{player}", player.getName());
-        sendMessageToAll(ChatColor.YELLOW + leaveMsg);
+        sendMessageToAll("<yellow>" + leaveMsg);
 
         return true;
     }
@@ -221,7 +223,7 @@ public class Party {
     public boolean transferLeadership(Player currentLeader, String newLeaderName) {
         // 检查权限
         if (members.get(currentLeader.getUniqueId()) != PartyRole.LEADER) {
-            currentLeader.sendMessage(ChatColor.RED + "只有队长可以转让权限!");
+            Text.send(currentLeader, "<red>只有队长可以转让权限!");
             return false;
         }
 
@@ -236,7 +238,7 @@ public class Party {
         }
 
         if (newLeader == null) {
-            currentLeader.sendMessage(ChatColor.RED + "找不到队员 " + newLeaderName + "!");
+            Text.send(currentLeader, "<red>找不到队员 " + newLeaderName + "!");
             return false;
         }
 
@@ -246,7 +248,7 @@ public class Party {
         String transferMsg = HappyGhastWar.getInstance().getLanguage(newLeader).getContent("party.leadership-transferred")
                 .replace("{oldLeader}", currentLeader.getName())
                 .replace("{newLeader}", newLeader.getName());
-        sendMessageToAll(ChatColor.GOLD + transferMsg);
+        sendMessageToAll("<gold>" + transferMsg);
 
         return true;
     }
@@ -258,7 +260,7 @@ public class Party {
         // 发送解散消息
         String disbandMsg = HappyGhastWar.getInstance().getLanguage(disbander).getContent("party.disbanded")
                 .replace("{player}", disbander.getName());
-        sendMessageToAll(ChatColor.RED + disbandMsg);
+        sendMessageToAll("<red>" + disbandMsg);
 
         // 清理所有邀请
         pendingInvites.clear();
@@ -276,19 +278,8 @@ public class Party {
         for (UUID memberId : members.keySet()) {
             Player member = Bukkit.getPlayer(memberId);
             if (member != null && member.isOnline()) {
-                member.sendMessage(message);
+                Text.send(member, message);
             }
-        }
-    }
-
-    /**
-     * 播放声音给成员
-     */
-    private void playSound(Player player, String sound) {
-        try {
-            player.playSound(player.getLocation(), org.bukkit.Sound.valueOf(sound), 1.0f, 1.0f);
-        } catch (IllegalArgumentException e) {
-            // 声音不存在，忽略
         }
     }
 
@@ -330,7 +321,7 @@ public class Party {
 
                 Player target = Bukkit.getPlayer(entry.getKey());
                 if (target != null && target.isOnline()) {
-                    target.sendMessage(ChatColor.RED + "组队邀请已过期!");
+                    Text.send(target, "<red>组队邀请已过期!");
                 }
             }
         }

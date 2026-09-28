@@ -4,6 +4,7 @@ import me.wang.happyGhastWar.HappyGhastWar;
 import me.wang.happyGhastWar.arena.Arena;
 import me.wang.happyGhastWar.arena.ArenaConfig;
 import me.wang.happyGhastWar.commands.gw.GWCommand;
+import me.wang.happyGhastWar.util.Text;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
@@ -11,25 +12,30 @@ import java.util.List;
 
 public class SetGhastAmount extends GWCommand {
     public SetGhastAmount(){
-        super("setghastamount", new String[0]);
+        super("setghastamount");
     }
 
     public void evaluate(HappyGhastWar ghastWar, Player player, String s, List<String> params) {
         World world = player.getWorld();
-        if (!ghastWar.arenas.containsKey(world.getName())){
-            player.sendMessage(ghastWar.getLanguage(player).getContent("commands.gameNotFound"));
+        if (!HappyGhastWar.arenas.containsKey(world.getName())){
+            Text.send(player, ghastWar.getLanguage(player).getContent("commands.gameNotFound"));
             return;
         }
-        if (params.size() < 1){
-            player.sendMessage(ghastWar.getLanguage(player).getContent("commands.missRequireData"));
+        if (params.isEmpty()){
+            Text.send(player, ghastWar.getLanguage(player).getContent("commands.missRequireData"));
             return;
         }
 
-        Arena arena = ghastWar.arenas.get(world.getName());
+        Arena arena = HappyGhastWar.arenas.get(world.getName());
         ArenaConfig arenaConfig = arena.getArenaConfig();
 
-        arenaConfig.setGhastAmount(Integer.valueOf(params.get(0)));
+        try {
+            arenaConfig.setGhastAmount(Integer.parseInt(params.getFirst()));
+        } catch (NumberFormatException e) {
+            Text.send(player, ghastWar.getLanguage(player).getContent("commands.missRequireData"));
+            return;
+        }
 
-        player.sendMessage(ghastWar.getLanguage(player).getContent("commands.setSuccess"));
+        Text.send(player, ghastWar.getLanguage(player).getContent("commands.setSuccess"));
     }
 }

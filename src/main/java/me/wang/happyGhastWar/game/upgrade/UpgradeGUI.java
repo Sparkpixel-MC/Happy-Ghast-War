@@ -5,8 +5,9 @@ import me.wang.happyGhastWar.arena.Arena;
 import me.wang.happyGhastWar.game.team.Team;
 import me.wang.happyGhastWar.ghast.GameGhast;
 import me.wang.happyGhastWar.util.Language;
+import me.wang.happyGhastWar.util.SoundUtil;
+import me.wang.happyGhastWar.util.Text;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.enchantments.Enchantment;
@@ -24,6 +25,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class UpgradeGUI implements Listener {
     private JavaPlugin plugin;
@@ -71,13 +73,13 @@ public class UpgradeGUI implements Listener {
     }
 
     public void openUpgradeGUI(Player player, Team team, Interaction interaction) {
-        Inventory gui = Bukkit.createInventory(null, 6 * 9, language.getContent("upgrade.gui-title"));
+        Inventory gui = Bukkit.createInventory(null, 6 * 9, Text.legacy(language.getContent("upgrade.gui-title")));
         PlayerUpgrade upgrade = upgradeManager.getPlayerUpgrade(player);
 
         // 填充背景玻璃板
         ItemStack background = new ItemStack(getColor(team));
         ItemMeta bgMeta = background.getItemMeta();
-        bgMeta.setDisplayName(" ");
+        bgMeta.displayName(Text.mm(" "));
         background.setItemMeta(bgMeta);
 
         for (int i = 0; i < 54; i++) {
@@ -133,7 +135,7 @@ public class UpgradeGUI implements Listener {
     @EventHandler
     public void close(InventoryCloseEvent e){
         if (!(e.getPlayer() instanceof Player)) return;
-        if (!e.getView().getTitle().equals(language.getContent("upgrade.gui-title"))) return;
+        if (!e.getView().getTitle().equals(Text.legacy(language.getContent("upgrade.gui-title")))) return;
 
         if (!HappyGhastWar.arenas.containsKey(e.getPlayer().getWorld().getName())) return;
         Arena arena = HappyGhastWar.arenas.get(e.getPlayer().getWorld().getName());
@@ -157,10 +159,10 @@ public class UpgradeGUI implements Listener {
     private ItemStack createArrowMaker(){
         ItemStack itemStack = new ItemStack(Material.FLETCHING_TABLE);
         ItemMeta itemMeta = itemStack.getItemMeta();
-        itemMeta.setDisplayName(ChatColor.GOLD+"制箭");
+        itemMeta.displayName(Text.mm("<gold>制箭"));
         List<String> lore = new ArrayList<>();
-        lore.add(ChatColor.YELLOW+"单击制作5根箭矢，消耗1原木");
-        itemMeta.setLore(lore);
+        lore.add("<yellow>单击制作5根箭矢，消耗1原木");
+        itemMeta.lore(lore.stream().map(Text::mm).collect(Collectors.toList()));
         itemStack.setItemMeta(itemMeta);
         return itemStack;
     }
@@ -168,7 +170,7 @@ public class UpgradeGUI implements Listener {
     private ItemStack createTeamChest(){
         ItemStack itemStack = new ItemStack(Material.WHITE_HARNESS);
         ItemMeta itemMeta = itemStack.getItemMeta();
-        itemMeta.setDisplayName(ChatColor.GOLD+"团队箱子");
+        itemMeta.displayName(Text.mm("<gold>团队箱子"));
         itemStack.setItemMeta(itemMeta);
         return itemStack;
     }
@@ -192,7 +194,7 @@ public class UpgradeGUI implements Listener {
                 lore.add(language.getContent("upgrade.item-price"));
                 for (Map.Entry<Material, Integer> entry : price.entrySet()) {
                     String materialName = getMaterialName(entry.getKey());
-                    lore.add("§7- " + materialName + " x" + entry.getValue());
+                    lore.add("<gray>- " + materialName + " x" + entry.getValue());
                 }
                 lore.add("");
             }
@@ -200,30 +202,30 @@ public class UpgradeGUI implements Listener {
             // 功能描述
             if (nextUpgrade == UpgradeManager.UpgradeType.IRON_SWORD_STORM ||
                     nextUpgrade == UpgradeManager.UpgradeType.NETHERITE_SWORD_STORM) {
-                lore.add("§6功能: §7风暴I附魔");
-                lore.add("§7暴击时生成风暴弹");
+                lore.add("<gold>功能: <gray>风暴I附魔");
+                lore.add("<gray>暴击时生成风暴弹");
                 lore.add("");
             }
 
-            lore.add("§e点击升级");
+            lore.add("<yellow>点击升级");
 
             ItemStack item = new ItemStack(upgradeManager.getIcon(nextUpgrade));
             ItemMeta meta = item.getItemMeta();
-            meta.setDisplayName("§6剑升级");
-            meta.setLore(lore);
+            meta.displayName(Text.mm("<gold>剑升级"));
+            meta.lore(lore.stream().map(Text::mm).collect(Collectors.toList()));
             item.setItemMeta(meta);
             return item;
         } else {
             // 已满级
-            lore.add("§a✔ 已满级");
+            lore.add("<green>✔ 已满级");
             lore.add("");
-            lore.add("§6功能: §7风暴I附魔");
-            lore.add("§7暴击时生成风暴弹");
+            lore.add("<gold>功能: <gray>风暴I附魔");
+            lore.add("<gray>暴击时生成风暴弹");
 
             ItemStack item = new ItemStack(Material.NETHERITE_SWORD); // 使用满级物品材质
             ItemMeta meta = item.getItemMeta();
-            meta.setDisplayName("§6剑升级");
-            meta.setLore(lore);
+            meta.displayName(Text.mm("<gold>剑升级"));
+            meta.lore(lore.stream().map(Text::mm).collect(Collectors.toList()));
             item.setItemMeta(meta);
             return item;
         }
@@ -235,41 +237,41 @@ public class UpgradeGUI implements Listener {
         UpgradeManager.UpgradeType nextUpgrade = getNextPickaxeUpgrade(upgrade);
         List<String> lore = new ArrayList<>();
 
-        lore.add("§7当前: §e" + upgrade.getCurrentPickaxeName());
+        lore.add("<gray>当前: <yellow>" + upgrade.getCurrentPickaxeName());
 
         if (nextUpgrade != null) {
-            lore.add("§7下一级: §a" + upgradeManager.getDescription(nextUpgrade));
+            lore.add("<gray>下一级: <green>" + upgradeManager.getDescription(nextUpgrade));
             lore.add("");
 
             Map<Material, Integer> price = upgradeManager.getPrice(nextUpgrade);
             if (price != null && !price.isEmpty()) {
-                lore.add("§6价格:");
+                lore.add("<gold>价格:");
                 for (Map.Entry<Material, Integer> entry : price.entrySet()) {
                     String materialName = getMaterialName(entry.getKey());
-                    lore.add("§7- " + materialName + " x" + entry.getValue());
+                    lore.add("<gray>- " + materialName + " x" + entry.getValue());
                 }
                 lore.add("");
             }
 
             if (nextUpgrade == UpgradeManager.UpgradeType.IRON_PICKAXE_FORTUNE) {
-                lore.add("§6功能: §7时运III");
+                lore.add("<gold>功能: <gray>时运III");
                 lore.add("");
             }
 
-            lore.add("§e点击升级");
+            lore.add("<yellow>点击升级");
 
             ItemStack item = new ItemStack(upgradeManager.getIcon(nextUpgrade));
             ItemMeta meta = item.getItemMeta();
-            meta.setDisplayName("§6镐升级");
-            meta.setLore(lore);
+            meta.displayName(Text.mm("<gold>镐升级"));
+            meta.lore(lore.stream().map(Text::mm).collect(Collectors.toList()));
             item.setItemMeta(meta);
             return item;
         } else {
-            lore.add("§a✔ 已满级");
+            lore.add("<green>✔ 已满级");
             ItemStack item = new ItemStack(Material.NETHERITE_PICKAXE);
             ItemMeta meta = item.getItemMeta();
-            meta.setDisplayName("§6镐升级");
-            meta.setLore(lore);
+            meta.displayName(Text.mm("<gold>镐升级"));
+            meta.lore(lore.stream().map(Text::mm).collect(Collectors.toList()));
             item.setItemMeta(meta);
             return item;
         }
@@ -281,47 +283,47 @@ public class UpgradeGUI implements Listener {
         UpgradeManager.UpgradeType nextUpgrade = getNextAxeUpgrade(upgrade);
         List<String> lore = new ArrayList<>();
 
-        lore.add("§7当前: §e" + upgrade.getCurrentAxeName());
+        lore.add("<gray>当前: <yellow>" + upgrade.getCurrentAxeName());
 
         if (nextUpgrade != null) {
-            lore.add("§7下一级: §a" + upgradeManager.getDescription(nextUpgrade));
+            lore.add("<gray>下一级: <green>" + upgradeManager.getDescription(nextUpgrade));
             lore.add("");
 
             Map<Material, Integer> price = upgradeManager.getPrice(nextUpgrade);
             if (price != null && !price.isEmpty()) {
-                lore.add("§6价格:");
+                lore.add("<gold>价格:");
                 for (Map.Entry<Material, Integer> entry : price.entrySet()) {
                     String materialName = getMaterialName(entry.getKey());
-                    lore.add("§7- " + materialName + " x" + entry.getValue());
+                    lore.add("<gray>- " + materialName + " x" + entry.getValue());
                 }
                 lore.add("");
             }
 
             if (nextUpgrade == UpgradeManager.UpgradeType.IRON_AXE_EFFICIENCY) {
-                lore.add("§6功能: §7效率III");
+                lore.add("<gold>功能: <gray>效率III");
                 lore.add("");
             } else if (nextUpgrade == UpgradeManager.UpgradeType.NETHERITE_AXE) {
-                lore.add("§6功能: §7效率VII, 锋利I");
+                lore.add("<gold>功能: <gray>效率VII, 锋利I");
                 lore.add("");
             }
 
-            lore.add("§e点击升级");
+            lore.add("<yellow>点击升级");
 
             ItemStack item = new ItemStack(upgradeManager.getIcon(nextUpgrade));
             ItemMeta meta = item.getItemMeta();
-            meta.setDisplayName("§6斧升级");
-            meta.setLore(lore);
+            meta.displayName(Text.mm("<gold>斧升级"));
+            meta.lore(lore.stream().map(Text::mm).collect(Collectors.toList()));
             item.setItemMeta(meta);
             return item;
         } else {
-            lore.add("§a✔ 已满级");
+            lore.add("<green>✔ 已满级");
             lore.add("");
-            lore.add("§6功能: §7效率VII, 锋利I");
+            lore.add("<gold>功能: <gray>效率VII, 锋利I");
 
             ItemStack item = new ItemStack(Material.NETHERITE_AXE);
             ItemMeta meta = item.getItemMeta();
-            meta.setDisplayName("§6斧升级");
-            meta.setLore(lore);
+            meta.displayName(Text.mm("<gold>斧升级"));
+            meta.lore(lore.stream().map(Text::mm).collect(Collectors.toList()));
             item.setItemMeta(meta);
             return item;
         }
@@ -333,41 +335,41 @@ public class UpgradeGUI implements Listener {
         UpgradeManager.UpgradeType nextUpgrade = getNextShovelUpgrade(upgrade);
         List<String> lore = new ArrayList<>();
 
-        lore.add("§7当前: §e" + upgrade.getCurrentShovelName());
+        lore.add("<gray>当前: <yellow>" + upgrade.getCurrentShovelName());
 
         if (nextUpgrade != null) {
-            lore.add("§7下一级: §a" + upgradeManager.getDescription(nextUpgrade));
+            lore.add("<gray>下一级: <green>" + upgradeManager.getDescription(nextUpgrade));
             lore.add("");
 
             Map<Material, Integer> price = upgradeManager.getPrice(nextUpgrade);
             if (price != null && !price.isEmpty()) {
-                lore.add("§6价格:");
+                lore.add("<gold>价格:");
                 for (Map.Entry<Material, Integer> entry : price.entrySet()) {
                     String materialName = getMaterialName(entry.getKey());
-                    lore.add("§7- " + materialName + " x" + entry.getValue());
+                    lore.add("<gray>- " + materialName + " x" + entry.getValue());
                 }
                 lore.add("");
             }
 
             if (nextUpgrade == UpgradeManager.UpgradeType.IRON_SHOVEL_SILK_TOUCH) {
-                lore.add("§6功能: §7精准采集");
+                lore.add("<gold>功能: <gray>精准采集");
                 lore.add("");
             }
 
-            lore.add("§e点击升级");
+            lore.add("<yellow>点击升级");
 
             ItemStack item = new ItemStack(upgradeManager.getIcon(nextUpgrade));
             ItemMeta meta = item.getItemMeta();
-            meta.setDisplayName("§6锹升级");
-            meta.setLore(lore);
+            meta.displayName(Text.mm("<gold>锹升级"));
+            meta.lore(lore.stream().map(Text::mm).collect(Collectors.toList()));
             item.setItemMeta(meta);
             return item;
         } else {
-            lore.add("§a✔ 已满级");
+            lore.add("<green>✔ 已满级");
             ItemStack item = new ItemStack(Material.NETHERITE_SHOVEL);
             ItemMeta meta = item.getItemMeta();
-            meta.setDisplayName("§6锹升级");
-            meta.setLore(lore);
+            meta.displayName(Text.mm("<gold>锹升级"));
+            meta.lore(lore.stream().map(Text::mm).collect(Collectors.toList()));
             item.setItemMeta(meta);
             return item;
         }
@@ -379,18 +381,18 @@ public class UpgradeGUI implements Listener {
         UpgradeManager.UpgradeType nextUpgrade = getNextCatapultUpgrade(upgrade);
         List<String> lore = new ArrayList<>();
 
-        lore.add("§7当前: §e" + upgrade.getCurrentCatapultName());
+        lore.add("<gray>当前: <yellow>" + upgrade.getCurrentCatapultName());
 
         if (nextUpgrade != null) {
-            lore.add("§7下一级: §a" + upgradeManager.getDescription(nextUpgrade));
+            lore.add("<gray>下一级: <green>" + upgradeManager.getDescription(nextUpgrade));
             lore.add("");
 
             Map<Material, Integer> price = upgradeManager.getPrice(nextUpgrade);
             if (price != null && !price.isEmpty()) {
-                lore.add("§6价格:");
+                lore.add("<gold>价格:");
                 for (Map.Entry<Material, Integer> entry : price.entrySet()) {
                     String materialName = getMaterialName(entry.getKey());
-                    lore.add("§7- " + materialName + " x" + entry.getValue());
+                    lore.add("<gray>- " + materialName + " x" + entry.getValue());
                 }
                 lore.add("");
             }
@@ -398,41 +400,41 @@ public class UpgradeGUI implements Listener {
             // 功能描述
             switch (nextUpgrade) {
                 case ADVANCED_CATAPULT:
-                    lore.add("§6功能: §7进阶弹射器");
-                    lore.add("§7使用次数: 3");
-                    lore.add("§7恢复用时: 3.5s");
+                    lore.add("<gold>功能: <gray>进阶弹射器");
+                    lore.add("<gray>使用次数: 3");
+                    lore.add("<gray>恢复用时: 3.5s");
                     break;
                 case HIGH_CATAPULT:
-                    lore.add("§6功能: §7高阶弹射器");
-                    lore.add("§7使用次数: 4");
-                    lore.add("§7恢复用时: 3s");
+                    lore.add("<gold>功能: <gray>高阶弹射器");
+                    lore.add("<gray>使用次数: 4");
+                    lore.add("<gray>恢复用时: 3s");
                     break;
                 case WIND_CORE_CATAPULT:
-                    lore.add("§6功能: §7风核弹射器");
-                    lore.add("§7使用次数: 5");
-                    lore.add("§7恢复用时: 2.5s");
+                    lore.add("<gold>功能: <gray>风核弹射器");
+                    lore.add("<gray>使用次数: 5");
+                    lore.add("<gray>恢复用时: 2.5s");
                     break;
             }
             lore.add("");
-            lore.add("§e点击升级");
+            lore.add("<yellow>点击升级");
 
             ItemStack item = new ItemStack(Material.PISTON); // 弹射器用活塞
             ItemMeta meta = item.getItemMeta();
-            meta.setDisplayName("§6弹射器");
-            meta.setLore(lore);
+            meta.displayName(Text.mm("<gold>弹射器"));
+            meta.lore(lore.stream().map(Text::mm).collect(Collectors.toList()));
             item.setItemMeta(meta);
             return item;
         } else {
-            lore.add("§a✔ 已满级");
+            lore.add("<green>✔ 已满级");
             lore.add("");
-            lore.add("§6功能: §7风核弹射器");
-            lore.add("§7使用次数: 5");
-            lore.add("§7恢复用时: 2.5s");
+            lore.add("<gold>功能: <gray>风核弹射器");
+            lore.add("<gray>使用次数: 5");
+            lore.add("<gray>恢复用时: 2.5s");
 
             ItemStack item = new ItemStack(Material.PISTON);
             ItemMeta meta = item.getItemMeta();
-            meta.setDisplayName("§6弹射器");
-            meta.setLore(lore);
+            meta.displayName(Text.mm("<gold>弹射器"));
+            meta.lore(lore.stream().map(Text::mm).collect(Collectors.toList()));
             item.setItemMeta(meta);
             return item;
         }
@@ -444,18 +446,18 @@ public class UpgradeGUI implements Listener {
         UpgradeManager.UpgradeType nextUpgrade = getNextCannonUpgrade(upgrade);
         List<String> lore = new ArrayList<>();
 
-        lore.add("§7当前: §e" + upgrade.getCurrentCannonName());
+        lore.add("<gray>当前: <yellow>" + upgrade.getCurrentCannonName());
 
         if (nextUpgrade != null) {
-            lore.add("§7下一级: §a" + upgradeManager.getDescription(nextUpgrade));
+            lore.add("<gray>下一级: <green>" + upgradeManager.getDescription(nextUpgrade));
             lore.add("");
 
             Map<Material, Integer> price = upgradeManager.getPrice(nextUpgrade);
             if (price != null && !price.isEmpty()) {
-                lore.add("§6价格:");
+                lore.add("<gold>价格:");
                 for (Map.Entry<Material, Integer> entry : price.entrySet()) {
                     String materialName = getMaterialName(entry.getKey());
-                    lore.add("§7- " + materialName + " x" + entry.getValue());
+                    lore.add("<gray>- " + materialName + " x" + entry.getValue());
                 }
                 lore.add("");
             }
@@ -463,41 +465,41 @@ public class UpgradeGUI implements Listener {
             // 功能描述
             switch (nextUpgrade) {
                 case PRIMARY_CANNON:
-                    lore.add("§6功能: §7初级核心火炮");
-                    lore.add("§7发射一枚火球");
-                    lore.add("§7冷却: 6s 蓄力: 1.5s");
+                    lore.add("<gold>功能: <gray>初级核心火炮");
+                    lore.add("<gray>发射一枚火球");
+                    lore.add("<gray>冷却: 6s 蓄力: 1.5s");
                     break;
                 case ADVANCED_CANNON:
-                    lore.add("§6功能: §7进阶核心火炮");
-                    lore.add("§7威力翻倍火球");
-                    lore.add("§7冷却: 12s 蓄力: 1.5s");
+                    lore.add("<gold>功能: <gray>进阶核心火炮");
+                    lore.add("<gray>威力翻倍火球");
+                    lore.add("<gray>冷却: 12s 蓄力: 1.5s");
                     break;
                 case HIGH_CANNON:
-                    lore.add("§6功能: §7高阶核心火炮");
-                    lore.add("§7连射3枚威力翻倍火球");
-                    lore.add("§7冷却: 16s 蓄力: 2.2s");
+                    lore.add("<gold>功能: <gray>高阶核心火炮");
+                    lore.add("<gray>连射3枚威力翻倍火球");
+                    lore.add("<gray>冷却: 16s 蓄力: 2.2s");
                     break;
             }
             lore.add("");
-            lore.add("§e点击" + (currentLevel == -1 ? "购买" : "升级"));
+            lore.add("<yellow>点击" + (currentLevel == -1 ? "购买" : "升级"));
 
             ItemStack item = new ItemStack(Material.DISPENSER); // 火炮用发射器
             ItemMeta meta = item.getItemMeta();
-            meta.setDisplayName("§6核心火炮");
-            meta.setLore(lore);
+            meta.displayName(Text.mm("<gold>核心火炮"));
+            meta.lore(lore.stream().map(Text::mm).collect(Collectors.toList()));
             item.setItemMeta(meta);
             return item;
         } else {
-            lore.add("§a✔ 已满级");
+            lore.add("<green>✔ 已满级");
             lore.add("");
-            lore.add("§6功能: §7高阶核心火炮");
-            lore.add("§7连射3枚威力翻倍火球");
-            lore.add("§7冷却: 16s 蓄力: 2.2s");
+            lore.add("<gold>功能: <gray>高阶核心火炮");
+            lore.add("<gray>连射3枚威力翻倍火球");
+            lore.add("<gray>冷却: 16s 蓄力: 2.2s");
 
             ItemStack item = new ItemStack(Material.DISPENSER);
             ItemMeta meta = item.getItemMeta();
-            meta.setDisplayName("§6核心火炮");
-            meta.setLore(lore);
+            meta.displayName(Text.mm("<gold>核心火炮"));
+            meta.lore(lore.stream().map(Text::mm).collect(Collectors.toList()));
             item.setItemMeta(meta);
             return item;
         }
@@ -510,48 +512,48 @@ public class UpgradeGUI implements Listener {
         List<String> lore = new ArrayList<>();
 
         String currentName = currentLevel == 0 ? "无" : (currentLevel == 1 ? "硬质盾" : "合金盾");
-        lore.add("§7当前: §e" + currentName);
+        lore.add("<gray>当前: <yellow>" + currentName);
 
         if (nextUpgrade != null) {
-            lore.add("§7下一级: §a" + upgradeManager.getDescription(nextUpgrade));
+            lore.add("<gray>下一级: <green>" + upgradeManager.getDescription(nextUpgrade));
             lore.add("");
 
             Map<Material, Integer> price = upgradeManager.getPrice(nextUpgrade);
             if (price != null && !price.isEmpty()) {
-                lore.add("§6价格:");
+                lore.add("<gold>价格:");
                 for (Map.Entry<Material, Integer> entry : price.entrySet()) {
                     String materialName = getMaterialName(entry.getKey());
-                    lore.add("§7- " + materialName + " x" + entry.getValue());
+                    lore.add("<gray>- " + materialName + " x" + entry.getValue());
                 }
                 lore.add("");
             }
 
             if (nextUpgrade == UpgradeManager.UpgradeType.HARD_SHIELD) {
-                lore.add("§6功能: §7硬质盾");
-                lore.add("§7+2护甲值, +2盔甲韧性");
+                lore.add("<gold>功能: <gray>硬质盾");
+                lore.add("<gray>+2护甲值, +2盔甲韧性");
             } else if (nextUpgrade == UpgradeManager.UpgradeType.ALLOY_SHIELD) {
-                lore.add("§6功能: §7合金盾");
-                lore.add("§7+3护甲值, +4盔甲韧性");
+                lore.add("<gold>功能: <gray>合金盾");
+                lore.add("<gray>+3护甲值, +4盔甲韧性");
             }
             lore.add("");
-            lore.add("§e点击" + (currentLevel == 0 ? "购买" : "升级"));
+            lore.add("<yellow>点击" + (currentLevel == 0 ? "购买" : "升级"));
 
             ItemStack item = new ItemStack(Material.SHIELD);
             ItemMeta meta = item.getItemMeta();
-            meta.setDisplayName("§6盾牌");
-            meta.setLore(lore);
+            meta.displayName(Text.mm("<gold>盾牌"));
+            meta.lore(lore.stream().map(Text::mm).collect(Collectors.toList()));
             item.setItemMeta(meta);
             return item;
         } else {
-            lore.add("§a✔ 已满级");
+            lore.add("<green>✔ 已满级");
             lore.add("");
-            lore.add("§6功能: §7合金盾");
-            lore.add("§7+3护甲值, +4盔甲韧性");
+            lore.add("<gold>功能: <gray>合金盾");
+            lore.add("<gray>+3护甲值, +4盔甲韧性");
 
             ItemStack item = new ItemStack(Material.SHIELD);
             ItemMeta meta = item.getItemMeta();
-            meta.setDisplayName("§6盾牌");
-            meta.setLore(lore);
+            meta.displayName(Text.mm("<gold>盾牌"));
+            meta.lore(lore.stream().map(Text::mm).collect(Collectors.toList()));
             item.setItemMeta(meta);
             return item;
         }
@@ -565,36 +567,36 @@ public class UpgradeGUI implements Listener {
         List<String> lore = new ArrayList<>();
 
         if (hasItem) {
-            lore.add("§7状态: §a已拥有");
+            lore.add("<gray>状态: <green>已拥有");
             lore.add("");
 
             ItemStack item = new ItemStack(Material.BOW);
             ItemMeta meta = item.getItemMeta();
-            meta.setDisplayName("§6" + name);
-            meta.setLore(lore);
+            meta.displayName(Text.mm("<gold>" + name));
+            meta.lore(lore.stream().map(Text::mm).collect(Collectors.toList()));
             item.setItemMeta(meta);
             return item;
         } else {
-            lore.add("§7状态: §c未拥有");
+            lore.add("<gray>状态: <red>未拥有");
             lore.add("");
 
             Map<Material, Integer> price = upgradeManager.getPrice(UpgradeManager.UpgradeType.BOW);
             if (price != null && !price.isEmpty()) {
-                lore.add("§6价格:");
+                lore.add("<gold>价格:");
                 for (Map.Entry<Material, Integer> entry : price.entrySet()) {
                     String materialName = getMaterialName(entry.getKey());
-                    lore.add("§7- " + materialName + " x" + entry.getValue());
+                    lore.add("<gray>- " + materialName + " x" + entry.getValue());
                 }
                 lore.add("");
             }
 
             lore.add("");
-            lore.add("§e点击购买");
+            lore.add("<yellow>点击购买");
 
             ItemStack item = new ItemStack(Material.BOW);
             ItemMeta meta = item.getItemMeta();
-            meta.setDisplayName("§6" + name);
-            meta.setLore(lore);
+            meta.displayName(Text.mm("<gold>" + name));
+            meta.lore(lore.stream().map(Text::mm).collect(Collectors.toList()));
             item.setItemMeta(meta);
             return item;
         }
@@ -626,39 +628,39 @@ public class UpgradeGUI implements Listener {
         List<String> lore = new ArrayList<>();
 
         if (hasItem) {
-            lore.add("§7状态: §a已拥有");
+            lore.add("<gray>状态: <green>已拥有");
             lore.add("");
 
             // 功能描述
             switch (type) {
                 case HEAVY_CROSSBOW:
-                    lore.add("§6功能: §7重型巨弩");
-                    lore.add("§713点伤害");
-                    lore.add("§7箭不会下坠");
+                    lore.add("<gold>功能: <gray>重型巨弩");
+                    lore.add("<gray>13点伤害");
+                    lore.add("<gray>箭不会下坠");
                     break;
                 case RAPID_CROSSBOW:
-                    lore.add("§6功能: §7连射弩");
-                    lore.add("§7自动装填");
-                    lore.add("§7无论是否在手上");
+                    lore.add("<gold>功能: <gray>连射弩");
+                    lore.add("<gray>自动装填");
+                    lore.add("<gray>无论是否在手上");
                     break;
             }
 
             ItemStack item = new ItemStack(Material.CROSSBOW);
             ItemMeta meta = item.getItemMeta();
-            meta.setDisplayName("§6" + name);
-            meta.setLore(lore);
+            meta.displayName(Text.mm("<gold>" + name));
+            meta.lore(lore.stream().map(Text::mm).collect(Collectors.toList()));
             item.setItemMeta(meta);
             return item;
         } else {
-            lore.add("§7状态: §c未拥有");
+            lore.add("<gray>状态: <red>未拥有");
             lore.add("");
 
             Map<Material, Integer> price = upgradeManager.getPrice(type);
             if (price != null && !price.isEmpty()) {
-                lore.add("§6价格:");
+                lore.add("<gold>价格:");
                 for (Map.Entry<Material, Integer> entry : price.entrySet()) {
                     String materialName = getMaterialName(entry.getKey());
-                    lore.add("§7- " + materialName + " x" + entry.getValue());
+                    lore.add("<gray>- " + materialName + " x" + entry.getValue());
                 }
                 lore.add("");
             }
@@ -666,26 +668,26 @@ public class UpgradeGUI implements Listener {
             // 功能描述
             switch (type) {
                 case CROSSBOW:
-                    lore.add("§6功能: §7弩");
+                    lore.add("<gold>功能: <gray>弩");
                     break;
                 case HEAVY_CROSSBOW:
-                    lore.add("§6功能: §7重型巨弩");
-                    lore.add("§713点伤害");
-                    lore.add("§7箭不会下坠");
+                    lore.add("<gold>功能: <gray>重型巨弩");
+                    lore.add("<gray>13点伤害");
+                    lore.add("<gray>箭不会下坠");
                     break;
                 case RAPID_CROSSBOW:
-                    lore.add("§6功能: §7连射弩");
-                    lore.add("§7自动装填");
-                    lore.add("§7无论是否在手上");
+                    lore.add("<gold>功能: <gray>连射弩");
+                    lore.add("<gray>自动装填");
+                    lore.add("<gray>无论是否在手上");
                     break;
             }
             lore.add("");
-            lore.add("§e点击购买");
+            lore.add("<yellow>点击购买");
 
             ItemStack item = new ItemStack(Material.CROSSBOW);
             ItemMeta meta = item.getItemMeta();
-            meta.setDisplayName("§6" + name);
-            meta.setLore(lore);
+            meta.displayName(Text.mm("<gold>" + name));
+            meta.lore(lore.stream().map(Text::mm).collect(Collectors.toList()));
             item.setItemMeta(meta);
             return item;
         }
@@ -697,36 +699,36 @@ public class UpgradeGUI implements Listener {
         UpgradeManager.UpgradeType nextUpgrade = getNextArmorUpgrade(upgrade);
         List<String> lore = new ArrayList<>();
 
-        lore.add("§7当前: §e" + upgrade.getCurrentArmorName());
+        lore.add("<gray>当前: <yellow>" + upgrade.getCurrentArmorName());
 
         if (nextUpgrade != null) {
-            lore.add("§7下一级: §a" + upgradeManager.getDescription(nextUpgrade));
+            lore.add("<gray>下一级: <green>" + upgradeManager.getDescription(nextUpgrade));
             lore.add("");
 
             Map<Material, Integer> price = upgradeManager.getPrice(nextUpgrade);
             if (price != null && !price.isEmpty()) {
-                lore.add("§6价格:");
+                lore.add("<gold>价格:");
                 for (Map.Entry<Material, Integer> entry : price.entrySet()) {
                     String materialName = getMaterialName(entry.getKey());
-                    lore.add("§7- " + materialName + " x" + entry.getValue());
+                    lore.add("<gray>- " + materialName + " x" + entry.getValue());
                 }
                 lore.add("");
             }
 
-            lore.add("§e点击升级");
+            lore.add("<yellow>点击升级");
 
             ItemStack item = new ItemStack(upgradeManager.getIcon(nextUpgrade));
             ItemMeta meta = item.getItemMeta();
-            meta.setDisplayName("§6护甲升级");
-            meta.setLore(lore);
+            meta.displayName(Text.mm("<gold>护甲升级"));
+            meta.lore(lore.stream().map(Text::mm).collect(Collectors.toList()));
             item.setItemMeta(meta);
             return item;
         } else {
-            lore.add("§a✔ 已满级");
+            lore.add("<green>✔ 已满级");
             ItemStack item = new ItemStack(Material.NETHERITE_CHESTPLATE);
             ItemMeta meta = item.getItemMeta();
-            meta.setDisplayName("§6护甲升级");
-            meta.setLore(lore);
+            meta.displayName(Text.mm("<gold>护甲升级"));
+            meta.lore(lore.stream().map(Text::mm).collect(Collectors.toList()));
             item.setItemMeta(meta);
             return item;
         }
@@ -751,53 +753,53 @@ public class UpgradeGUI implements Listener {
         List<String> lore = new ArrayList<>();
 
         if (hasEnchant) {
-            lore.add("§7状态: §a已拥有");
+            lore.add("<gray>状态: <green>已拥有");
             lore.add("");
 
             if (type == UpgradeManager.UpgradeType.CHEST_ENCHANT_SPECIAL) {
-                lore.add("§6功能: §7弹射物保护III");
-                lore.add("§7爆炸保护III");
-                lore.add("§c与保护IV附魔不兼容");
+                lore.add("<gold>功能: <gray>弹射物保护III");
+                lore.add("<gray>爆炸保护III");
+                lore.add("<red>与保护IV附魔不兼容");
             } else {
-                lore.add("§6功能: §7保护IV");
-                lore.add("§c与其他保护附魔不兼容");
+                lore.add("<gold>功能: <gray>保护IV");
+                lore.add("<red>与其他保护附魔不兼容");
             }
 
             ItemStack item = new ItemStack(Material.ENCHANTED_BOOK);
             ItemMeta meta = item.getItemMeta();
-            meta.setDisplayName("§6" + name);
-            meta.setLore(lore);
+            meta.displayName(Text.mm("<gold>" + name));
+            meta.lore(lore.stream().map(Text::mm).collect(Collectors.toList()));
             item.setItemMeta(meta);
             return item;
         } else {
-            lore.add("§7状态: §c未拥有");
+            lore.add("<gray>状态: <red>未拥有");
             lore.add("");
 
             Map<Material, Integer> price = upgradeManager.getPrice(type);
             if (price != null && !price.isEmpty()) {
-                lore.add("§6价格:");
+                lore.add("<gold>价格:");
                 for (Map.Entry<Material, Integer> entry : price.entrySet()) {
                     String materialName = getMaterialName(entry.getKey());
-                    lore.add("§7- " + materialName + " x" + entry.getValue());
+                    lore.add("<gray>- " + materialName + " x" + entry.getValue());
                 }
                 lore.add("");
             }
 
             if (type == UpgradeManager.UpgradeType.CHEST_ENCHANT_SPECIAL) {
-                lore.add("§6功能: §7弹射物保护III");
-                lore.add("§7爆炸保护III");
-                lore.add("§c与保护IV附魔不兼容");
+                lore.add("<gold>功能: <gray>弹射物保护III");
+                lore.add("<gray>爆炸保护III");
+                lore.add("<red>与保护IV附魔不兼容");
             } else {
-                lore.add("§6功能: §7保护IV");
-                lore.add("§c与其他保护附魔不兼容");
+                lore.add("<gold>功能: <gray>保护IV");
+                lore.add("<red>与其他保护附魔不兼容");
             }
             lore.add("");
-            lore.add("§e点击购买");
+            lore.add("<yellow>点击购买");
 
             ItemStack item = new ItemStack(Material.ENCHANTED_BOOK);
             ItemMeta meta = item.getItemMeta();
-            meta.setDisplayName("§6" + name);
-            meta.setLore(lore);
+            meta.displayName(Text.mm("<gold>" + name));
+            meta.lore(lore.stream().map(Text::mm).collect(Collectors.toList()));
             item.setItemMeta(meta);
             return item;
         }
@@ -808,42 +810,42 @@ public class UpgradeGUI implements Listener {
         List<String> lore = new ArrayList<>();
 
         if (upgrade.hasTeleportHook()) {
-            lore.add("§7状态: §a已拥有");
+            lore.add("<gray>状态: <green>已拥有");
             lore.add("");
-            lore.add("§6功能: §7传送钩");
-            lore.add("§7放竿记录位置");
-            lore.add("§7再次使用传送到鱼钩位置");
+            lore.add("<gold>功能: <gray>传送钩");
+            lore.add("<gray>放竿记录位置");
+            lore.add("<gray>再次使用传送到鱼钩位置");
 
             ItemStack item = new ItemStack(Material.FISHING_ROD);
             ItemMeta meta = item.getItemMeta();
-            meta.setDisplayName("§6传送钩");
-            meta.setLore(lore);
+            meta.displayName(Text.mm("<gold>传送钩"));
+            meta.lore(lore.stream().map(Text::mm).collect(Collectors.toList()));
             item.setItemMeta(meta);
             return item;
         } else {
-            lore.add("§7状态: §c未拥有");
+            lore.add("<gray>状态: <red>未拥有");
             lore.add("");
 
             Map<Material, Integer> price = upgradeManager.getPrice(UpgradeManager.UpgradeType.TELEPORT_HOOK);
             if (price != null && !price.isEmpty()) {
-                lore.add("§6价格:");
+                lore.add("<gold>价格:");
                 for (Map.Entry<Material, Integer> entry : price.entrySet()) {
                     String materialName = getMaterialName(entry.getKey());
-                    lore.add("§7- " + materialName + " x" + entry.getValue());
+                    lore.add("<gray>- " + materialName + " x" + entry.getValue());
                 }
                 lore.add("");
             }
 
-            lore.add("§6功能: §7传送钩");
-            lore.add("§7放竿记录位置");
-            lore.add("§7再次使用传送到鱼钩位置");
+            lore.add("<gold>功能: <gray>传送钩");
+            lore.add("<gray>放竿记录位置");
+            lore.add("<gray>再次使用传送到鱼钩位置");
             lore.add("");
-            lore.add("§e点击购买");
+            lore.add("<yellow>点击购买");
 
             ItemStack item = new ItemStack(Material.FISHING_ROD);
             ItemMeta meta = item.getItemMeta();
-            meta.setDisplayName("§6传送钩");
-            meta.setLore(lore);
+            meta.displayName(Text.mm("<gold>传送钩"));
+            meta.lore(lore.stream().map(Text::mm).collect(Collectors.toList()));
             item.setItemMeta(meta);
             return item;
         }
@@ -855,36 +857,36 @@ public class UpgradeGUI implements Listener {
         UpgradeManager.UpgradeType nextUpgrade = getNextSoulArmorUpgrade(upgrade);
         List<String> lore = new ArrayList<>();
 
-        lore.add("§7当前等级: §e" + currentLevel);
+        lore.add("<gray>当前等级: <yellow>" + currentLevel);
 
         if (nextUpgrade != null) {
-            lore.add("§7下一等级: §a" + (currentLevel + 1));
+            lore.add("<gray>下一等级: <green>" + (currentLevel + 1));
             lore.add("");
 
             Map<Material, Integer> price = upgradeManager.getPrice(nextUpgrade);
             if (price != null && !price.isEmpty()) {
-                lore.add("§6价格:");
+                lore.add("<gold>价格:");
                 for (Map.Entry<Material, Integer> entry : price.entrySet()) {
                     String materialName = getMaterialName(entry.getKey());
-                    lore.add("§7- " + materialName + " x" + entry.getValue());
+                    lore.add("<gray>- " + materialName + " x" + entry.getValue());
                 }
                 lore.add("");
             }
 
-            lore.add("§e点击升级");
+            lore.add("<yellow>点击升级");
 
             ItemStack item = new ItemStack(Material.WHITE_HARNESS);
             ItemMeta meta = item.getItemMeta();
-            meta.setDisplayName("§e乐魂护甲提升");
-            meta.setLore(lore);
+            meta.displayName(Text.mm("<yellow>乐魂护甲提升"));
+            meta.lore(lore.stream().map(Text::mm).collect(Collectors.toList()));
             item.setItemMeta(meta);
             return item;
         } else {
-            lore.add("§a✔ 已满级");
+            lore.add("<green>✔ 已满级");
             ItemStack item = new ItemStack(Material.WHITE_HARNESS);
             ItemMeta meta = item.getItemMeta();
-            meta.setDisplayName("§e乐魂护甲提升");
-            meta.setLore(lore);
+            meta.displayName(Text.mm("<yellow>乐魂护甲提升"));
+            meta.lore(lore.stream().map(Text::mm).collect(Collectors.toList()));
             item.setItemMeta(meta);
             return item;
         }
@@ -895,36 +897,36 @@ public class UpgradeGUI implements Listener {
         int currentLevel = upgrade.getSoulHealthLevel();
         List<String> lore = new ArrayList<>();
 
-        lore.add("§7当前等级: §e" + currentLevel);
+        lore.add("<gray>当前等级: <yellow>" + currentLevel);
 
         if (currentLevel == 0) {
-            lore.add("§7下一等级: §a1");
+            lore.add("<gray>下一等级: <green>1");
             lore.add("");
 
             Map<Material, Integer> price = upgradeManager.getPrice(UpgradeManager.UpgradeType.SOUL_HEALTH_UPGRADE_1);
             if (price != null && !price.isEmpty()) {
-                lore.add("§6价格:");
+                lore.add("<gold>价格:");
                 for (Map.Entry<Material, Integer> entry : price.entrySet()) {
                     String materialName = getMaterialName(entry.getKey());
-                    lore.add("§7- " + materialName + " x" + entry.getValue());
+                    lore.add("<gray>- " + materialName + " x" + entry.getValue());
                 }
                 lore.add("");
             }
 
-            lore.add("§e点击升级");
+            lore.add("<yellow>点击升级");
 
             ItemStack item = new ItemStack(Material.SNOW_BLOCK); // 雪块
             ItemMeta meta = item.getItemMeta();
-            meta.setDisplayName("§e乐魂血量提升");
-            meta.setLore(lore);
+            meta.displayName(Text.mm("<yellow>乐魂血量提升"));
+            meta.lore(lore.stream().map(Text::mm).collect(Collectors.toList()));
             item.setItemMeta(meta);
             return item;
         } else {
-            lore.add("§a✔ 已满级");
+            lore.add("<green>✔ 已满级");
             ItemStack item = new ItemStack(Material.SNOW_BLOCK);
             ItemMeta meta = item.getItemMeta();
-            meta.setDisplayName("§e乐魂血量提升");
-            meta.setLore(lore);
+            meta.displayName(Text.mm("<yellow>乐魂血量提升"));
+            meta.lore(lore.stream().map(Text::mm).collect(Collectors.toList()));
             item.setItemMeta(meta);
             return item;
         }
@@ -1029,7 +1031,7 @@ public class UpgradeGUI implements Listener {
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
         if (!(event.getWhoClicked() instanceof Player)) return;
-        if (!event.getView().getTitle().equals(language.getContent("upgrade.gui-title"))) return;
+        if (!event.getView().getTitle().equals(Text.legacy(language.getContent("upgrade.gui-title")))) return;
         if (event.getClickedInventory() == null) return;
         if (event.getClickedInventory().getType() == InventoryType.PLAYER) return;
 
@@ -1051,6 +1053,7 @@ public class UpgradeGUI implements Listener {
         if (cooldownPlayers.contains(player.getUniqueId())) {
             return;
         }
+        cooldownPlayers.add(player.getUniqueId());
 
         Team team = playerMap.get(player);
 
@@ -1088,16 +1091,11 @@ public class UpgradeGUI implements Listener {
 
         }
 
-        player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING,1,1);
+        SoundUtil.play(player, "upgrade-click", Sound.BLOCK_NOTE_BLOCK_PLING, 1, 1);
         // 延迟一小段时间后移除冷却（500毫秒）
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
             cooldownPlayers.remove(player.getUniqueId());
         }, 5L); // 0.5秒后移除
-
-        // 异步处理购买，避免阻塞主线程
-        Bukkit.getScheduler().runTaskLater(plugin, () -> {
-
-        }, 1L);
     }
 
     private void handleTeamChest(Player player){
@@ -1112,7 +1110,7 @@ public class UpgradeGUI implements Listener {
 
     private void handleArrowMaker(Player player){
         if (!player.getInventory().contains(Material.OAK_LOG)){
-            player.sendMessage(ChatColor.RED+"资源不足！");
+            Text.send(player, "<red>资源不足！");
             return;
         }
         int slot = player.getInventory().first(Material.OAK_LOG);
@@ -1129,13 +1127,13 @@ public class UpgradeGUI implements Listener {
     private void handleSwordUpgrade(Player player, PlayerUpgrade upgrade, Team team) {
         // 检查是否已经满级
         if (upgrade.getSwordLevel() >= 3) {
-            player.sendMessage("§c剑已经达到最高等级了！");
+            Text.send(player, "<red>剑已经达到最高等级了！");
             return;
         }
 
         UpgradeManager.UpgradeType nextUpgrade = getNextSwordUpgrade(upgrade);
         if (nextUpgrade == null) {
-            player.sendMessage("§c无法升级！");
+            Text.send(player, "<red>无法升级！");
             return;
         }
 
@@ -1146,7 +1144,7 @@ public class UpgradeGUI implements Listener {
 
         // 执行升级
         if (upgrade.upgradeSword()) {
-            player.sendMessage("§a剑升级成功！");
+            Text.send(player, "<green>剑升级成功！");
             // 给予新的剑，替换旧的
             giveSwordToPlayer(player, upgrade.getSwordLevel());
             upgradeManager.savePlayerUpgrade(player, upgrade);
@@ -1174,13 +1172,13 @@ public class UpgradeGUI implements Listener {
 
     private void handlePickaxeUpgrade(Player player, PlayerUpgrade upgrade, Team team) {
         if (upgrade.getPickaxeLevel() >= 3) {
-            player.sendMessage("§c镐已经达到最高等级了！");
+            Text.send(player, "<red>镐已经达到最高等级了！");
             return;
         }
 
         UpgradeManager.UpgradeType nextUpgrade = getNextPickaxeUpgrade(upgrade);
         if (nextUpgrade == null) {
-            player.sendMessage("§c无法升级！");
+            Text.send(player, "<red>无法升级！");
             return;
         }
 
@@ -1189,7 +1187,7 @@ public class UpgradeGUI implements Listener {
         }
 
         if (upgrade.upgradePickaxe()) {
-            player.sendMessage("§a镐升级成功！");
+            Text.send(player, "<green>镐升级成功！");
             givePickaxeToPlayer(player, upgrade.getPickaxeLevel());
             upgradeManager.savePlayerUpgrade(player, upgrade);
         }
@@ -1201,13 +1199,13 @@ public class UpgradeGUI implements Listener {
 
     private void handleAxeUpgrade(Player player, PlayerUpgrade upgrade, Team team) {
         if (upgrade.getAxeLevel() >= 3) {
-            player.sendMessage("§c斧已经达到最高等级了！");
+            Text.send(player, "<red>斧已经达到最高等级了！");
             return;
         }
 
         UpgradeManager.UpgradeType nextUpgrade = getNextAxeUpgrade(upgrade);
         if (nextUpgrade == null) {
-            player.sendMessage("§c无法升级！");
+            Text.send(player, "<red>无法升级！");
             return;
         }
 
@@ -1216,7 +1214,7 @@ public class UpgradeGUI implements Listener {
         }
 
         if (upgrade.upgradeAxe()) {
-            player.sendMessage("§a斧升级成功！");
+            Text.send(player, "<green>斧升级成功！");
             giveAxeToPlayer(player, upgrade.getAxeLevel());
             upgradeManager.savePlayerUpgrade(player, upgrade);
         }
@@ -1228,13 +1226,13 @@ public class UpgradeGUI implements Listener {
 
     private void handleShovelUpgrade(Player player, PlayerUpgrade upgrade, Team team) {
         if (upgrade.getShovelLevel() >= 4) {
-            player.sendMessage("§c锹已经达到最高等级了！");
+            Text.send(player, "<red>锹已经达到最高等级了！");
             return;
         }
 
         UpgradeManager.UpgradeType nextUpgrade = getNextShovelUpgrade(upgrade);
         if (nextUpgrade == null) {
-            player.sendMessage("§c无法升级！");
+            Text.send(player, "<red>无法升级！");
             return;
         }
 
@@ -1243,7 +1241,7 @@ public class UpgradeGUI implements Listener {
         }
 
         if (upgrade.upgradeShovel()) {
-            player.sendMessage("§a锹升级成功！");
+            Text.send(player, "<green>锹升级成功！");
             giveShovelToPlayer(player, upgrade.getShovelLevel());
             upgradeManager.savePlayerUpgrade(player, upgrade);
         }
@@ -1255,13 +1253,13 @@ public class UpgradeGUI implements Listener {
 
     private void handleCatapultUpgrade(Player player, PlayerUpgrade upgrade, Team team) {
         if (upgrade.getCatapultLevel() >= 3) {
-            player.sendMessage("§c弹射器已经达到最高等级了！");
+            Text.send(player, "<red>弹射器已经达到最高等级了！");
             return;
         }
 
         UpgradeManager.UpgradeType nextUpgrade = getNextCatapultUpgrade(upgrade);
         if (nextUpgrade == null) {
-            player.sendMessage("§c无法升级！");
+            Text.send(player, "<red>无法升级！");
             return;
         }
 
@@ -1270,7 +1268,7 @@ public class UpgradeGUI implements Listener {
         }
 
         if (upgrade.upgradeCatapult()) {
-            player.sendMessage("§a弹射器升级成功！");
+            Text.send(player, "<green>弹射器升级成功！");
             giveCatapultToPlayer(player, upgrade.getCatapultLevel());
             upgradeManager.savePlayerUpgrade(player, upgrade);
         }
@@ -1282,13 +1280,13 @@ public class UpgradeGUI implements Listener {
 
     private void handleCannonUpgrade(Player player, PlayerUpgrade upgrade, Team team) {
         if (upgrade.getCannonLevel() >= 2) {
-            player.sendMessage("§c火炮已经达到最高等级了！");
+            Text.send(player, "<red>火炮已经达到最高等级了！");
             return;
         }
 
         UpgradeManager.UpgradeType nextUpgrade = getNextCannonUpgrade(upgrade);
         if (nextUpgrade == null) {
-            player.sendMessage("§c无法升级！");
+            Text.send(player, "<red>无法升级！");
             return;
         }
 
@@ -1297,7 +1295,7 @@ public class UpgradeGUI implements Listener {
         }
 
         if (upgrade.upgradeCannon()) {
-            player.sendMessage("§a" + (upgrade.getCannonLevel() == 0 ? "购买" : "升级") + "火炮成功！");
+            Text.send(player, "<green>" + (upgrade.getCannonLevel() == 0 ? "购买" : "升级") + "火炮成功！");
             giveCannonToPlayer(player, upgrade.getCannonLevel());
             upgradeManager.savePlayerUpgrade(player, upgrade);
         }
@@ -1309,13 +1307,13 @@ public class UpgradeGUI implements Listener {
 
     private void handleShieldUpgrade(Player player, PlayerUpgrade upgrade, Team team) {
         if (upgrade.getShieldLevel() >= 2) {
-            player.sendMessage("§c盾牌已经达到最高等级了！");
+            Text.send(player, "<red>盾牌已经达到最高等级了！");
             return;
         }
 
         UpgradeManager.UpgradeType nextUpgrade = getNextShieldUpgrade(upgrade);
         if (nextUpgrade == null) {
-            player.sendMessage("§c无法升级！");
+            Text.send(player, "<red>无法升级！");
             return;
         }
 
@@ -1324,7 +1322,7 @@ public class UpgradeGUI implements Listener {
         }
 
         if (upgrade.upgradeShield()) {
-            player.sendMessage("§a" + (upgrade.getShieldLevel() == 1 ? "购买" : "升级") + "盾牌成功！");
+            Text.send(player, "<green>" + (upgrade.getShieldLevel() == 1 ? "购买" : "升级") + "盾牌成功！");
             giveShieldToPlayer(player, upgrade.getShieldLevel());
             upgradeManager.savePlayerUpgrade(player, upgrade);
         }
@@ -1343,7 +1341,7 @@ public class UpgradeGUI implements Listener {
         }
 
         if (hasItem) {
-            player.sendMessage("§c您已经拥有这个物品了！");
+            Text.send(player, "<red>您已经拥有这个物品了！");
             return;
         }
 
@@ -1354,21 +1352,21 @@ public class UpgradeGUI implements Listener {
         switch (type) {
             case CROSSBOW:
                 if (upgrade.buyCrossbow()) {
-                    player.sendMessage("§a购买弩成功！");
+                    Text.send(player, "<green>购买弩成功！");
                     giveCrossbowToPlayer(player, type);
                     upgradeManager.savePlayerUpgrade(player, upgrade);
                 }
                 break;
             case HEAVY_CROSSBOW:
                 if (upgrade.buyHeavyCrossbow()) {
-                    player.sendMessage("§a购买重型巨弩成功！");
+                    Text.send(player, "<green>购买重型巨弩成功！");
                     giveCrossbowToPlayer(player, type);
                     upgradeManager.savePlayerUpgrade(player, upgrade);
                 }
                 break;
             case RAPID_CROSSBOW:
                 if (upgrade.buyRapidCrossbow()) {
-                    player.sendMessage("§a购买连射弩成功！");
+                    Text.send(player, "<green>购买连射弩成功！");
                     giveCrossbowToPlayer(player, type);
                     upgradeManager.savePlayerUpgrade(player, upgrade);
                 }
@@ -1382,13 +1380,13 @@ public class UpgradeGUI implements Listener {
 
     private void handleArmorUpgrade(Player player, PlayerUpgrade upgrade, Team team) {
         if (upgrade.getArmorLevel() >= 3) {
-            player.sendMessage("§c护甲已经达到最高等级了！");
+            Text.send(player, "<red>护甲已经达到最高等级了！");
             return;
         }
 
         UpgradeManager.UpgradeType nextUpgrade = getNextArmorUpgrade(upgrade);
         if (nextUpgrade == null) {
-            player.sendMessage("§c无法升级！");
+            Text.send(player, "<red>无法升级！");
             return;
         }
 
@@ -1397,7 +1395,7 @@ public class UpgradeGUI implements Listener {
         }
 
         if (upgrade.upgradeArmor()) {
-            player.sendMessage("§a护甲升级成功！");
+            Text.send(player, "<green>护甲升级成功！");
             applyArmorUpgrade(player, upgrade.getArmorLevel());
             upgradeManager.savePlayerUpgrade(player, upgrade);
         }
@@ -1415,17 +1413,23 @@ public class UpgradeGUI implements Listener {
         }
 
         if (hasEnchant) {
-            player.sendMessage("§c您已经拥有这个附魔了！");
+            Text.send(player, "<red>您已经拥有这个附魔了！");
             return;
         }
 
         // 检查不兼容性
         if (type == UpgradeManager.UpgradeType.CHEST_ENCHANT_SPECIAL && upgrade.hasChestEnchantSpecialized()) {
-            player.sendMessage("§c胸甲强化附魔与保护IV不兼容！");
+            Text.send(player, "<red>胸甲强化附魔与保护IV不兼容！");
             return;
         }
         if (type == UpgradeManager.UpgradeType.CHEST_ENCHANT_SPECIALIZED && upgrade.hasChestEnchantSpecial()) {
-            player.sendMessage("§c保护IV与其他保护附魔不兼容！");
+            Text.send(player, "<red>保护IV与其他保护附魔不兼容！");
+            return;
+        }
+
+        // 先确认玩家拥有胸甲，避免扣了材料却无处附魔
+        if (!hasChestplate(player)) {
+            Text.send(player, "<red>您没有胸甲可以附魔！请先购买护甲升级");
             return;
         }
 
@@ -1436,14 +1440,14 @@ public class UpgradeGUI implements Listener {
         switch (type) {
             case CHEST_ENCHANT_SPECIAL:
                 if (upgrade.buyChestEnchantSpecial()) {
-                    player.sendMessage("§a购买胸甲强化附魔成功！");
+                    Text.send(player, "<green>购买胸甲强化附魔成功！");
                     applyChestEnchant(player, type);
                     upgradeManager.savePlayerUpgrade(player, upgrade);
                 }
                 break;
             case CHEST_ENCHANT_SPECIALIZED:
                 if (upgrade.buyChestEnchantSpecialized()) {
-                    player.sendMessage("§a购买胸甲附魔特化成功！");
+                    Text.send(player, "<green>购买胸甲附魔特化成功！");
                     applyChestEnchant(player, type);
                     upgradeManager.savePlayerUpgrade(player, upgrade);
                 }
@@ -1457,7 +1461,7 @@ public class UpgradeGUI implements Listener {
 
     private void handleTeleportHookPurchase(Player player, PlayerUpgrade upgrade, Team team) {
         if (upgrade.hasTeleportHook()) {
-            player.sendMessage("§c您已经拥有传送钩了！");
+            Text.send(player, "<red>您已经拥有传送钩了！");
             return;
         }
 
@@ -1466,7 +1470,7 @@ public class UpgradeGUI implements Listener {
         }
 
         if (upgrade.buyTeleportHook()) {
-            player.sendMessage("§a购买传送钩成功！");
+            Text.send(player, "<green>购买传送钩成功！");
             giveTeleportHookToPlayer(player);
             upgradeManager.savePlayerUpgrade(player, upgrade);
         }
@@ -1478,7 +1482,7 @@ public class UpgradeGUI implements Listener {
 
     private void handleBowPurchase(Player player, PlayerUpgrade upgrade, Team team) {
         if (upgrade.hasBow()) {
-            player.sendMessage("§c您已经拥有弓了！");
+            Text.send(player, "<red>您已经拥有弓了！");
             return;
         }
 
@@ -1487,7 +1491,7 @@ public class UpgradeGUI implements Listener {
         }
 
         if (upgrade.buyBow()) {
-            player.sendMessage("§a购买弓成功！");
+            Text.send(player, "<green>购买弓成功！");
             giveBowToPlayer(player);
             upgradeManager.savePlayerUpgrade(player, upgrade);
         }
@@ -1500,23 +1504,28 @@ public class UpgradeGUI implements Listener {
     private void handleSoulArmorUpgrade(Player player, PlayerUpgrade upgrade, Team team) {
         if (team == null) return;
         if (upgrade.getSoulArmorLevel() >= 3) {
-            player.sendMessage("§c乐魂护甲已经达到最高等级了！");
+            Text.send(player, "<red>乐魂护甲已经达到最高等级了！");
             return;
         }
 
         UpgradeManager.UpgradeType nextUpgrade = getNextSoulArmorUpgrade(upgrade);
         if (nextUpgrade == null) {
-            player.sendMessage("§c无法升级！");
+            Text.send(player, "<red>无法升级！");
             return;
         }
 
         if (!upgradeManager.purchaseUpgrade(player, nextUpgrade)) {
             return;
         }
+        arena.getStatistics().recordUpgradePerformed(player);
 
         if (upgrade.upgradeSoulArmor()) {
-            player.sendMessage("§a乐魂护甲升级成功！");
-            // 这里调用你自己的乐魂护甲提升逻辑
+            Text.send(player, "<green>乐魂护甲升级成功！");
+            // 实装乐魂护甲：提升本队所有乐魂的真实护甲等级（Protection 中按 5%/级 减伤）
+            int newLevel = upgrade.getSoulArmorLevel();
+            for (GameGhast ghast : team.getGhasts()){
+                ghast.setArmorLevel(newLevel);
+            }
             upgradeManager.savePlayerUpgrade(player, upgrade);
         }
 
@@ -1528,22 +1537,22 @@ public class UpgradeGUI implements Listener {
     private void handleSoulHealthUpgrade(Player player, PlayerUpgrade upgrade, Team team) {
         if (team == null) return;
         if (upgrade.getSoulHealthLevel() > 0) {
-            player.sendMessage("§c乐魂血量已经达到最高等级了！");
+            Text.send(player, "<red>乐魂血量已经达到最高等级了！");
             return;
         }
 
         if (!upgradeManager.purchaseUpgrade(player, UpgradeManager.UpgradeType.SOUL_HEALTH_UPGRADE_1)) {
             return;
         }
+        arena.getStatistics().recordUpgradePerformed(player);
 
         if (upgrade.upgradeSoulHealth()) {
-            player.sendMessage("§a乐魂血量升级成功！");
+            Text.send(player, "<green>乐魂血量升级成功！");
             for (GameGhast ghast : team.getGhasts()){
                 ghast.addMaxHealth(20);
+                ghast.addHealth(20);
             }
-            for (Player player1 : team.getPlayers()){
-                upgradeManager.savePlayerUpgrade(player1, upgrade);
-            }
+            upgradeManager.savePlayerUpgrade(player, upgrade);
         }
 
         Bukkit.getScheduler().runTask(plugin, () -> {
@@ -1569,13 +1578,13 @@ public class UpgradeGUI implements Listener {
             case 1: // 铁剑
                 sword = new ItemStack(Material.IRON_SWORD);
                 meta = sword.getItemMeta();
-                meta.setDisplayName("§7铁剑");
+                meta.displayName(Text.mm("<gray>铁剑"));
                 sword.setItemMeta(meta);
                 break;
             case 2: // 铁剑(风暴I)
                 sword = new ItemStack(Material.IRON_SWORD);
                 meta = sword.getItemMeta();
-                meta.setDisplayName("§7铁剑(风暴I)");
+                meta.displayName(Text.mm("<gray>铁剑(风暴I)"));
                 // 这里添加风暴I附魔逻辑
                 meta.addEnchant(Enchantment.WIND_BURST, 1, true);
                 sword.setItemMeta(meta);
@@ -1583,7 +1592,7 @@ public class UpgradeGUI implements Listener {
             case 3: // 下界合金剑(风暴I)
                 sword = new ItemStack(Material.NETHERITE_SWORD);
                 meta = sword.getItemMeta();
-                meta.setDisplayName("§5下界合金剑(风暴I)");
+                meta.displayName(Text.mm("<dark_purple>下界合金剑(风暴I)"));
                 // 这里添加风暴I附魔逻辑
                 meta.addEnchant(Enchantment.WIND_BURST, 1, true);
                 sword.setItemMeta(meta);
@@ -1625,20 +1634,20 @@ public class UpgradeGUI implements Listener {
             case 1: // 铁镐
                 pickaxe = new ItemStack(Material.IRON_PICKAXE);
                 meta = pickaxe.getItemMeta();
-                meta.setDisplayName("§7铁镐");
+                meta.displayName(Text.mm("<gray>铁镐"));
                 pickaxe.setItemMeta(meta);
                 break;
             case 2: // 铁镐(时运III)
                 pickaxe = new ItemStack(Material.IRON_PICKAXE);
                 meta = pickaxe.getItemMeta();
-                meta.setDisplayName("§7铁镐(时运III)");
+                meta.displayName(Text.mm("<gray>铁镐(时运III)"));
                 meta.addEnchant(Enchantment.FORTUNE, 3, true);
                 pickaxe.setItemMeta(meta);
                 break;
             case 3: // 下界合金镐
                 pickaxe = new ItemStack(Material.NETHERITE_PICKAXE);
                 meta = pickaxe.getItemMeta();
-                meta.setDisplayName("§5下界合金镐");
+                meta.displayName(Text.mm("<dark_purple>下界合金镐"));
                 pickaxe.setItemMeta(meta);
                 break;
             default:
@@ -1665,20 +1674,20 @@ public class UpgradeGUI implements Listener {
             case 1: // 铁斧
                 axe = new ItemStack(Material.IRON_AXE);
                 meta = axe.getItemMeta();
-                meta.setDisplayName("§7铁斧");
+                meta.displayName(Text.mm("<gray>铁斧"));
                 axe.setItemMeta(meta);
                 break;
             case 2: // 铁斧(效率III)
                 axe = new ItemStack(Material.IRON_AXE);
                 meta = axe.getItemMeta();
-                meta.setDisplayName("§7铁斧(效率III)");
+                meta.displayName(Text.mm("<gray>铁斧(效率III)"));
                 meta.addEnchant(Enchantment.EFFICIENCY, 3, true);
                 axe.setItemMeta(meta);
                 break;
             case 3: // 下界合金斧(效率VII,锋利I)
                 axe = new ItemStack(Material.NETHERITE_AXE);
                 meta = axe.getItemMeta();
-                meta.setDisplayName("§5下界合金斧(效率VII,锋利I)");
+                meta.displayName(Text.mm("<dark_purple>下界合金斧(效率VII,锋利I)"));
                 meta.addEnchant(Enchantment.EFFICIENCY, 7, true);
                 meta.addEnchant(Enchantment.SHARPNESS, 1, true);
                 axe.setItemMeta(meta);
@@ -1708,26 +1717,26 @@ public class UpgradeGUI implements Listener {
             case 1: // 石锹
                 shovel = new ItemStack(Material.STONE_SHOVEL);
                 meta = shovel.getItemMeta();
-                meta.setDisplayName("§7石锹");
+                meta.displayName(Text.mm("<gray>石锹"));
                 shovel.setItemMeta(meta);
                 break;
             case 2: // 铁锹
                 shovel = new ItemStack(Material.IRON_SHOVEL);
                 meta = shovel.getItemMeta();
-                meta.setDisplayName("§7铁锹");
+                meta.displayName(Text.mm("<gray>铁锹"));
                 shovel.setItemMeta(meta);
                 break;
             case 3: // 铁锹(精准采集)
                 shovel = new ItemStack(Material.IRON_SHOVEL);
                 meta = shovel.getItemMeta();
-                meta.setDisplayName("§7铁锹(精准采集)");
+                meta.displayName(Text.mm("<gray>铁锹(精准采集)"));
                 meta.addEnchant(Enchantment.SILK_TOUCH, 1, true);
                 shovel.setItemMeta(meta);
                 break;
             case 4: // 下界合金锹
                 shovel = new ItemStack(Material.NETHERITE_SHOVEL);
                 meta = shovel.getItemMeta();
-                meta.setDisplayName("§5下界合金锹");
+                meta.displayName(Text.mm("<dark_purple>下界合金锹"));
                 shovel.setItemMeta(meta);
                 break;
             default:
@@ -1745,37 +1754,38 @@ public class UpgradeGUI implements Listener {
 
         switch (level) {
             case 0:
-                meta.setDisplayName("§7初级弹射器");
+                meta.displayName(Text.mm("<gray>初级弹射器"));
+                break;
             case 1: // 进阶弹射器
-                meta.setDisplayName("§7进阶弹射器");
+                meta.displayName(Text.mm("<gray>进阶弹射器"));
                 break;
             case 2: // 高阶弹射器
-                meta.setDisplayName("§7高阶弹射器");
+                meta.displayName(Text.mm("<gray>高阶弹射器"));
                 break;
             case 3: // 风核弹射器
-                meta.setDisplayName("§5风核弹射器");
+                meta.displayName(Text.mm("<dark_purple>风核弹射器"));
                 break;
             default:
                 return;
         }
 
         List<String> lore = new ArrayList<>();
-        lore.add("§6右键给予推力");
+        lore.add("<gold>右键给予推力");
         switch (level) {
             case 1:
-                lore.add("§7使用次数: 3");
-                lore.add("§7恢复用时: 3.5s");
+                lore.add("<gray>使用次数: 3");
+                lore.add("<gray>恢复用时: 3.5s");
                 break;
             case 2:
-                lore.add("§7使用次数: 4");
-                lore.add("§7恢复用时: 3s");
+                lore.add("<gray>使用次数: 4");
+                lore.add("<gray>恢复用时: 3s");
                 break;
             case 3:
-                lore.add("§7使用次数: 5");
-                lore.add("§7恢复用时: 2.5s");
+                lore.add("<gray>使用次数: 5");
+                lore.add("<gray>恢复用时: 2.5s");
                 break;
         }
-        meta.setLore(lore);
+        meta.lore(lore.stream().map(Text::mm).collect(Collectors.toList()));
         catapult.setItemMeta(meta);
 
         player.getInventory().addItem(catapult);
@@ -1789,35 +1799,35 @@ public class UpgradeGUI implements Listener {
 
         switch (level) {
             case 0: // 初级核心火炮
-                meta.setDisplayName("§7初级核心火炮");
+                meta.displayName(Text.mm("<gray>初级核心火炮"));
                 break;
             case 1: // 进阶核心火炮
-                meta.setDisplayName("§7进阶核心火炮");
+                meta.displayName(Text.mm("<gray>进阶核心火炮"));
                 break;
             case 2: // 高阶核心火炮
-                meta.setDisplayName("§7高阶核心火炮");
+                meta.displayName(Text.mm("<gray>高阶核心火炮"));
                 break;
             default:
                 return;
         }
 
         List<String> lore = new ArrayList<>();
-        lore.add("§6右键蓄力发射火球");
+        lore.add("<gold>右键蓄力发射火球");
         switch (level) {
             case 0:
-                lore.add("§7发射一枚火球");
-                lore.add("§7冷却: 6s 蓄力: 1.5s");
+                lore.add("<gray>发射一枚火球");
+                lore.add("<gray>冷却: 6s 蓄力: 1.5s");
                 break;
             case 1:
-                lore.add("§7威力翻倍火球");
-                lore.add("§7冷却: 12s 蓄力: 1.5s");
+                lore.add("<gray>威力翻倍火球");
+                lore.add("<gray>冷却: 12s 蓄力: 1.5s");
                 break;
             case 2:
-                lore.add("§7连射3枚威力翻倍火球");
-                lore.add("§7冷却: 16s 蓄力: 2.2s");
+                lore.add("<gray>连射3枚威力翻倍火球");
+                lore.add("<gray>冷却: 16s 蓄力: 2.2s");
                 break;
         }
-        meta.setLore(lore);
+        meta.lore(lore.stream().map(Text::mm).collect(Collectors.toList()));
         cannon.setItemMeta(meta);
 
         player.getInventory().addItem(cannon);
@@ -1830,15 +1840,15 @@ public class UpgradeGUI implements Listener {
         ItemMeta meta = shield.getItemMeta();
 
         if (level == 1) { // 硬质盾
-            meta.setDisplayName("§7硬质盾");
+            meta.displayName(Text.mm("<gray>硬质盾"));
             List<String> lore = new ArrayList<>();
-            lore.add("§7+2护甲值, +2盔甲韧性");
-            meta.setLore(lore);
+            lore.add("<gray>+2护甲值, +2盔甲韧性");
+            meta.lore(lore.stream().map(Text::mm).collect(Collectors.toList()));
         } else if (level == 2) { // 合金盾
-            meta.setDisplayName("§5合金盾");
+            meta.displayName(Text.mm("<dark_purple>合金盾"));
             List<String> lore = new ArrayList<>();
-            lore.add("§7+3护甲值, +4盔甲韧性");
-            meta.setLore(lore);
+            lore.add("<gray>+3护甲值, +4盔甲韧性");
+            meta.lore(lore.stream().map(Text::mm).collect(Collectors.toList()));
         }
 
         shield.setItemMeta(meta);
@@ -1851,21 +1861,21 @@ public class UpgradeGUI implements Listener {
 
         switch (type) {
             case CROSSBOW:
-                meta.setDisplayName("§7弩");
+                meta.displayName(Text.mm("<gray>弩"));
                 break;
             case HEAVY_CROSSBOW:
-                meta.setDisplayName("§7重型巨弩");
+                meta.displayName(Text.mm("<gray>重型巨弩"));
                 List<String> lore = new ArrayList<>();
-                lore.add("§613点伤害");
-                lore.add("§7箭不会下坠");
-                meta.setLore(lore);
+                lore.add("<gold>13点伤害");
+                lore.add("<gray>箭不会下坠");
+                meta.lore(lore.stream().map(Text::mm).collect(Collectors.toList()));
                 break;
             case RAPID_CROSSBOW:
-                meta.setDisplayName("§7连射弩");
+                meta.displayName(Text.mm("<gray>连射弩"));
                 List<String> lore2 = new ArrayList<>();
-                lore2.add("§7自动装填");
-                lore2.add("§7无论是否在手上");
-                meta.setLore(lore2);
+                lore2.add("<gray>自动装填");
+                lore2.add("<gray>无论是否在手上");
+                meta.lore(lore2.stream().map(Text::mm).collect(Collectors.toList()));
                 break;
             default:
                 return;
@@ -1890,19 +1900,19 @@ public class UpgradeGUI implements Listener {
             case 1: // 铁制胸甲
                 chestplate = new ItemStack(Material.IRON_CHESTPLATE);
                 meta = chestplate.getItemMeta();
-                meta.setDisplayName("§7护甲升级I(铁制)");
+                meta.displayName(Text.mm("<gray>护甲升级I(铁制)"));
                 chestplate.setItemMeta(meta);
                 break;
             case 2: // 钻石胸甲
                 chestplate = new ItemStack(Material.DIAMOND_CHESTPLATE);
                 meta = chestplate.getItemMeta();
-                meta.setDisplayName("§7护甲升级II(钻石)");
+                meta.displayName(Text.mm("<gray>护甲升级II(钻石)"));
                 chestplate.setItemMeta(meta);
                 break;
             case 3: // 下界合金胸甲
                 chestplate = new ItemStack(Material.NETHERITE_CHESTPLATE);
                 meta = chestplate.getItemMeta();
-                meta.setDisplayName("§7护甲升级III(下界合金)");
+                meta.displayName(Text.mm("<gray>护甲升级III(下界合金)"));
                 chestplate.setItemMeta(meta);
                 break;
             default:
@@ -1910,14 +1920,13 @@ public class UpgradeGUI implements Listener {
         }
 
         player.getInventory().setChestplate(chestplate);
-        player.sendMessage("§a护甲已升级到等级 " + level);
+        Text.send(player, "<green>护甲已升级到等级 " + level);
     }
 
     private void applyChestEnchant(Player player, UpgradeManager.UpgradeType type) {
         // 查找玩家的胸甲
         ItemStack chestplate = null;
         boolean isEquipped = false;
-
         // 先检查玩家穿着的胸甲
         ItemStack equippedChestplate = player.getInventory().getChestplate();
         if (equippedChestplate != null && isChestplateType(equippedChestplate.getType())) {
@@ -1935,7 +1944,7 @@ public class UpgradeGUI implements Listener {
 
         if (chestplate == null) {
             // 玩家没有胸甲，给予提示并保存附魔状态
-            player.sendMessage("§c您没有胸甲可以附魔！请先购买胸甲");
+            Text.send(player, "<red>您没有胸甲可以附魔！请先购买胸甲");
             return;
         }
 
@@ -1975,7 +1984,7 @@ public class UpgradeGUI implements Listener {
     private void applySpecialProtection(Player player, ItemMeta meta, ItemStack chestplate) {
         // 移除不兼容的保护IV附魔
         if (meta.hasEnchant(Enchantment.PROTECTION)) {
-            player.sendMessage("§e你已经附魔保护IV了");
+            Text.send(player, "<yellow>你已经附魔保护IV了");
             return;
         }
 
@@ -1986,7 +1995,7 @@ public class UpgradeGUI implements Listener {
         meta.addEnchant(Enchantment.BLAST_PROTECTION, 3, true);
 
 
-        player.sendMessage("§a已应用胸甲强化附魔！");
+        Text.send(player, "<green>已应用胸甲强化附魔！");
     }
 
     // 应用胸甲附魔特化（保护IV）
@@ -1999,7 +2008,7 @@ public class UpgradeGUI implements Listener {
 
         for (Enchantment enchant : protectionEnchants) {
             if (meta.hasEnchant(enchant)) {
-                player.sendMessage("§e你已经附魔弹射物保护III和爆炸保护III了");
+                Text.send(player, "<yellow>你已经附魔弹射物保护III和爆炸保护III了");
                 return;
             }
         }
@@ -2008,19 +2017,19 @@ public class UpgradeGUI implements Listener {
         meta.addEnchant(Enchantment.PROTECTION, 4, true);
 
 
-        player.sendMessage("§a已应用胸甲附魔特化！");
+        Text.send(player, "<green>已应用胸甲附魔特化！");
     }
 
     // 获取默认的胸甲名称
     private String getDefaultChestplateName(Material material) {
         switch (material) {
-            case LEATHER_CHESTPLATE: return "§7皮革胸甲";
-            case IRON_CHESTPLATE: return "§7铁胸甲";
-            case CHAINMAIL_CHESTPLATE: return "§7锁链胸甲";
-            case GOLDEN_CHESTPLATE: return "§7金胸甲";
-            case DIAMOND_CHESTPLATE: return "§7钻石胸甲";
-            case NETHERITE_CHESTPLATE: return "§5下界合金胸甲";
-            default: return "§7胸甲";
+            case LEATHER_CHESTPLATE: return "<gray>皮革胸甲";
+            case IRON_CHESTPLATE: return "<gray>铁胸甲";
+            case CHAINMAIL_CHESTPLATE: return "<gray>锁链胸甲";
+            case GOLDEN_CHESTPLATE: return "<gray>金胸甲";
+            case DIAMOND_CHESTPLATE: return "<gray>钻石胸甲";
+            case NETHERITE_CHESTPLATE: return "<dark_purple>下界合金胸甲";
+            default: return "<gray>胸甲";
         }
     }
 
@@ -2050,11 +2059,11 @@ public class UpgradeGUI implements Listener {
     private void giveTeleportHookToPlayer(Player player) {
         ItemStack hook = new ItemStack(Material.FISHING_ROD);
         ItemMeta meta = hook.getItemMeta();
-        meta.setDisplayName("§7传送钩");
+        meta.displayName(Text.mm("<gray>传送钩"));
         List<String> lore = new ArrayList<>();
-        lore.add("§6放竿记录位置");
-        lore.add("§7再次使用传送到鱼钩位置");
-        meta.setLore(lore);
+        lore.add("<gold>放竿记录位置");
+        lore.add("<gray>再次使用传送到鱼钩位置");
+        meta.lore(lore.stream().map(Text::mm).collect(Collectors.toList()));
         hook.setItemMeta(meta);
 
         player.getInventory().addItem(hook);

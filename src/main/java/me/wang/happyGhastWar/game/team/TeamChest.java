@@ -2,6 +2,7 @@ package me.wang.happyGhastWar.game.team;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import me.wang.happyGhastWar.util.Text;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -25,6 +26,18 @@ public class TeamChest implements Listener {
     // 存储打开中的GUI，便于清理
     private final Map<UUID, Team> openInventories = new ConcurrentHashMap<>();
 
+    public TeamChest() {
+    }
+
+    /**
+     * 带插件的构造器：自动注册事件监听器（推荐，Arena 使用此构造器）
+     */
+    public TeamChest(org.bukkit.plugin.java.JavaPlugin plugin) {
+        if (plugin != null && plugin.isEnabled()) {
+            org.bukkit.Bukkit.getPluginManager().registerEvents(this, plugin);
+        }
+    }
+
     /**
      * 获取或创建队伍的箱子
      * @param team 队伍对象
@@ -41,7 +54,7 @@ public class TeamChest implements Listener {
         Inventory inventory = Bukkit.createInventory(
                 new TeamChestHolder(team),
                 6 * 9,
-                "§6团队箱子 §7- §e" + team.getTeams().getDisplayName()
+                Text.legacy("<gold>团队箱子 <gray>- <yellow>" + team.getTeams().getDisplayName())
         );
 
         teamChests.put(team, inventory);
@@ -56,7 +69,7 @@ public class TeamChest implements Listener {
      */
     public boolean openTeamChest(Player player, Team team) {
         if (team == null || !team.getPlayers().contains(player)) {
-            player.sendMessage("§c你必须加入队伍才能使用团队箱子！");
+            Text.send(player, "<red>你必须加入队伍才能使用团队箱子！");
             return false;
         }
 
@@ -76,7 +89,7 @@ public class TeamChest implements Listener {
         ItemStack border = new ItemStack(Material.BLACK_STAINED_GLASS_PANE);
         org.bukkit.inventory.meta.ItemMeta meta = border.getItemMeta();
         if (meta != null) {
-            meta.setDisplayName("§7 ");
+            meta.displayName(Text.mm("<gray> "));
             border.setItemMeta(meta);
         }
 
@@ -122,7 +135,7 @@ public class TeamChest implements Listener {
         if (!canAccessChest(player, team)) {
             event.setCancelled(true);
             player.closeInventory();
-            player.sendMessage("§c你已不在该队伍，无法使用团队箱子！");
+            Text.send(player, "<red>你已不在该队伍，无法使用团队箱子！");
             openInventories.remove(playerId);
             return;
         }
@@ -151,7 +164,7 @@ public class TeamChest implements Listener {
         if (!canAccessChest(player, team)) {
             event.setCancelled(true);
             player.closeInventory();
-            player.sendMessage("§c你已不在该队伍，无法使用团队箱子！");
+            Text.send(player, "<red>你已不在该队伍，无法使用团队箱子！");
             openInventories.remove(playerId);
         }
     }
@@ -164,11 +177,11 @@ public class TeamChest implements Listener {
 
     /**
      * 获取指定队伍箱子的物品内容
-     * @param teamName 队伍名称
+     * @param team 队伍对象
      * @return 物品数组
      */
-    public ItemStack[] getTeamChestContents(String teamName) {
-        Inventory chest = teamChests.get(teamName);
+    public ItemStack[] getTeamChestContents(Team team) {
+        Inventory chest = teamChests.get(team);
         if (chest == null) return new ItemStack[0];
         return chest.getContents();
     }

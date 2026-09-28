@@ -2,8 +2,9 @@ package me.wang.happyGhastWar.api;
 
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
+import org.jspecify.annotations.NonNull;
 
-public class ClientDataReceiveEvent extends Event {
+public class ClientDataReceiveEvent extends Event implements org.bukkit.event.Cancellable {
     private static final HandlerList handlers = new HandlerList();
 
     private final String clientName;
@@ -38,7 +39,7 @@ public class ClientDataReceiveEvent extends Event {
     }
 
     @Override
-    public HandlerList getHandlers() {
+    public @NonNull HandlerList getHandlers() {
         return handlers;
     }
 

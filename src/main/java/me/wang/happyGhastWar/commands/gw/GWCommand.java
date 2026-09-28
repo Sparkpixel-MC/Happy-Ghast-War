@@ -6,6 +6,7 @@ import me.wang.happyGhastWar.HappyGhastWar;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -39,10 +40,6 @@ public abstract class GWCommand {
         return command;
     }
 
-    public Set<String> getAlias() {
-        return alias;
-    }
-
     public final String getPermission() {
         return this.permission;
     }
@@ -72,9 +69,9 @@ public abstract class GWCommand {
         return ImmutableSet.<String>builder().add(this.command).addAll(this.alias).build();
     }
 
-    public void evaluate(HappyGhastWar happyGhastWar, CommandSender commandSender, String s, List<String> params){}
+    public void evaluate(CommandSender commandSender, String s, List<String> params){}
 
-    public void evaluate(HappyGhastWar happyGhastWar, Player commandSender, String s, List<String> params){}
+    public void evaluate(HappyGhastWar happyGhastWar, Player commandSender, String s, List<String> params) throws IOException {}
 
     public void complete(HappyGhastWar happyGhastWar, CommandSender sender, String alias, List<String> params, List<String> suggestions){}
 }

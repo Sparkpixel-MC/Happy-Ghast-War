@@ -15,10 +15,12 @@ import java.util.*;
 public class AdvancedCircleShrinker {
 
     private final JavaPlugin plugin;
+    private final me.wang.happyGhastWar.arena.Arena arena;
     private final CircleShrinker circleShrinker;
     private boolean isActive;
     private boolean shrinkAnimation;
     private double damagePerSecond;
+    private boolean restarting; // 重启缩圈时抑制"缩圈已停止"误报
     private int shrinkTaskId;
     private int damageTaskId;
     private int animationTaskId;
@@ -30,9 +32,12 @@ public class AdvancedCircleShrinker {
      * @param plugin 插件主类
      * @param center 中心位置
      * @param initialRadius 初始半径
+     * @param arena 所属场地（用于按玩家语言广播消息）
      */
-    public AdvancedCircleShrinker(JavaPlugin plugin, Location center, double initialRadius) {
+    public AdvancedCircleShrinker(JavaPlugin plugin, Location center, double initialRadius,
+                                  me.wang.happyGhastWar.arena.Arena arena) {
         this.plugin = plugin;
+        this.arena = arena;
         this.circleShrinker = new CircleShrinker(center, initialRadius);
         this.isActive = false;
         this.shrinkAnimation = true;
@@ -47,7 +52,9 @@ public class AdvancedCircleShrinker {
      */
     public void startShrinking(double targetRadius, int shrinkDuration, double damagePerSecond) {
         if (isActive) {
+            restarting = true;
             stopShrinking();
+            restarting = false;
         }
 
         this.isActive = true;
@@ -84,8 +91,8 @@ public class AdvancedCircleShrinker {
         }
 
         // 播放开始音效
-        broadcastSound(Sound.ENTITY_WITHER_SPAWN, 1.0f, 1.0f);
-        broadcastMessage("§c缩圈开始！请尽快进入安全区域！");
+        broadcastSound("shrink-start", Sound.ENTITY_WITHER_SPAWN, 1.0f, 1.0f);
+        broadcastMessageKey("border.shrink-start");
     }
 
     /**
@@ -113,9 +120,11 @@ public class AdvancedCircleShrinker {
         // 清空调息列表
         damageCooldown.clear();
 
-        // 播放结束音效
-        broadcastSound(Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.0f);
-        broadcastMessage("§a缩圈已停止！");
+        // 播放结束音效（重启缩圈时不广播"已停止"）
+        if (!restarting) {
+            broadcastSound("shrink-stop", Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.0f);
+            broadcastMessageKey("border.shrink-stop");
+        }
     }
 
     /**
@@ -134,8 +143,7 @@ public class AdvancedCircleShrinker {
                 List<Entity> outsideEntities = getOutsideLivingEntities();
 
                 for (Entity entity : outsideEntities) {
-                    if (entity instanceof LivingEntity) {
-                        LivingEntity living = (LivingEntity) entity;
+                    if (entity instanceof LivingEntity living) {
                         UUID uuid = living.getUniqueId();
 
                         // 检查冷却
@@ -150,14 +158,15 @@ public class AdvancedCircleShrinker {
                         damageCooldown.add(uuid);
 
                         // 给玩家发送警告
-                        if (living instanceof Player) {
-                            Player player = (Player) living;
+                        if (living instanceof Player player) {
                             double distance = circleShrinker.getDistanceToCircleEdge(player);
-                            player.sendMessage(String.format("§c你处于圈外！受到%.1f点伤害，距离安全区域: %.1f格",
-                                    damagePerSecond, distance));
+                            String message = me.wang.happyGhastWar.HappyGhastWar.language.getContent("border.outside-damage")
+                                    .replace("{damage}", String.format("%.1f", damagePerSecond))
+                                    .replace("{distance}", String.format("%.1f", Math.max(0, distance)));
+                            me.wang.happyGhastWar.util.Text.send(player, message);
 
                             // 屏幕抖动效果
-                            player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_HURT, 1.0f, 1.0f);
+                            me.wang.happyGhastWar.util.SoundUtil.play(player, "border-damage", Sound.ENTITY_GENERIC_HURT, 1.0f, 1.0f);
                         }
                     }
                 }
@@ -226,18 +235,20 @@ public class AdvancedCircleShrinker {
     }
 
     /**
-     * 向所有圈内玩家广播消息
+     * 向所有圈内玩家广播消息（按玩家语言）
      */
-    private void broadcastMessage(String message) {
+    private void broadcastMessageKey(String key) {
+        me.wang.happyGhastWar.HappyGhastWar ghastWarPlugin = (me.wang.happyGhastWar.HappyGhastWar) plugin;
         for (Player player : circleShrinker.getPlayersInsideCircle()) {
-            player.sendMessage(message);
+            me.wang.happyGhastWar.util.Text.send(player, ghastWarPlugin.getLanguage(player).getContent(key));
         }
     }
 
     /**
-     * 向所有圈内玩家播放音效
+     * 向所有圈内玩家播放音效（音效可经 config.yml 的 sounds.<key> 配置）
      */
-    private void broadcastSound(Sound sound, float volume, float pitch) {
+    private void broadcastSound(String key, Sound fallback, float volume, float pitch) {
+        Sound sound = me.wang.happyGhastWar.util.SoundUtil.get(key, fallback);
         for (Player player : circleShrinker.getPlayersInsideCircle()) {
             player.playSound(player.getLocation(), sound, volume, pitch);
         }

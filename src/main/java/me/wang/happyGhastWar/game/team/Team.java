@@ -22,15 +22,26 @@ public class Team {
     private final Scoreboard scoreboard;
     private boolean canRespawn;
     private boolean isAlive;
+    private boolean unregistered = false;
 
     public Team(Arena.Teams teams, Scoreboard scoreboard){
         this.teams = teams;
         this.scoreboard = scoreboard;
+        // 防御：上一局若未正常清理，同名牌会残留导致 registerNewTeam 抛
+        // "Team name 'xx' is already in use"，先移除再注册
+        org.bukkit.scoreboard.Team existing = scoreboard.getTeam(teams.getDisplayName());
+        if (existing != null) {
+            try {
+                existing.unregister();
+            } catch (IllegalStateException ignored) {
+                // 已被移除
+            }
+        }
         this.team = scoreboard.registerNewTeam(teams.getDisplayName());
-        this.team.setColor(teams.getColor());
+        this.team.color(teams.getNamedColor());
         this.team.setOption(org.bukkit.scoreboard.Team.Option.COLLISION_RULE, org.bukkit.scoreboard.Team.OptionStatus.FOR_OTHER_TEAMS);
         this.team.setAllowFriendlyFire(false);
-        team.setPrefix(teams.getColor()+"["+teams.getDisplayName()+"]");
+        team.setPrefix(me.wang.happyGhastWar.util.Text.legacy(teams.getColor()+"["+teams.getDisplayName()+"]"));
         this.canRespawn = true;
         this.isAlive = true;
     }
@@ -101,7 +112,17 @@ public class Team {
     }
 
     public void unRegister(){
-        team.unregister();
+        // 幂等：Arena.init 与 forceReset 可能对同一队伍各调一次，
+        // Bukkit Team.unregister() 对已移除的队伍会抛 IllegalStateException
+        if (unregistered) {
+            return;
+        }
+        unregistered = true;
+        try {
+            team.unregister();
+        } catch (IllegalStateException ignored) {
+            // 已被移除
+        }
         players.clear();
         ghasts.clear();
     }

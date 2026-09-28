@@ -5,18 +5,18 @@ import com.google.common.collect.ImmutableMap;
 import me.wang.happyGhastWar.HappyGhastWar;
 import me.wang.happyGhastWar.arena.Arena;
 import me.wang.happyGhastWar.commands.party.impl.*;
+import me.wang.happyGhastWar.util.Text;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
-import org.checkerframework.checker.units.qual.C;
 
 import java.util.*;
 import java.util.stream.Stream;
 
 public class PartyCommandRouter implements CommandExecutor, TabExecutor {
-    private static final List<PartyCommand> COMMANDS = ImmutableList.of(new Accept(), new Create(), new Decline(), new Disband(), new Info(), new Invite(), new Kick(), new Leave(), new Transfer());
+    private static final List<PartyCommand> COMMANDS = ImmutableList.of(new Accept(), new Create(), new Decline(), new Disband(), new Info(), new Invite(), new Kick(), new Leave(), new Transfer(), new Chat());
     private final HappyGhastWar plugin;
     private final Map<String, PartyCommand> commands;
 
@@ -43,12 +43,12 @@ public class PartyCommandRouter implements CommandExecutor, TabExecutor {
             String search = args[0].toLowerCase(Locale.ROOT);
             PartyCommand target = (PartyCommand) this.commands.get(search);
             if (target == null) {
-                sender.sendMessage("&cUnknown command &7" + search);
+                Text.send(sender, "<red>Unknown command <gray>" + search);
                 return true;
             } else {
                 String permission = target.getPermission();
                 if (permission != null && !permission.isEmpty() && !sender.hasPermission(permission)) {
-                    sender.sendMessage("&cYou do not have permission to do this!");
+                    Text.send(sender, "<red>You do not have permission to do this!");
                     return true;
                 } else {
                     if (sender instanceof Player){

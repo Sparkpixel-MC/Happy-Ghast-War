@@ -4,7 +4,7 @@ import me.wang.happyGhastWar.HappyGhastWar;
 import me.wang.happyGhastWar.arena.Arena;
 import me.wang.happyGhastWar.game.team.Team;
 import me.wang.happyGhastWar.ghast.GameGhast;
-import org.bukkit.ChatColor;
+import me.wang.happyGhastWar.util.Text;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.HappyGhast;
 import org.bukkit.entity.Player;
@@ -34,7 +34,7 @@ public class GhastDeath implements Listener {
         if (e.getEntity().getKiller() != null){
             for (Team team : arena.getTeams()){
                 if (team.getPlayers().contains(e.getEntity().getKiller())){
-                    killer_color = team.getTeam().getColor().toString();
+                    killer_color = team.getTeams().getColor();
                     killer_name = e.getEntity().getKiller().getDisplayName();
                     break;
                 }
@@ -53,7 +53,12 @@ public class GhastDeath implements Listener {
                             .replace("{1}",team.getTeams().getDisplayName())
                             .replace("{2}", finalKiller_color)
                             .replace("{3}", finalKiller_name);
-                    player.sendMessage(message);
+                    Text.send(player, message);
+
+                    // 显示被击杀乐魂的护甲等级（仅升级过时显示）
+                    if (ghast.getArmorLevel() > 0) {
+                        Text.send(player, "<yellow>护甲等级: <red>" + ghast.getArmorLevel());
+                    }
                 }
                 checkGhast(team,arena);
             }
@@ -67,7 +72,8 @@ public class GhastDeath implements Listener {
     public void checkGhast(Team team,Arena arena){
         if (!team.getGhasts().isEmpty()) return;
         for (Player player : team.getPlayers()){
-            player.sendTitle(ghastWar.getLanguage(player).getContent("game.respawn-unavailable-title"),HappyGhastWar.language.getContent("game.respawn-unavailable-subtitle"));
+            player.sendTitle(Text.legacy(ghastWar.getLanguage(player).getContent("game.respawn-unavailable-title")),
+                    Text.legacy(ghastWar.getLanguage(player).getContent("game.respawn-unavailable-subtitle")));
         }
         team.setCanRespawn(false);
         arena.getGameScoreboard().updateTeam(team);

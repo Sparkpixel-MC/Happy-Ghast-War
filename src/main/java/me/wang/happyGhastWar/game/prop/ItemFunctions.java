@@ -2,8 +2,6 @@ package me.wang.happyGhastWar.game.prop;
 
 
 import me.wang.happyGhastWar.game.upgrade.UpgradeManager;
-import net.md_5.bungee.api.ChatMessageType;
-import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.*;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
@@ -154,12 +152,12 @@ public class ItemFunctions implements Listener {
         player.setVelocity(direction.multiply(power));
 
         // 效果
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 1.0f, 1.0f);
+        me.wang.happyGhastWar.util.SoundUtil.play(player, "prop-jump", Sound.ENTITY_BLAZE_SHOOT, 1.0f, 1.0f);
         player.getWorld().spawnParticle(Particle.CLOUD, player.getLocation(), 20, 0.5, 0.5, 0.5, 0.1);
 
         // 显示剩余使用次数
-        String message = ChatColor.GREEN + "■".repeat(currentUses) + ChatColor.GRAY + "■".repeat(maxUses-currentUses);
-        player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacy(message));
+        String message = "<green>" + "■".repeat(currentUses) + "<gray>" + "■".repeat(maxUses-currentUses);
+        player.sendActionBar(me.wang.happyGhastWar.util.Text.mm(message));
 
         // 如果使用次数用完，开始恢复计时
         if (currentUses <= 0) {
@@ -226,26 +224,38 @@ public class ItemFunctions implements Listener {
         if (state == PlayerFishEvent.State.FISHING && !hookLocations.containsKey(player.getUniqueId())) {
             // 玩家抛竿，记录鱼钩
             activeHooks.put(player.getUniqueId(), hook);
-            BukkitTask task = plugin.getServer().getScheduler().runTaskTimerAsynchronously(plugin,()->{
-                if (hookLocations.containsKey(player.getUniqueId())) return;
-                if (hook.isOnGround()){
-                    hookLocations.put(player.getUniqueId(), hook.getLocation().clone());
-                    activeHooks.remove(player.getUniqueId());
-                }else if (hook.getState().equals(FishHook.HookState.HOOKED_ENTITY) && hook.getHookedEntity() != null){
-                    hookLocations.put(player.getUniqueId(), hook.getHookedEntity().getLocation());
-                    activeHooks.remove(player.getUniqueId());
-                }else{
-                    return;
+            // 必须在主线程轮询：isOnGround/getState/getHookedEntity 都是主线程 API
+            BukkitRunnable hookTask = new BukkitRunnable() {
+                @Override
+                public void run() {
+                    if (!hook.isValid() || hook.isDead()) {
+                        activeHooks.remove(player.getUniqueId());
+                        cancel();
+                        return;
+                    }
+                    if (hookLocations.containsKey(player.getUniqueId())) {
+                        cancel();
+                        return;
+                    }
+                    if (hook.isOnGround()){
+                        hookLocations.put(player.getUniqueId(), hook.getLocation().clone());
+                        activeHooks.remove(player.getUniqueId());
+                    }else if (hook.getState().equals(FishHook.HookState.HOOKED_ENTITY) && hook.getHookedEntity() != null){
+                        hookLocations.put(player.getUniqueId(), hook.getHookedEntity().getLocation());
+                        activeHooks.remove(player.getUniqueId());
+                    }else{
+                        return;
+                    }
+                    me.wang.happyGhastWar.util.Text.send(player, "<green>位置已记录");
+                    hook.remove();
                 }
-                player.sendMessage(ChatColor.GREEN+"位置已记录");
-                plugin.getServer().getScheduler().runTask(plugin, hook::remove);
-            },0,0);
+            };
+            BukkitTask task = hookTask.runTaskTimer(plugin, 0, 2);
             plugin.getServer().getScheduler().runTaskLater(plugin,()->{
                 if (!task.isCancelled()){
                     task.cancel();
                 }
             },10*20);
-            //player.playSound(player.getLocation(), Sound.ENTITY_FISHING_BOBBER_THROW, 1.0f, 1.0f);
         }
 
         else if (state == PlayerFishEvent.State.REEL_IN || hookLocations.containsKey(player.getUniqueId())) {
@@ -275,7 +285,7 @@ public class ItemFunctions implements Listener {
                 // 没有记录的位置或者鱼钩已消失
                 if (hook != null && !hook.isDead()) {
                     // 正常收竿
-                    player.sendMessage("§c鱼钩位置未记录！请等待鱼钩落地后再收竿。");
+                    me.wang.happyGhastWar.util.Text.send(player, "<red>鱼钩位置未记录！请等待鱼钩落地后再收竿。");
                 }
             }
         }
@@ -292,8 +302,8 @@ public class ItemFunctions implements Listener {
             Location recordedLocation = hookLocations.get(player.getUniqueId());
             if (recordedLocation != null) {
                 // 有记录的位置，询问是否传送
-                player.sendMessage("§c钓到了鱼！鱼钩位置已丢失。");
-                player.sendMessage("§7如果鱼钩落地，请直接收竿（不钓鱼）来传送。");
+                me.wang.happyGhastWar.util.Text.send(player, "<red>钓到了鱼！鱼钩位置已丢失。");
+                me.wang.happyGhastWar.util.Text.send(player, "<gray>如果鱼钩落地，请直接收竿（不钓鱼）来传送。");
 
                 // 清除记录的位置
                 hookLocations.remove(player.getUniqueId());
@@ -326,10 +336,10 @@ public class ItemFunctions implements Listener {
             // 开始蓄力
             if (!cannonChargeStart.containsKey(playerId)) {
                 cannonChargeStart.put(playerId, System.currentTimeMillis());
-                player.sendMessage("§6蓄力中...");
+                me.wang.happyGhastWar.util.Text.send(player, "<gold>蓄力中...");
 
                 // 播放蓄力声音
-                player.playSound(player.getLocation(), Sound.BLOCK_FIRE_EXTINGUISH, 0.5f, 0.5f);
+                me.wang.happyGhastWar.util.SoundUtil.play(player, "prop-fireball-charge", Sound.BLOCK_FIRE_EXTINGUISH, 0.5f, 0.5f);
 
                 // 蓄力任务
                 BukkitRunnable chargeTask = new BukkitRunnable() {
@@ -382,7 +392,7 @@ public class ItemFunctions implements Listener {
                         if (item == null || item.getType() != Material.DISPENSER) {
                             // 玩家切换了物品，取消蓄力
                             cancelCannonCharge(playerId);
-                            player.sendMessage("§c火炮蓄力已取消");
+                            me.wang.happyGhastWar.util.Text.send(player, "<red>火炮蓄力已取消");
                         }
                     }
                 }
@@ -402,7 +412,7 @@ public class ItemFunctions implements Listener {
         UUID playerId = player.getUniqueId();
 
         if (!fullyCharged) {
-            player.sendMessage("§c蓄力不足！");
+            me.wang.happyGhastWar.util.Text.send(player, "<red>蓄力不足！");
             return;
         }
 
@@ -449,7 +459,7 @@ public class ItemFunctions implements Listener {
                     fireball.setVelocity(player.getLocation().getDirection().multiply(1.5));
 
                     // 效果
-                    player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 1.0f, 1.0f);
+                    me.wang.happyGhastWar.util.SoundUtil.play(player, "prop-fireball", Sound.ENTITY_BLAZE_SHOOT, 1.0f, 1.0f);
                     player.getWorld().spawnParticle(Particle.FLAME, spawnLoc, 20, 0.1, 0.1, 0.1, 0.05);
                     player.getWorld().spawnParticle(Particle.LARGE_SMOKE, spawnLoc, 10, 0.1, 0.1, 0.1, 0.05);
 
@@ -535,9 +545,8 @@ public class ItemFunctions implements Listener {
     public void useRapidCrossbow(PlayerInteractEvent e){
         if (e.getItem() == null) return;
         if (e.getItem().getItemMeta() == null) return;
-        if (!e.getItem().getItemMeta().getDisplayName().equals("§7连射弩")) return;
-        org.bukkit.inventory.meta.CrossbowMeta crossbowMeta = (org.bukkit.inventory.meta.CrossbowMeta) e.getItem().getItemMeta();
-        if (crossbowMeta == null) return;
+        if (!"§7连射弩".equals(e.getItem().getItemMeta().getDisplayName())) return;
+        if (!(e.getItem().getItemMeta() instanceof org.bukkit.inventory.meta.CrossbowMeta crossbowMeta)) return;
         if (!crossbowMeta.hasChargedProjectiles()) return;
         Bukkit.getServer().getScheduler().runTaskLater(plugin, ()-> {
             checkAndReloadRapidCrossbow(e.getPlayer());
@@ -554,8 +563,9 @@ public class ItemFunctions implements Listener {
         for (ItemStack item : player.getInventory().getContents()) {
             if (item != null && item.getType() == Material.CROSSBOW) {
                 ItemMeta meta = item.getItemMeta();
-                if (meta != null && meta.hasDisplayName() &&
-                        meta.getDisplayName().equals("§7连射弩")) {
+                if (meta instanceof org.bukkit.inventory.meta.CrossbowMeta &&
+                        meta.hasDisplayName() &&
+                        "§7连射弩".equals(meta.getDisplayName())) {
                     hasRapidCrossbow = true;
                     rapidCrossbow = item;
                     break;
@@ -570,14 +580,17 @@ public class ItemFunctions implements Listener {
         if (crossbowMeta == null) return;
 
         if (!crossbowMeta.hasChargedProjectiles()) {
-            // 自动装填
+            // 自动装填：从背包消耗一支箭
+            if (!player.getInventory().contains(Material.ARROW)) return;
+            player.getInventory().removeItem(new ItemStack(Material.ARROW, 1));
+
             ItemStack arrow = new ItemStack(Material.ARROW, 1);
             List<ItemStack> projectiles = new ArrayList<>();
             projectiles.add(arrow);
 
             crossbowMeta.setChargedProjectiles(projectiles);
             rapidCrossbow.setItemMeta(crossbowMeta);
-
+            me.wang.happyGhastWar.util.SoundUtil.play(player, "crossbow-load", Sound.ITEM_CROSSBOW_LOADING_END, 0.6f, 1.4f);
         }
     }
 

@@ -17,7 +17,7 @@ public class CircleShrinker {
 
     private final Location center;
     private double radius;
-    private boolean checkYAxis;
+    private final boolean checkYAxis;
     private double minY;
     private double maxY;
 

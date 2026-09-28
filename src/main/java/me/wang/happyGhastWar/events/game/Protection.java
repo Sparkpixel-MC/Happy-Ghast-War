@@ -68,8 +68,21 @@ public class Protection implements Listener {
         if (ghast_team == null || damager_team == null) return;
 
         if (ghast_team.equals(damager_team)){
-            e.getDamager().sendMessage(ghastWar.getLanguage(damager instanceof Player ? (Player) damager : null).getContent("game.protect-ghast"));
+            me.wang.happyGhastWar.util.Text.send(e.getDamager(), ghastWar.getLanguage(damager instanceof Player ? (Player) damager : null).getContent("game.protect-ghast"));
             e.setCancelled(true);
+        } else {
+            // 应用护甲减伤
+            double damage = e.getDamage();
+            double reduction = ghast.getArmorLevel() * 0.05; // 每级护甲减少5%伤害
+            double reducedDamage = damage * (1 - reduction);
+
+            if (reducedDamage < damage) {
+                // 记录伤害减免信息
+                me.wang.happyGhastWar.util.Text.send((Player) damager,
+                        "<gray>乐魂护甲减免了 " + String.format("%.1f", damage - reducedDamage) + " 点伤害!");
+            }
+
+            e.setDamage(reducedDamage);
         }
     }
 
@@ -97,7 +110,7 @@ public class Protection implements Listener {
 
         if (!ghast_team.equals(enter_team)){
             e.setCancelled(true);
-            e.getEntered().sendMessage(ghastWar.getLanguage((Player) e.getEntered()).getContent("game.enter-other-ghast"));
+            me.wang.happyGhastWar.util.Text.send(e.getEntered(), ghastWar.getLanguage((Player) e.getEntered()).getContent("game.enter-other-ghast"));
         }
     }
 
@@ -148,7 +161,10 @@ public class Protection implements Listener {
         if (!arena.isEnable()) return;
         if (arena.status != Arena.GameStatus.PLAYING) return;
         if (e.getCause() != EntityDamageEvent.DamageCause.FALL) return;
-        e.setCancelled(true);
+        // 摔落伤害默认开启（game.fall-damage: true），仅当场地配置显式关闭时才取消
+        if (!arena.getArenaConfig().isFallDamageEnabled()) {
+            e.setCancelled(true);
+        }
     }
 
     private List<Integer> disabledSlot = new ArrayList<>(Arrays.asList(36,37,38,39));

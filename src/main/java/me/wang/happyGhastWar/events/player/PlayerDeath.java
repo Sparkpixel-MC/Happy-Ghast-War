@@ -5,13 +5,12 @@ import me.wang.happyGhastWar.arena.Arena;
 import me.wang.happyGhastWar.game.player.PlayerData;
 import me.wang.happyGhastWar.game.team.Team;
 import me.wang.happyGhastWar.util.Language;
+import me.wang.happyGhastWar.util.Text;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.chat.TranslatableComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
-import org.bukkit.damage.DamageSource;
-import org.bukkit.damage.DamageType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -66,7 +65,7 @@ public class PlayerDeath implements Listener {
             Player finalKiller = killer;
             items.forEach((item, integer) -> {
                 String message = ghastWar.getLanguage(finalKiller).getContent("game.reward-add").replace("{0}",String.valueOf(integer));
-                finalKiller.spigot().sendMessage(new TranslatableComponent(item.getTranslationKey()),new TextComponent(message));
+                finalKiller.spigot().sendMessage(new TranslatableComponent(item.translationKey()),new TextComponent(Text.legacy(message)));
             });
         }
         e.setKeepInventory(true);
@@ -90,6 +89,9 @@ public class PlayerDeath implements Listener {
             }
         }
         if (team == null) return;
+
+        // 记录死亡统计
+        arena.getStatistics().recordDeath(victim);
 
         if (killer != null){
             PlayerData data = arena.getPlayerDatas().get(killer);
@@ -155,7 +157,7 @@ public class PlayerDeath implements Listener {
                 .replace("{2}",killer_color)
                 .replace("{3}",killer_name);
         for (Player player : arena.getPlayers()){
-            player.sendMessage(message);
+            Text.send(player, message);
         }
     }
 
@@ -172,14 +174,14 @@ public class PlayerDeath implements Listener {
                 e.setRespawnLocation(arena.getArenaConfig().getSpawn(team.getTeams()));
                 e.getPlayer().setGameMode(GameMode.SPECTATOR);
                 if (team.isCanRespawn()){
-                    e.getPlayer().sendTitle(ghastWar.getLanguage(e.getPlayer()).getContent("game.respawn-title"),HappyGhastWar.language.getContent("game.respawn-subtitle"));
+                    e.getPlayer().sendTitle(Text.legacy(ghastWar.getLanguage(e.getPlayer()).getContent("game.respawn-title")),Text.legacy(HappyGhastWar.language.getContent("game.respawn-subtitle")));
                     Bukkit.getServer().getScheduler().runTaskLater(HappyGhastWar.getPlugin(HappyGhastWar.class), ()->{
                         e.getPlayer().teleport(arena.getArenaConfig().getSpawn(team.getTeams()));
                         arena.giveEquipment(e.getPlayer(), team);
                         e.getPlayer().setGameMode(GameMode.SURVIVAL);
                     },3 * 20);
                 }else {
-                    e.getPlayer().sendTitle(ghastWar.getLanguage(e.getPlayer()).getContent("game.cant-respawn-title"),HappyGhastWar.language.getContent("game.cant-respawn-subtitle"));
+                    e.getPlayer().sendTitle(Text.legacy(ghastWar.getLanguage(e.getPlayer()).getContent("game.cant-respawn-title")),Text.legacy(HappyGhastWar.language.getContent("game.cant-respawn-subtitle")));
                     team.removePlayer(e.getPlayer());
                     arena.getGameScoreboard().updateTeam(team);
                 }
@@ -196,6 +198,6 @@ public class PlayerDeath implements Listener {
         if (arena.status != Arena.GameStatus.PLAYING) return;
         if (!arena.getPlayers().contains(e.getPlayer())) return;
         if (e.getPlayer().getLocation().getY() > -100) return;
-        e.getPlayer().damage(100.0,e.getPlayer().getKiller());
+        e.getPlayer().damage(100.0);
     }
 }

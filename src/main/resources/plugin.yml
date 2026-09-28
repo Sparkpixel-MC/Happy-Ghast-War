@@ -1,68 +1,37 @@
 name: HappyGhastWar
-version: '1.0'
+version: 1.0-beta
 main: me.wang.happyGhastWar.HappyGhastWar
-api-version: '1.21'
-authors: [lao_wang]
-description: 乐魂战
-website: https://plugins.ngup.eu.org
-
-depend: [Multiverse-Core]
-
+api-version: 1.21
+description: A Ghast Warfare game
+author: Wang
+softdepend:
+  - SlimeWorldManager
+  - AdvancedSlimePaper
+  - TAB
 commands:
   ghastwar:
+    description: Main command for HappyGhastWar
+    usage: /<command>
     aliases:
-      - 'gw'
+      - gw
   party:
+    description: Party management command
+    usage: /<command>
     aliases:
-      - 'pt'
-
+      - p
 permissions:
-  party.*:
-    default: true
-    children:
-      party.create: true
-      party.invite: true
-      party.accept: true
-      party.decline: true
-      party.leave: true
-      party.kick: true
-      party.transfer: true
-      party.disband: true
-      party.info: true
-  party.create:
-    default: true
-  party.invite:
-    default: true
-  party.accept:
-    default: true
-  party.decline:
-    default: true
-  party.leave:
-    default: true
-  party.kick:
-    default: true
-  party.transfer:
-    default: true
-  party.disband:
-    default: true
-  party.info:
-    default: true
-  gw.*:
-    default: true
-    children:
-      gw.admin: true
-      gw.debug: true
-  gw.admin:
+  happyghastwar.admin:
+    description: Admin permissions
     default: op
-  gw.gui:
+  happyghastwar.join:
+    description: Allow joining games
     default: true
-  gw.leave:
+  happyghastwar.leave:
+    description: Allow leaving games
     default: true
-  gw.join:
+  happyghastwar.create:
+    description: Allow creating arenas
     default: op
-  gw.debug:
-    default: true
-    children:
-      gw.debug.openupgradegui: true
-  gw.debug.openupgradegui:
-    default: true
+  happyghastwar.setup:
+    description: Allow arena setup
+    default: op

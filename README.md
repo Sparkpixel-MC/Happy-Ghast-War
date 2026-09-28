@@ -1,52 +1,144 @@
-# HappyGhastWar
-HappyGhastWar is a minigame plugin inspired by the Happy Ghast update in version 1.21.6. Similar to bedwars, your goal is to protect your team's Happy Ghast while eliminating other teams. Gather resources by mining ores across the map and spend them at the central shop to gear up. With an added shrinking zone mechanic, the battlefield will gradually close in—so make sure to push toward the center and fight for victory! For detailed gameplay information, please refer to [Mythend's video](https://www.bilibili.com/video/BV1FThjzrEC8/?share_source=copy_web&v) (The video is in Chinese.).
+# Happy Ghast War
 
-# ✅ Features:
-- Greater Freedom: You can destroy blocks and build structures during gameplay
-- Multi-language Support: Includes commonly used languages and automatically switches based on your client’s language upon joining
-- Many unique items you’ve likely never seen before, such as:
-  - Catapult
-  - Rapid-fire Crossbow
-  - Teleportation Hook
-  - Heavy Crossbow
-- Party Support: Supports party play, with a maximum of 8 people per party
-- Supports up to 8 teams per match with no player limit!
-- And more!
+一个基于 Paper 1.21.10 的乐魂战小游戏，使用 Advanced Slime Paper API 管理游戏世界，支持单服多竞技场并发与 TAB 计分板。
 
-![game](https://cdn.modrinth.com/data/cached_images/445d4042cdceffd676650f87823697763b448f37.webp)
+## ✨ 特性
 
-# 📥Installation:
-HappyGhastWar supports Spigot and its forks, but is not compatible with Folia or hybrid servers. The server version must be at least 1.21.6!
-1. Download the plugin itself
-2. Download multiverse-core
-3. Place the plugin itself and its dependencies into the /plugins folder on the server.
-4. (Optional) Place the pre-prepared map into the server folder.
-5. Restart the server
+- 🎮 多人在线竞技
+- 🐸 Ghast 战斗玩法
+- 👥 队伍系统
+- 🎁 随机战利品箱
+- 🏆 排名和积分
+- 🗺️ 动态场地缩小
+- 💪 角色升级系统
 
-# ⚙️Commands
-![Replace this with a description](https://cdn.modrinth.com/data/cached_images/f3437bf7e76126ecf46f1a63469ee1b81df7ca29.png)
-You can use `/gw` in-game to view the help menu.
+## 🚀 快速开始
 
-# 🗺️How to create an arena:
-1. use `/gw admin create <world name> <display name>` to create a arena
-2. use `/gw admin setwait` to set wait position
-3. use `/gw admin setspawn <team id>` to set spawn of team
-4. use `/gw admin setghastspawn <team id>` to set spawn of happy ghast
-5. use `/gw admin setcenter` to set arena center
-6. use `/gw admin setradius <radius>` to set initial world border radius
-7. use `/gw admin settargetradius <radius>` to set shrunk border radius
-8. use `/gw admin setghastamount <amount>` to set ghasts per team
-9. use `/gw admin addchest` to add loot chest (Aim at chest)
+### 1. 构建插件
 
-use `/gw admin setlobby` to set the lobby of server
-#Team id: RED, BLUE, GREEN, YELLOW, PURPLE, WHITE, GOLD, AQUA. Teams should be set from left to right. For example, if there are only two teams, set RED and BLUE to prevent errors when splitting teams.
+```bash
+mvn clean package
+```
 
-# 🗺️How to join an arena:
-Use `/gw gui` to access the menu and select a game.
+### 2. 准备服务器
 
-# 🐛How to Report Issues
-Please use the [Report Issues](https://github.com/YYDSQAQ1024/HappyGhastWar/issues) link at the top of the page to report bugs, crashes, or other issues. Be sure to include your server type, version, and attach the error logs.
+- Paper 1.21.10
+- Advanced Slime Paper
+- SlimeWorldManager
+- TAB（可选，安装后计分板由 TAB 渲染）
 
-# 💡Other
-If you think the plugin is great, could you [sponsor me](https://afdian.com/a/lao_wang) ?
+### 3. 配置 Arena
 
+将 `.slime` 文件和 YAML 配置放入 `arenas/` 目录。
+
+每个场地的 `arenas/<世界名>.yml` 支持以下玩法开关（新建场地自动写入默认值，旧场地缺省时同样生效）：
+
+| 配置项 | 默认 | 说明 |
+|---|---|---|
+| `game.fall-damage` | `true` | 玩家是否有摔落伤害 |
+| `game.pvp` | `true` | 是否允许玩家互攻（写入世界 PVP 属性，slime 文件里 pvp=false 也会被覆盖） |
+| `game.resource-respawn` | `45` | 资源点恢复时间（秒），中立区减半 |
+| `game.private-zone-radius` | `30` | 距队出生点该距离内的矿为该队私有资源区，0=全部按中立区 |
+
+全部矿物（煤/铁/铜/金/红石/青金石/钻石/绿宝石/石英，含深板岩与下界变体）、粗金属块和原木均为自动注册的资源点：挖取后掉落对应资源，方块在 `resource-respawn` 秒后自动恢复原状。
+
+游戏音效均可在 `config.yml` 的 `sounds:` 段自定义（支持命名空间键或旧枚举名，可附加 `,音量,音调`），未配置时使用内置默认值。
+
+详细说明请查看 [BUILD_GUIDE.md](BUILD_GUIDE.md) 和 [MIGRATION_TO_SLIMEWORLD.md](MIGRATION_TO_SLIMEWORLD.md)。
+
+## 📖 文档
+
+- [构建指南](BUILD_GUIDE.md) - 如何构建和部署
+- [迁移指南](MIGRATION_TO_SLIMEWORLD.md) - 从 Multiverse 迁移到 SlimeWorld
+- [API 文档](docs/index.md) - SlimeWorld API 使用说明
+- [加载世界](docs/loading_worlds.md) - 如何加载世界
+- [属性配置](docs/properties.md) - 世界属性设置
+
+## 🛠️ 命令
+
+### 主命令 `/gw` 或 `/ghastwar`
+
+- `/gw admin` - 管理员命令
+  - `/gw admin create <name>` - 创建新场地
+  - `/gw admin setcenter <x> <y> <z>` - 设置中心点
+  - `/gw admin setradius <r>` - 设置场地半径
+  - `/gw admin addchest` - 添加战利品箱
+
+- `/gw join` - 加入游戏
+- `/gw leave` - 离开游戏
+- `/gw status` - 查看场地状态
+- `/gw stats` - 查看个人统计
+- `/gw gui` - 打开游戏菜单
+- `/gw debug info|start` - 调试命令
+
+### 队伍命令 `/party` 或 `/p`
+
+- `/party create` - 创建队伍
+- `/party invite <player>` - 邀请玩家
+- `/party accept` - 接受邀请
+- `/party leave` - 离开队伍
+- `/party chat <消息>` - 队伍聊天/游戏内队伍警报
+
+## 📦 项目结构
+
+```
+Happy-Ghast-War/
+├── src/main/java/          # Java 源代码
+├── src/main/resources/     # 配置文件和资源
+├── docs/                   # 项目文档
+│   ├── index.md           # API 说明
+│   ├── loading_worlds.md  # 世界加载
+│   └── properties.md      # 属性配置
+├── arenas/                 # 场地配置和 SlimeWorld 文件
+├── pom.xml                 # Maven 配置
+├── README.md               # 项目说明
+└── BUILD_GUIDE.md          # 构建指南
+```
+
+## 🔧 技术栈
+
+- **服务器**: Paper 1.21.10
+- **API**: Advanced Slime Paper 4.0.0-SNAPSHOT + TAB-API 6.1.2
+- **构建工具**: Maven
+- **Java 版本**: 21
+
+## 🎯 游戏玩法
+
+### 基本规则
+
+1. **准备阶段**: 玩家加入场地，等待游戏开始
+2. **开发阶段**: 收集资源和升级装备
+3. **战斗阶段**: 场地缩小，对抗 Ghast
+4. **终极阶段**: 最终决战，争夺胜利
+
+### 升级系统
+
+- 铁匠台制作合金
+- 升级装备属性
+- 提升战斗力
+
+### 战利品
+
+- 随机生成的战利品箱
+- 稀有掉落物
+- 资源收集
+
+## 🤝 贡献
+
+欢迎提交 Issue 和 Pull Request！
+
+## 📄 许可证
+
+本项目仅供学习和研究使用。
+
+## 🔗 相关链接
+
+- [PaperMC](https://papermc.io/)
+- [Advanced Slime Paper](https://docs.infernalsuite.com/)
+- [SlimeWorld 格式](https://github.com/InfernalSuite/AdvancedSlimePaper)
+
+---
+
+**版本**: 1.0-beta
+**更新日期**: 2026-08-13
+**服务器 IP**: ngup.eu.org

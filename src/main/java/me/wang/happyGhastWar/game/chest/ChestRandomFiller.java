@@ -54,13 +54,12 @@ public class ChestRandomFiller {
 
             Block block = location.getBlock();
 
-            if (!(block.getState() instanceof Container)) {
+            if (!(block.getState() instanceof Container container)) {
                 Bukkit.getLogger().warning("位置 " + location + " 处的方块不是容器！方块类型：" + block.getType());
                 return false;
             }
-            Chest chest = (Chest) block.getState();
 
-            Inventory inventory = chest.getBlockInventory();
+            Inventory inventory = container.getInventory();
 
             // 清空箱子
             inventory.clear();

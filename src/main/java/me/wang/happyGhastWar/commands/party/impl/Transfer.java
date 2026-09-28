@@ -3,7 +3,7 @@ package me.wang.happyGhastWar.commands.party.impl;
 import me.wang.happyGhastWar.HappyGhastWar;
 import me.wang.happyGhastWar.commands.party.PartyCommand;
 import me.wang.happyGhastWar.game.party.Party;
-import org.bukkit.ChatColor;
+import me.wang.happyGhastWar.util.Text;
 import org.bukkit.entity.Player;
 
 import java.util.List;
@@ -15,13 +15,13 @@ public class Transfer extends PartyCommand {
 
     public void evaluate(HappyGhastWar ghastWar, Player player, String s, List<String> params) {
         if (HappyGhastWar.arenas.containsKey(player.getWorld().getName())){
-            player.sendMessage(HappyGhastWar.language.getContent("party.unable-use-in-game"));
+            Text.send(player, HappyGhastWar.language.getContent("party.unable-use-in-game"));
             return;
         }
         if (params.isEmpty()) return;
         Party party = ghastWar.getPartyManager().getParty(player);
         if (party == null) {
-            player.sendMessage(ChatColor.RED + "你没有队伍!");
+            Text.send(player, "<red>你没有队伍!");
             return;
         }
 

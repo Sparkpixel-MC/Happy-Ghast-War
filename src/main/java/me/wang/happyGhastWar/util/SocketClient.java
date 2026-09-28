@@ -14,13 +14,13 @@ public class SocketClient extends BukkitRunnable{
     private Socket socket;
     private BufferedReader reader;
     private PrintWriter writer;
-    private boolean connected = false;
-    private boolean nameRegistered = false;
+    private volatile boolean connected = false;
+    private volatile boolean nameRegistered = false;
+    private volatile boolean scheduled = false;
     private Thread receiveThread;
     private String clientName;
     private String serverAddress;
     private MessageListener messageListener;
-    private int connectionTimeout = 1000 * 60;
 
     public SocketClient(HappyGhastWar plugin) {
         this.plugin = plugin;
@@ -71,6 +71,7 @@ public class SocketClient extends BukkitRunnable{
 
             // 创建Socket并设置连接超时
             socket = new Socket();
+            int connectionTimeout = 1000 * 60;
             socket.setSoTimeout(connectionTimeout);
 
             // 尝试连接
@@ -94,6 +95,7 @@ public class SocketClient extends BukkitRunnable{
 
             plugin.getLogger().info("正在注册...");
             this.runTaskTimer(plugin,0,30 * 20);
+            scheduled = true;
             return true;
 
         } catch (ConnectException e) {
@@ -121,7 +123,7 @@ public class SocketClient extends BukkitRunnable{
             plugin.getLogger().severe("连接失败: " + errorMsg);
 
             // 提供更详细的错误信息
-            if (errorMsg.contains("Cannot assign requested address")) {
+            if (errorMsg != null && errorMsg.contains("Cannot assign requested address")) {
                 plugin.getLogger().severe("无法分配请求的地址，可能原因:");
                 plugin.getLogger().severe("1. 主机地址错误或无法访问");
                 plugin.getLogger().severe("2. 端口被占用");
@@ -212,16 +214,21 @@ public class SocketClient extends BukkitRunnable{
                 }.runTask(plugin);
             }
         } catch (IOException e) {
-            if (connected) {
-                plugin.getLogger().warning("客户端 '" + clientName + "' 处理数据时出错: " + e.getMessage());
-            }
+            plugin.getLogger().warning("客户端 '" + clientName + "' 处理数据时出错: " + e.getMessage());
         } finally {
             disconnect();
         }
     }
 
     public void disconnect() {
-        this.cancel();
+        if (scheduled) {
+            try {
+                this.cancel();
+                scheduled = false;
+            } catch (IllegalStateException ignored) {
+                // 任务尚未调度
+            }
+        }
         if (connected) {
             connected = false;
             nameRegistered = false;

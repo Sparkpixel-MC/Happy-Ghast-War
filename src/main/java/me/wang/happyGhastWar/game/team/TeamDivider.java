@@ -353,7 +353,7 @@ public class TeamDivider {
             if (teamSize > maxPlayers) maxPlayers = teamSize;
 
             String teamColor = team.getTeams().getColor() + team.getTeams().getDisplayName();
-            stats.append(String.format("  %s§f队: %d名玩家\n", teamColor, teamSize));
+            stats.append(String.format("  %s<white>队: %d名玩家\n", teamColor, teamSize));
         }
 
         stats.append("\n总计: ").append(totalPlayers).append("名玩家\n");
@@ -385,7 +385,7 @@ public class TeamDivider {
             Arena.Teams teamEnum = team.getTeams();
             String teamColor = teamEnum.getColor() + teamEnum.getDisplayName();
 
-            details.append("\n").append(teamColor).append("§f队 (").append(team.getSize()).append("人):\n");
+            details.append("\n").append(teamColor).append("<white>队 (").append(team.getSize()).append("人):\n");
 
             List<Player> players = team.getPlayers();
             if (players.isEmpty()) {

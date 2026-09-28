@@ -2,6 +2,9 @@
 serverIp: 'ngup.eu.org'
 #服务器默认语言选择
 language: 'zh_cn.yml'
+#SlimeWorld 世界文件目录（.slime 文件所在目录）
+#相对路径基于服务器根目录；默认 slime_worlds（SlimeWorldManager 的默认目录）
+slime-worlds-folder: 'slime_worlds'
 #跨服选项
 bungee:
   #是否开启Bungee模式
@@ -30,3 +33,49 @@ entity-white-list:
   - 'FIREBALL'
   - 'TNT'
   - 'TNT_MINECART'
+
+#游戏音效配置：每个音效均可自定义。
+#值格式：'音效名' 或 '音效名,音量,音调'（音量/音调可省略，默认 1.0）
+#音效名支持 Minecraft 命名空间键（推荐，如 entity.player.levelup）
+#或旧版枚举常量名（如 ENTITY_PLAYER_LEVELUP）。
+#删除某一行或整段不配置时，使用代码内默认音效（下列注释中列出）。
+sounds:
+  #开局音效（默认 entity.player.levelup）+ 开局按钮音（默认 ui.button.click）
+  game-start: 'entity.player.levelup'
+  game-start-click: 'ui.button.click'
+  #开局倒计时最后5秒（默认 ui.button.click）
+  countdown: 'ui.button.click'
+  #缩圈开始（默认 entity.wither.spawn）/缩圈结束（默认 entity.player.levelup）
+  shrink-start: 'entity.wither.spawn'
+  shrink-stop: 'entity.player.levelup'
+  #玩家在圈外受伤警告（默认 entity.generic.hurt）
+  border-damage: 'entity.generic.hurt'
+  #加入场地成功（默认 entity.player.levelup）/界面点击（默认 ui.button.click）
+  arena-join: 'entity.player.levelup'
+  gui-click: 'ui.button.click'
+  #击杀玩家（默认 entity.player.attack.crit）
+  player-kill: 'entity.player.attack.crit'
+  #空投：警告（默认 entity.elder_guardian.curse）、落地（默认 block.anvil.land,0.6,1.4）、
+  #落地杂音（默认 entity.item.pickup）、开启空投箱（默认 entity.item.pickup）
+  airdrop-warning: 'entity.elder_guardian.curse'
+  airdrop-land: 'block.anvil.land,0.6,1.4'
+  airdrop-land-pop: 'entity.item.pickup'
+  airdrop-open: 'entity.item.pickup'
+  #组队：队聊提示（默认 block.note_block.bell）、邀请等通知（默认 entity.experience_orb.pickup）
+  party-chat: 'block.note_block.bell'
+  party-notify: 'entity.experience_orb.pickup'
+  #道具：风袋跳跃（默认 entity.blaze_shoot）、火球蓄力（默认 block.fire.extinguish）、
+  #火球发射（默认 entity.blaze_shoot）、速射弩装填（默认 item.crossbow.loading_end）
+  prop-jump: 'entity.blaze_shoot'
+  prop-fireball-charge: 'block.fire.extinguish'
+  prop-fireball: 'entity.blaze_shoot'
+  crossbow-load: 'item.crossbow.loading_end'
+  #合金炉熔炼完成（默认 block.blastfurnace.fire_crackle）
+  alloy-done: 'block.blastfurnace.fire_crackle'
+  #升级界面点击（默认 block.note_block.pling）
+  upgrade-click: 'block.note_block.pling'
+  #乐魂护甲升级（默认 entity.player.levelup）/终极护甲触发（默认 entity.ender_dragon.growl）
+  armor-upgrade: 'entity.player.levelup'
+  armor-ultimate: 'entity.ender_dragon.growl'
+  #乐魂技能：火球爆发（默认 entity.firework_rocket.blast）
+  skill-fireball: 'entity.firework_rocket.blast'

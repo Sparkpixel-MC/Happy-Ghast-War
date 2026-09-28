@@ -5,8 +5,9 @@ import me.wang.happyGhastWar.arena.Arena;
 import me.wang.happyGhastWar.game.party.Party;
 import me.wang.happyGhastWar.game.party.PartyManager;
 import me.wang.happyGhastWar.game.team.TeamDivider;
+import me.wang.happyGhastWar.util.SoundUtil;
+import me.wang.happyGhastWar.util.Text;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -41,11 +42,11 @@ public class ArenaSelector implements Listener {
         int rows = Math.max(1, (int) Math.ceil(availableArenas.size() / 9.0));
         int size = Math.min(rows * 9, 54);
 
-        // 创建GUI
+        // 创建 GUI
         Inventory gui = Bukkit.createInventory(
                 null,
                 size,
-                ChatColor.translateAlternateColorCodes('&', "&6&l选择游戏 &7(点击加入)")
+                Text.legacy("<gold><bold>选择游戏 <gray>(点击加入)")
         );
 
         // 添加竞技场物品
@@ -58,10 +59,10 @@ public class ArenaSelector implements Listener {
         if (size > availableArenas.size()) {
             ItemStack refreshItem = new ItemStack(Material.COMPASS);
             ItemMeta meta = refreshItem.getItemMeta();
-            meta.setDisplayName(ChatColor.YELLOW + "刷新列表");
-            meta.setLore(Arrays.asList(
-                    ChatColor.GRAY + "点击刷新可用游戏列表"
-            ));
+            meta.displayName(Text.mm("<yellow>刷新列表"));
+            meta.lore(Arrays.asList(
+                    "点击刷新可用游戏列表"
+            ).stream().map(Text::mm).collect(java.util.stream.Collectors.toList()));
             refreshItem.setItemMeta(meta);
             gui.setItem(size - 1, refreshItem);
         }
@@ -80,10 +81,20 @@ public class ArenaSelector implements Listener {
         return HappyGhastWar.getArenas().values().stream()
                 .filter(Arena::isEnable) // 启用状态
                 .filter(arena -> arena.status != Arena.GameStatus.PLAYING) // 等待状态
+                .filter(ArenaSelector::isSetupComplete) // 配置完整（等待点/出生点等已设置）
                 .filter(arena -> arena.getPlayers().size() <
                         arena.getArenaConfig().getTeamCount() * arena.getArenaConfig().getTeamSize()) // 未满员
                 .sorted(Comparator.comparingInt(a -> a.getPlayers().size())) // 按玩家人数排序
                 .collect(java.util.stream.Collectors.toList());
+    }
+
+    /** 场地配置是否完整 */
+    private static boolean isSetupComplete(Arena arena) {
+        try {
+            return arena.getArenaConfig().isSetupComplete();
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     private ItemStack createArenaItem(Arena arena) {
@@ -96,34 +107,34 @@ public class ArenaSelector implements Listener {
 
         // 根据填充率选择材质颜色
         if (fillPercentage >= 0.75) {
-            item.setType(Material.RED_CONCRETE);
+            item = item.withType(Material.RED_CONCRETE);
         } else if (fillPercentage >= 0.5) {
-            item.setType(Material.YELLOW_CONCRETE);
+            item = item.withType(Material.YELLOW_CONCRETE);
         } else if (fillPercentage >= 0.25) {
-            item.setType(Material.GREEN_CONCRETE);
+            item = item.withType(Material.GREEN_CONCRETE);
         } else {
-            item.setType(Material.BLUE_CONCRETE);
+            item = item.withType(Material.BLUE_CONCRETE);
         }
 
         ItemMeta meta = item.getItemMeta();
 
         // 设置显示名称
         String statusColor = (fillPercentage >= 0.75) ?
-                ChatColor.RED.toString() : (fillPercentage >= 0.5) ?
-                ChatColor.YELLOW.toString() : ChatColor.GREEN.toString();
+                "<red>" : (fillPercentage >= 0.5) ?
+                "<yellow>" : "<green>";
 
-        meta.setDisplayName(ChatColor.GOLD + arena.getName() +
-                statusColor + " [" + playerCount + "/" + maxPlayers + "]");
+        meta.displayName(Text.mm("<gold>" + arena.getName() +
+                statusColor + " [" + playerCount + "/" + maxPlayers + "]"));
 
         // 设置Lore
         List<String> lore = new ArrayList<>();
-        lore.add(ChatColor.GRAY + "状态: " + getStatusText(arena, fillPercentage));
-        lore.add(ChatColor.GRAY + "队伍数: " + ChatColor.WHITE + arena.getArenaConfig().getTeamCount());
-        lore.add(ChatColor.GRAY + "队伍大小: " + ChatColor.WHITE + arena.getArenaConfig().getTeamSize());
+        lore.add("<gray>状态: " + getStatusText(arena, fillPercentage));
+        lore.add("<gray>队伍数: " + "<white>" + arena.getArenaConfig().getTeamCount());
+        lore.add("<gray>队伍大小: " + "<white>" + arena.getArenaConfig().getTeamSize());
         lore.add("");
-        lore.add(ChatColor.YELLOW + "点击加入游戏!");
+        lore.add("<yellow>点击加入游戏!");
 
-        meta.setLore(lore);
+        meta.lore(lore.stream().map(Text::mm).collect(java.util.stream.Collectors.toList()));
         item.setItemMeta(meta);
 
         return item;
@@ -134,13 +145,13 @@ public class ArenaSelector implements Listener {
         int maxPlayers = arena.getArenaConfig().getTeamCount() * arena.getArenaConfig().getTeamSize();
 
         if (playerCount == 0) {
-            return ChatColor.GREEN + "等待玩家";
+            return "<green>等待玩家";
         } else if (playerCount < maxPlayers / 2) {
-            return ChatColor.YELLOW + "等待更多玩家";
+            return "<yellow>等待更多玩家";
         } else if (playerCount < maxPlayers) {
-            return ChatColor.GOLD + "即将开始";
+            return "<gold>即将开始";
         } else {
-            return ChatColor.RED + "已满员";
+            return "<red>已满员";
         }
     }
 
@@ -150,8 +161,8 @@ public class ArenaSelector implements Listener {
             Bukkit.getScheduler().cancelTask(refreshTasks.get(player.getUniqueId()));
         }
 
-        // 创建新任务
-        int taskId = Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, () -> {
+        // 创建新任务（必须主线程：gui.clear/setItem 与 ItemStack 构建均非线程安全）
+        int taskId = Bukkit.getScheduler().runTaskTimer(plugin, () -> {
             if (!player.isOnline() || !openInventories.containsKey(player.getUniqueId())) {
                 return;
             }
@@ -172,10 +183,10 @@ public class ArenaSelector implements Listener {
             // 添加刷新按钮
             ItemStack refreshItem = new ItemStack(Material.COMPASS);
             ItemMeta meta = refreshItem.getItemMeta();
-            meta.setDisplayName(ChatColor.YELLOW + "刷新列表");
-            meta.setLore(Arrays.asList(
-                    ChatColor.GRAY + "点击刷新可用游戏列表"
-            ));
+            meta.displayName(Text.mm("<yellow>刷新列表"));
+            meta.lore(Arrays.asList(
+                    "点击刷新可用游戏列表"
+            ).stream().map(Text::mm).collect(java.util.stream.Collectors.toList()));
             refreshItem.setItemMeta(meta);
             gui.setItem(gui.getSize() - 1, refreshItem);
 
@@ -213,13 +224,14 @@ public class ArenaSelector implements Listener {
             // 刷新GUI
             openInventories.remove(playerId);
             openSelector(player);
-            player.playSound(player.getLocation(), org.bukkit.Sound.UI_BUTTON_CLICK, 1.0f, 1.0f);
+            SoundUtil.play(player, "gui-click", org.bukkit.Sound.UI_BUTTON_CLICK, 1.0f, 1.0f);
             return;
         }
 
         // 处理竞技场物品
         if (clicked.hasItemMeta() && clicked.getItemMeta().hasDisplayName()) {
-            String displayName = ChatColor.stripColor(clicked.getItemMeta().getDisplayName());
+            String displayName = net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer.plainText()
+                    .serialize(clicked.getItemMeta().displayName());
 
             //提取竞技场名称 (格式为 "竞技场名称 [x/y]")
             //注意：由于名称可能包含空格，我们按 " [" 分割，取第一部分
@@ -236,24 +248,33 @@ public class ArenaSelector implements Listener {
 
                     // 检查是否满足加入条件
                     if (!arena.isEnable()) {
-                        player.sendMessage(ChatColor.RED + "该游戏已禁用!");
+                        Text.send(player, "<red>该游戏已禁用!");
+                        return;
+                    }
+
+                    // 配置完整性兜底校验（GUI 可能是旧缓存）：缺等待点等配置时禁止加入
+                    if (!isSetupComplete(arena)) {
+                        Text.send(player, "<red>场地 [" + arenaName + "] 配置不完整，无法加入，缺少：");
+                        for (String item : arena.getArenaConfig().getMissingSetup()) {
+                            Text.send(player, "<gray> - " + item);
+                        }
                         return;
                     }
 
                     if (arena.status == Arena.GameStatus.PLAYING) {
-                        player.sendMessage(ChatColor.RED + "游戏已开始，无法加入!");
+                        Text.send(player, "<red>游戏已开始，无法加入!");
                         return;
                     }
 
                     if (arena.getPlayers().contains(player)) {
-                        player.sendMessage(ChatColor.RED + "你已在此游戏中!");
+                        Text.send(player, "<red>你已在此游戏中!");
                         return;
                     }
 
                     // 检查是否满员
                     int maxPlayers = arena.getArenaConfig().getTeamCount() * arena.getArenaConfig().getTeamSize();
                     if (arena.getPlayers().size() >= maxPlayers) {
-                        player.sendMessage(ChatColor.RED + "游戏已满员!");
+                        Text.send(player, "<red>游戏已满员!");
                         return;
                     }
 
@@ -269,7 +290,7 @@ public class ArenaSelector implements Listener {
 
                         //检查Party人数是否超过队伍最大人数
                         if (partySize > arena.getArenaConfig().getTeamSize()) {
-                            player.sendMessage(HappyGhastWar.language.getContent("game.party-too-large")
+                            Text.send(player, HappyGhastWar.language.getContent("game.party-too-large")
                                     .replace("{0}", String.valueOf(partySize))
                                     .replace("{1}", String.valueOf(arena.getArenaConfig().getTeamSize())));
                             return;
@@ -278,7 +299,7 @@ public class ArenaSelector implements Listener {
                         //检查Party成员是否都可以加入
                         for (Player member : partyMembers) {
                             if (arena.getPlayers().contains(member)) {
-                                player.sendMessage(ChatColor.RED + member.getName() + " 已经在游戏中!");
+                                Text.send(player, "<red>" + member.getName() + " 已经在游戏中!");
                                 return;
                             }
                         }
@@ -290,7 +311,7 @@ public class ArenaSelector implements Listener {
                         if (allPlayersAfterJoin.size() >= arena.getArenaConfig().getTeamCount()){
                             if (!TeamDivider.canStartCountdown(allPlayersAfterJoin, arena.getArenaConfig().getTeamCount(), partyManager)) {
                                 if (arena.getPlayers().isEmpty()){
-                                    player.sendMessage(HappyGhastWar.language.getContent("game.party-not-enough-space"));
+                                    Text.send(player, HappyGhastWar.language.getContent("game.party-not-enough-space"));
                                     return;
                                 }
                             }
@@ -306,7 +327,7 @@ public class ArenaSelector implements Listener {
 
                         if (party != null && !party.isLeader(player)) {
                             if (!arena.getPlayers().contains(party.getLeader())) {
-                                player.sendMessage(ChatColor.RED + "请等待队长 " + party.getLeader().getName() + " 先加入游戏!");
+                                Text.send(player, "<red>请等待队长 " + party.getLeader().getName() + " 先加入游戏!");
                                 return;
                             }
                         }
@@ -314,8 +335,8 @@ public class ArenaSelector implements Listener {
                         arena.internalAddPlayer(player);
                     }
 
-                    player.sendMessage(ChatColor.GREEN + "已加入游戏: " + ChatColor.GOLD + arenaName);
-                    player.playSound(player.getLocation(), org.bukkit.Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.0f);
+                    Text.send(player, "<green>已加入游戏: <gold>" + arenaName);
+                    SoundUtil.play(player, "arena-join", org.bukkit.Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.0f);
 
                     // 从列表中移除
                     openInventories.remove(playerId);

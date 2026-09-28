@@ -1,7 +1,6 @@
 package me.wang.happyGhastWar.util;
 
 import me.wang.happyGhastWar.HappyGhastWar;
-import org.bukkit.ChatColor;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -33,7 +32,7 @@ public class Language {
             }
             config = YamlConfiguration.loadConfiguration(file);
             config.save(file);
-            logger.info(ChatColor.GREEN+"Successfully loaded language "+name);
+            logger.info("Successfully loaded language " + name);
         } catch (IOException e) {
             logger.severe("Failed to load language "+name);
             throw new RuntimeException(e);
@@ -55,7 +54,7 @@ public class Language {
         }
         try {
             config.load(file);
-            logger.info(ChatColor.GREEN+"Successfully reloaded language "+name);
+            logger.info("Successfully reloaded language " + name);
         } catch (InvalidConfigurationException | IOException e) {
             logger.severe("Failed to reload language "+name);
             throw new RuntimeException(e);
@@ -66,17 +65,27 @@ public class Language {
         return config.getString(key);
     }
 
+    /**
+     * 获取语言文本（MiniMessage 标签格式）。
+     * 旧语言包里的 {@code &x} 色码会自动转换为对应标签；缺失 key 时回退为 key 本身，避免 NPE。
+     * 发送时请经 {@link Text#send} / {@link Text#mm}；喂给记分板等 legacy API 前用 {@link Text#legacy}。
+     */
     public String getContent(String key){
         String raw = config.getString(key);
-        return ChatColor.translateAlternateColorCodes('&',raw);
+        // 语言包缺失该 key 时回退为 key 本身，避免 NPE
+        if (raw == null){
+            return key;
+        }
+        return Text.legacyToTag(raw);
     }
 
     public List<String> getList(String key){
         return config.getStringList(key);
     }
 
+    /** 获取语言文本列表（MiniMessage 标签格式，同 {@link #getContent}） */
     public List<String> getTranslatedList(String key){
         List<String> list = config.getStringList(key);
-        return list.stream().map(s -> s = ChatColor.translateAlternateColorCodes('&',s)).collect(Collectors.toList());
+        return list.stream().map(Text::legacyToTag).collect(Collectors.toList());
     }
 }

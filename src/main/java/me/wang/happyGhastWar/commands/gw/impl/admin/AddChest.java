@@ -4,7 +4,7 @@ import me.wang.happyGhastWar.HappyGhastWar;
 import me.wang.happyGhastWar.arena.Arena;
 import me.wang.happyGhastWar.arena.ArenaConfig;
 import me.wang.happyGhastWar.commands.gw.GWCommand;
-import org.bukkit.Location;
+import me.wang.happyGhastWar.util.Text;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -14,31 +14,31 @@ import java.util.List;
 
 public class AddChest extends GWCommand {
     public AddChest(){
-        super("addchest", new String[0]);
+        super("addchest");
     }
 
     public void evaluate(HappyGhastWar ghastWar, Player player, String s, List<String> params) {
         World world = player.getWorld();
-        if (!ghastWar.arenas.containsKey(world.getName())){
-            player.sendMessage(ghastWar.language.getContent("commands.gameNotFound"));
+        if (!HappyGhastWar.arenas.containsKey(world.getName())){
+            Text.send(player, HappyGhastWar.language.getContent("commands.gameNotFound"));
             return;
         }
 
-        Arena arena = ghastWar.arenas.get(world.getName());
+        Arena arena = HappyGhastWar.arenas.get(world.getName());
         ArenaConfig arenaConfig = arena.getArenaConfig();
 
         Block block = player.getTargetBlockExact(5);
         if (block == null){
-            player.sendMessage(ghastWar.language.getContent("commands.target-empty"));
+            Text.send(player, HappyGhastWar.language.getContent("commands.target-empty"));
             return;
         }
         if (block.getType() != Material.CHEST){
-            player.sendMessage(ghastWar.language.getContent("commands.type-not-chest"));
+            Text.send(player, HappyGhastWar.language.getContent("commands.type-not-chest"));
             return;
         }
 
         arenaConfig.addChest(block.getLocation());
 
-        player.sendMessage(ghastWar.language.getContent("commands.setSuccess"));
+        Text.send(player, HappyGhastWar.language.getContent("commands.setSuccess"));
     }
 }

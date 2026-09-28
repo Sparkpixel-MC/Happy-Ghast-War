@@ -10,6 +10,9 @@ public class UpgradeManager {
     private static UpgradeManager instance;
     private Map<UUID, PlayerUpgrade> playerUpgrades = new HashMap<>();
 
+    /** 缓存价格表：getPrice 调用频繁，不必每次重建 */
+    private Map<UpgradeType, Map<Material, Integer>> priceCache;
+
     public enum UpgradeType {
         // 剑系列
         IRON_SWORD,
@@ -71,6 +74,13 @@ public class UpgradeManager {
 
     // 商品价格配置
     public Map<Material, Integer> getPrice(UpgradeType type) {
+        if (priceCache == null) {
+            priceCache = buildPrices();
+        }
+        return priceCache.get(type);
+    }
+
+    private Map<UpgradeType, Map<Material, Integer>> buildPrices() {
         Map<UpgradeType, Map<Material, Integer>> prices = new HashMap<>();
 
         // 剑系列
@@ -245,7 +255,7 @@ public class UpgradeManager {
         soulHealth1Price.put(Material.SNOW_BLOCK, 60);
         prices.put(UpgradeType.SOUL_HEALTH_UPGRADE_1, soulHealth1Price);
 
-        return prices.get(type);
+        return prices;
     }
 
     // 获取商品描述
@@ -409,7 +419,8 @@ public class UpgradeManager {
 
     // 检查玩家是否有足够的材料
     public boolean hasEnoughMaterials(Player player, Map<Material, Integer> required) {
-        if (required == null) return true;
+        // 未配置价格的商品视为不可购买，防止误变成免费
+        if (required == null) return false;
 
         for (Map.Entry<Material, Integer> entry : required.entrySet()) {
             int count = 0;
@@ -454,7 +465,7 @@ public class UpgradeManager {
 
         // 检查材料是否足够
         if (!hasEnoughMaterials(player, price)) {
-            player.sendMessage("§c材料不足！");
+            me.wang.happyGhastWar.util.Text.send(player, "<red>材料不足！");
             return false;
         }
 

@@ -4,6 +4,7 @@ import me.wang.happyGhastWar.HappyGhastWar;
 import me.wang.happyGhastWar.arena.Arena;
 import me.wang.happyGhastWar.arena.ArenaConfig;
 import me.wang.happyGhastWar.commands.gw.GWCommand;
+import me.wang.happyGhastWar.util.Text;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
@@ -13,34 +14,32 @@ import java.util.List;
 
 public class SetGhastSpawn extends GWCommand {
     public SetGhastSpawn(){
-        super("setghastspawn", new String[0]);
+        super("setghastspawn");
     }
 
     public void evaluate(HappyGhastWar ghastWar, Player player, String s, List<String> params) {
         World world = player.getWorld();
-        if (!ghastWar.arenas.containsKey(world.getName())){
-            player.sendMessage(ghastWar.getLanguage(player).getContent("commands.gameNotFound"));
+        if (!HappyGhastWar.arenas.containsKey(world.getName())){
+            Text.send(player, ghastWar.getLanguage(player).getContent("commands.gameNotFound"));
             return;
         }
-        if (params.size() < 1){
-            player.sendMessage(ghastWar.getLanguage(player).getContent("commands.missRequireData"));
+        if (params.isEmpty()){
+            Text.send(player, ghastWar.getLanguage(player).getContent("commands.missRequireData"));
             return;
         }
         List<String> teams = new ArrayList<>();
-        Arrays.stream(Arena.Teams.values()).forEach(teams1 -> {
-            teams.add(teams1.name());
-        });
+        Arrays.stream(Arena.Teams.values()).forEach(teams1 -> teams.add(teams1.name()));
 
-        if (!teams.contains(params.get(0))){
-            player.sendMessage(ghastWar.getLanguage(player).getContent("commands.teamNotFound"));
-            player.sendMessage(ghastWar.getLanguage(player).getContent("commands.availableTeams"));
+        if (!teams.contains(params.getFirst())){
+            Text.send(player, ghastWar.getLanguage(player).getContent("commands.teamNotFound"));
+            Text.send(player, ghastWar.getLanguage(player).getContent("commands.availableTeams"));
             return;
         }
-        Arena arena = ghastWar.arenas.get(world.getName());
+        Arena arena = HappyGhastWar.arenas.get(world.getName());
         ArenaConfig arenaConfig = arena.getArenaConfig();
 
-        arenaConfig.setGhastSpawn(Arena.Teams.valueOf(params.get(0)),player.getLocation());
+        arenaConfig.setGhastSpawn(Arena.Teams.valueOf(params.getFirst()),player.getLocation());
 
-        player.sendMessage(ghastWar.getLanguage(player).getContent("commands.setSuccess"));
+        Text.send(player, ghastWar.getLanguage(player).getContent("commands.setSuccess"));
     }
 }

@@ -30,13 +30,7 @@ public class JoinGameEvent implements Listener {
 
     @EventHandler
     public void joinFromServer(PlayerJoinEvent e){
+        // 主动调用一次，确保语言包已按该玩家 locale 缓存
         ghastWar.getLanguage(e.getPlayer());
-        World world = e.getPlayer().getWorld();
-        if (!HappyGhastWar.arenas.containsKey(world.getName())){
-            return;
-        }
-        Arena arena = HappyGhastWar.arenas.get(world.getName());
-
-        //arena.addPlayer(e.getPlayer());
     }
 }
