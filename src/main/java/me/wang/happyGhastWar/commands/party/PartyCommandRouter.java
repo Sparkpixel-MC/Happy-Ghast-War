@@ -3,7 +3,6 @@ package me.wang.happyGhastWar.commands.party;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import me.wang.happyGhastWar.HappyGhastWar;
-import me.wang.happyGhastWar.arena.Arena;
 import me.wang.happyGhastWar.commands.party.impl.*;
 import me.wang.happyGhastWar.util.Text;
 import org.bukkit.command.Command;
@@ -16,7 +15,7 @@ import java.util.*;
 import java.util.stream.Stream;
 
 public class PartyCommandRouter implements CommandExecutor, TabExecutor {
-    private static final List<PartyCommand> COMMANDS = ImmutableList.of(new Accept(), new Create(), new Decline(), new Disband(), new Info(), new Invite(), new Kick(), new Leave(), new Transfer(), new Chat());
+    private static final List<PartyCommand> COMMANDS = ImmutableList.of(new Accept(), new Create(), new Decline(), new Disband(), new Info(), new Invite(), new Kick(), new Leave(), new Transfer());
     private final HappyGhastWar plugin;
     private final Map<String, PartyCommand> commands;
 
