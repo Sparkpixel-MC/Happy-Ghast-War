@@ -1,6 +1,6 @@
 name: HappyGhastWar
 version: 1.0-beta
-main: me.wang.happyGhastWar.HappyGhastWar
+main: top.sparkpixel.hgw.HappyGhastWar
 api-version: 1.21
 description: A Ghast Warfare game
 author: Wang
