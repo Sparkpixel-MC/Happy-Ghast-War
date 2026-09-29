@@ -127,6 +127,12 @@ public class Debug extends GWCommand {
                 Text.send(player, "<red>场地内没有玩家，先 /gw join 加入");
                 return;
             }
+            // 倒计时进行中必须先停掉任务再拉回 WAIT：否则旧倒计时任务会被
+            // handleWait 的重复创建覆盖成孤儿，之后会反复把场地拨回 STARTING，
+            // 表现为"游戏开始"刷屏+玩家被反复传送回出生点
+            if (arena.status == Arena.GameStatus.COUNTING && arena.countTask != null){
+                arena.countTask.cancel();
+            }
             // 把状态拉回 WAIT 以触发 handleWait 中的倒计时启动逻辑
             arena.status = Arena.GameStatus.WAIT;
             Text.send(player, "<green>已跳过等待，倒计时即将开始（如人数不足仍无法开始）");

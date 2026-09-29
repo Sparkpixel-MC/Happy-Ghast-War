@@ -1,5 +1,5 @@
 name: HappyGhastWar
-version: 1.0-beta
+version: 2.0-beta-1
 main: top.sparkpixel.hgw.HappyGhastWar
 api-version: 1.21
 description: A Ghast Warfare game

@@ -146,32 +146,58 @@ public final class HappyGhastWar extends JavaPlugin {
                         // Only treat .yml files in the arenas folder as configs
                         continue;
                     }
-                    String fileName = file.getName();
-                    String worldName = fileName.replace(".yml", "");
+                    // 每个竞技场独立 try/catch：单个竞技场失败不能中断其余竞技场的加载
+                    try {
+                        String fileName = file.getName();
+                        String worldName = fileName.replace(".yml", "");
 
-                    // Check whether the SlimeWorld exists in the loader's directory
-                    // (<slime-worlds-folder>/<name>.slime), not the arenas folder.
-                    if (!loader.worldExists(worldName)) {
-                        getLogger().warning("SlimeWorld file not found for arena " + worldName
-                                + " in " + slimeWorldsDir.getAbsolutePath() + ", skipping...");
-                        continue;
+                        // Check whether the SlimeWorld exists in the loader's directory
+                        // (<slime-worlds-folder>/<name>.slime), not the arenas folder.
+                        if (!loader.worldExists(worldName)) {
+                            getLogger().warning("SlimeWorld file not found for arena " + worldName
+                                    + " in " + slimeWorldsDir.getAbsolutePath() + ", skipping...");
+                            continue;
+                        }
+
+                        SlimeWorldInstance instance = asp.getLoadedWorld(worldName);
+                        SlimeWorld world;
+                        World bukkitWorld;
+                        if (instance != null) {
+                            // The world was already loaded before us (server bukkit.yml entry
+                            // or another plugin); loadWorld() would throw "already loaded".
+                            getLogger().warning("SlimeWorld " + worldName + " is already loaded, reusing it.");
+                            world = instance;
+                            bukkitWorld = instance.getBukkitWorld();
+                        } else if (Bukkit.getWorld(worldName) != null) {
+                            // A regular (non-slime) world with this name is loaded and ASP
+                            // can't take it over. resetWorld() will swap in the slime world
+                            // on first reset, so the arena can still run on it meanwhile.
+                            getLogger().warning("World " + worldName + " is already loaded as a regular world, reusing it.");
+                            world = null;
+                            bukkitWorld = Bukkit.getWorld(worldName);
+                        } else {
+                            // Read world synchronously
+                            world = asp.readWorld(loader, worldName, false, new SlimePropertyMap());
+
+                            // Load world synchronously on main thread
+                            instance = asp.loadWorld(world, true);
+                            bukkitWorld = instance.getBukkitWorld();
+                        }
+
+                        ArenaConfig arenaConfig = new ArenaConfig(HappyGhastWar.this);
+                        arenaConfig.loadArena(fileName);
+                        Arena arena = new Arena(HappyGhastWar.this, bukkitWorld, arenaConfig);
+
+                        arenas.put(bukkitWorld.getName(), arena);
+                        if (world != null) {
+                            slimeWorldInstances.put(worldName, instance);
+                            slimeWorlds.put(worldName, world);
+                        }
+                        getLogger().info("Loaded arena " + worldName);
+                    } catch (Exception e) {
+                        getLogger().severe("Failed to load arena " + file.getName() + ": " + e.getMessage());
+                        e.printStackTrace();
                     }
-
-                    // Read world synchronously
-                    SlimeWorld world = asp.readWorld(loader, worldName, false, new SlimePropertyMap());
-
-                    // Load world synchronously on main thread
-                    SlimeWorldInstance instance = asp.loadWorld(world, true);
-                    World bukkitWorld = instance.getBukkitWorld();
-
-                    ArenaConfig arenaConfig = new ArenaConfig(HappyGhastWar.this);
-                    arenaConfig.loadArena(fileName);
-                    Arena arena = new Arena(HappyGhastWar.this, bukkitWorld, arenaConfig);
-
-                    arenas.put(bukkitWorld.getName(), arena);
-                    slimeWorldInstances.put(worldName, instance);
-                    slimeWorlds.put(worldName, world);
-                    getLogger().info("Loaded arena " + worldName);
                 }
             }
             getLogger().info("Loaded " + arenas.size() + " arena(s) in total.");

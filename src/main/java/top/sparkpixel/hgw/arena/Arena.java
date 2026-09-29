@@ -142,7 +142,7 @@ public class Arena extends BukkitRunnable {
 
     private int timeCount = -1;
 
-    private BukkitTask countTask;
+    public BukkitTask countTask;
 
     public Map<Location,Material> resources = new HashMap<>();
 
@@ -240,7 +240,19 @@ public class Arena extends BukkitRunnable {
         updateBossBar();
         switch (status){
             case WAIT -> handleWait();
-            case STARTING -> handleStarting();
+            case STARTING -> {
+                try {
+                    handleStarting();
+                } catch (Exception e) {
+                    // 开局中途异常会把场地留在半初始化状态：只把状态拨回 WAIT 的话，
+                    // 人数满足时倒计时会被立刻再次触发，表现为反复传送+刷"游戏开始"。
+                    // 必须做一次完整清理并重载世界
+                    ghastWar.getLogger().severe("Game start failed for arena " + name + ": " + e.getMessage());
+                    e.printStackTrace();
+                    status = GameStatus.WAIT;
+                    forceReset();
+                }
+            }
             case PLAYING -> handlePlaying();
             case ENDING -> handleEnding();
         }
@@ -616,8 +628,10 @@ public class Arena extends BukkitRunnable {
             Team winTeam = teams.getFirst();
 
             endGame(winTeam);
-        } else if (teams.isEmpty() && !playerDatas.isEmpty()){
-            // 所有队伍同时团灭：平局结束
+        } else if (teams.isEmpty()){
+            // 所有队伍团灭（含全员退出导致 playerDatas 已被清空的情形）都必须结束：
+            // 不结束的话场地永远停在 PLAYING，清理与世界重载不会执行，
+            // 上一局的乐魂/炉子就会残留到下一局
             endGame(null);
         }
     }
@@ -822,6 +836,13 @@ public class Arena extends BukkitRunnable {
         // 重置统计（每局独立）
         statistics.cleanup();
 
+        // 防御：异常重开时上一次对局的乐魂实体可能仍残留，先全部移除，
+        // 避免旧炉子/旧乐魂堆进新对局
+        for (GameGhast oldGhast : new ArrayList<>(ghasts.values())){
+            oldGhast.unregister();
+        }
+        ghasts.clear();
+
         world.setGameRule(GameRule.KEEP_INVENTORY,true);
         world.setGameRule(GameRule.DO_IMMEDIATE_RESPAWN,true);
         world.setDifficulty(Difficulty.EASY);
@@ -884,6 +905,11 @@ public class Arena extends BukkitRunnable {
         gameScoreboard.updatePlayerCount(size,teamCount * teamSize);
 
         if (size >= minPlayers){
+            // 已有倒计时在跑时绝不能再建一个：被覆盖的旧任务会泄漏，
+            // 之后每秒把 status 拨回 STARTING，导致开局流程无限重演
+            if (countTask != null && !countTask.isCancelled()){
+                return;
+            }
             status = GameStatus.COUNTING;
             boolean canStart = TeamDivider.canStartCountdown(
                     players,
@@ -901,38 +927,49 @@ public class Arena extends BukkitRunnable {
             gameScoreboard.setGameState(GameScoreboard.GameState.COUNTDOWN);
             // 更新所有玩家的 Tab 显示
             updateAllTabs();
-            countTask = ghastWar.getServer().getScheduler().runTaskTimer(ghastWar,() -> {
-                gameScoreboard.updateCountdown(timeCount);
-                if (players.size() < minPlayers){
-                    for (Player player : players){
-                        Text.send(player, ghastWar.getLanguage(player).getContent("game.game-cancel-message"));
+            // 用匿名 BukkitRunnable 以便任务内部 this.cancel() 精确自毁：
+            // 在 lambda 里引用 countTask 字段取消的可能已经是新建的另一个任务
+            countTask = new BukkitRunnable(){
+                @Override
+                public void run(){
+                    // 孤儿任务自毁：场地已不在倒计时状态（被重置/开局/调试指令改动）时，
+                    // 绝不能把 status 拨回 STARTING，否则开局流程会被反复触发
+                    if (status != GameStatus.COUNTING){
+                        this.cancel();
+                        return;
                     }
-                    countTask.cancel();
-                    status = GameStatus.WAIT;
-                    gameScoreboard.setGameState(GameScoreboard.GameState.WAITING);
-                    // 更新所有玩家的 Tab 显示
-                    updateAllTabs();
-                    timeCount = -1;
-                    return;
-                }
-                if (timeCount > 0 && timeCount <= 5){
-                    String subtitle = translateCount(timeCount);
+                    gameScoreboard.updateCountdown(timeCount);
+                    if (players.size() < minPlayers){
+                        for (Player player : players){
+                            Text.send(player, ghastWar.getLanguage(player).getContent("game.game-cancel-message"));
+                        }
+                        this.cancel();
+                        status = GameStatus.WAIT;
+                        gameScoreboard.setGameState(GameScoreboard.GameState.WAITING);
+                        // 更新所有玩家的 Tab 显示
+                        updateAllTabs();
+                        timeCount = -1;
+                        return;
+                    }
+                    if (timeCount > 0 && timeCount <= 5){
+                        String subtitle = translateCount(timeCount);
 
-                    for (Player player : players){
-                        String title = ghastWar.getLanguage(player).getContent("game.arena-start-countdown-title");
-                        player.sendTitle(Text.legacy(title), Text.legacy(subtitle));
-                        SoundUtil.play(player, "countdown", Sound.UI_BUTTON_CLICK, 1.0f, 1.0f);
-                        Text.send(player, ghastWar.getLanguage(player).getContent("game.getMinPlayers").replace("{time}",timeCount+""));
+                        for (Player player : players){
+                            String title = ghastWar.getLanguage(player).getContent("game.arena-start-countdown-title");
+                            player.sendTitle(Text.legacy(title), Text.legacy(subtitle));
+                            SoundUtil.play(player, "countdown", Sound.UI_BUTTON_CLICK, 1.0f, 1.0f);
+                            Text.send(player, ghastWar.getLanguage(player).getContent("game.getMinPlayers").replace("{time}",timeCount+""));
+                        }
                     }
+                    if (timeCount < 1){
+                        timeCount = 0;
+                        this.cancel();
+                        status = GameStatus.STARTING;
+                        return;
+                    }
+                    timeCount--;
                 }
-                if (timeCount < 1){
-                    timeCount = 0;
-                    countTask.cancel();
-                    status = GameStatus.STARTING;
-                    return;
-                }
-                timeCount--;
-            },0,20);
+            }.runTaskTimer(ghastWar,0,20);
         }
     }
 
@@ -1117,7 +1154,24 @@ public class Arena extends BukkitRunnable {
         if (slimeWorld != null) {
             api.saveWorld(slimeWorld);
         }
-        Bukkit.unloadWorld(worldName, false);
+        boolean unloaded = Bukkit.unloadWorld(worldName, false);
+        if (!unloaded){
+            // 卸载失败基本都是世界里还有玩家。直接继续的话 loadWorld 会抛
+            // "already loaded" 被 catch 吞掉，场地卡在 PROCESSING 且旧实体全部残留。
+            // 先把残留玩家送回大厅再试一次，仍失败则放弃本次重置
+            World existing = Bukkit.getWorld(worldName);
+            if (existing != null){
+                for (Player leftover : new ArrayList<>(existing.getPlayers())){
+                    tpToLobby(leftover, ghastWar);
+                }
+                unloaded = Bukkit.unloadWorld(worldName, false);
+            }
+        }
+        if (!unloaded){
+            ghastWar.getLogger().severe("Failed to unload world " + worldName + " for reset; aborting reset to avoid stale entities.");
+            status = GameStatus.WAIT;
+            return;
+        }
 
         // Per the AdvancedSlimePaper docs: readWorld (I/O) should run off the main
         // thread; loadWorld (server-interacting) MUST run on the main thread. So do
