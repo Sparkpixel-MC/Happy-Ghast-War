@@ -1,9 +1,11 @@
 name: HappyGhastWar
-version: 2.0-beta-1
+version: 2.0-beta-2
 main: top.sparkpixel.hgw.HappyGhastWar
 api-version: 1.21
-description: A Ghast Warfare game
-author: Wang
+description: A game similar to BedWars, but with gameplay more varied than BedWars
+author:
+  - laowangowo
+  - Sparkpixel-MC
 softdepend:
   - SlimeWorldManager
   - AdvancedSlimePaper

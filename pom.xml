@@ -6,7 +6,7 @@
 
   <groupId>top.sparkpixel</groupId>
   <artifactId>happyghastwar</artifactId>
-  <version>2.0-beta-1</version>
+  <version>2.0-beta-2</version>
   <packaging>jar</packaging>
 
   <name>happyghastwar</name>
