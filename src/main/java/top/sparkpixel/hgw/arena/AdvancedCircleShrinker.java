@@ -4,6 +4,7 @@ import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.World;
+import org.bukkit.WorldBorder;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -30,6 +31,9 @@ public class AdvancedCircleShrinker {
 
     private final Set<UUID> damageCooldown = new HashSet<>();
 
+    /** 缩圈范围可视化：所在世界自带的世界边界（正方形近似圆形边界，伤害为 0） */
+    private WorldBorder border;
+
     /**
      * 构造函数
      * @param plugin 插件主类
@@ -45,6 +49,9 @@ public class AdvancedCircleShrinker {
         this.isActive = false;
         this.shrinkAnimation = true;
         this.damagePerSecond = 1.0; // 默认每秒1点伤害
+
+        // 开局即用世界边界标出初始缩圈范围，方便玩家参考
+        updateBorder();
     }
 
     /**
@@ -71,7 +78,14 @@ public class AdvancedCircleShrinker {
         shrinkTaskId = new BukkitRunnable() {
             @Override
             public void run() {
+                // 游戏已结束（结算/重置中）：冻结缩圈，边界由 init() 的 stopShrinking 复位
+                if (arena.status != Arena.GameStatus.PLAYING) {
+                    cancel();
+                    return;
+                }
+
                 boolean reachedTarget = circleShrinker.shrinkTo(targetRadius, shrinkPerTick);
+                updateBorder();
 
                 if (reachedTarget) {
                     cancel();
@@ -123,6 +137,9 @@ public class AdvancedCircleShrinker {
         // 清空调息列表
         damageCooldown.clear();
 
+        // 复位世界边界可视化
+        resetBorder();
+
         // 播放结束音效（重启缩圈时不广播"已停止"）
         if (!restarting) {
             broadcastSound("shrink-stop", Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.0f);
@@ -137,7 +154,8 @@ public class AdvancedCircleShrinker {
         damageTaskId = new BukkitRunnable() {
             @Override
             public void run() {
-                if (!isActive) {
+                // 游戏已结束就不再施加缩圈伤害/发送圈外警告（结算阶段 15 秒内旧任务会继续跑）
+                if (!isActive || arena.status != Arena.GameStatus.PLAYING) {
                     cancel();
                     return;
                 }
@@ -189,7 +207,7 @@ public class AdvancedCircleShrinker {
 
             @Override
             public void run() {
-                if (!isActive) {
+                if (!isActive || arena.status != Arena.GameStatus.PLAYING) {
                     cancel();
                     return;
                 }
@@ -254,6 +272,29 @@ public class AdvancedCircleShrinker {
         Sound sound = SoundUtil.get(key, fallback);
         for (Player player : circleShrinker.getPlayersInsideCircle()) {
             player.playSound(player.getLocation(), sound, volume, pitch);
+        }
+    }
+
+    /**
+     * 用 MC 世界边界可视化当前缩圈范围（世界边界是正方形，这里以圆的直径近似）：
+     * 伤害设为 0，仅作参考显示，圈外伤害仍由缩圈器自身的伤害任务施加。
+     */
+    private void updateBorder() {
+        World world = circleShrinker.getCenter().getWorld();
+        if (world == null) return;
+        if (border == null) {
+            border = world.getWorldBorder();
+        }
+        border.setDamageAmount(0);
+        border.setCenter(circleShrinker.getCenter());
+        border.setSize(circleShrinker.getRadius() * 2);
+    }
+
+    /** 复位世界边界为该世界默认状态 */
+    private void resetBorder() {
+        if (border != null) {
+            border.reset();
+            border = null;
         }
     }
 

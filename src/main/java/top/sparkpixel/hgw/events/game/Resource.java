@@ -3,12 +3,10 @@ package top.sparkpixel.hgw.events.game;
 import top.sparkpixel.hgw.HappyGhastWar;
 import top.sparkpixel.hgw.arena.Arena;
 import top.sparkpixel.hgw.util.Text;
-import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.block.Chest;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -29,17 +27,10 @@ public class Resource implements Listener {
     }
 
     /**
-     * 全部可采集方块 -> 应有掉落物（挖取后自动恢复原方块）。
+     * 全部可采集方块 -> 应有掉落物（方块保留原地，仅产出掉落物）。
      * 覆盖所有矿物（含深板岩/下界变体）、粗金属块与各类原木。
      */
     private static final Map<Material, ItemStack> RESOURCE_DROPS = buildResourceDrops();
-
-    /** 粗金属块 -> 挖取后降级成的对应矿石（到点仍恢复为原粗金属块） */
-    private static final Map<Material, Material> RAW_DEGRADE = Map.of(
-            Material.RAW_IRON_BLOCK, Material.IRON_ORE,
-            Material.RAW_COPPER_BLOCK, Material.COPPER_ORE,
-            Material.RAW_GOLD_BLOCK, Material.GOLD_ORE
-    );
 
     private static Map<Material, ItemStack> buildResourceDrops() {
         Map<Material, ItemStack> drops = new EnumMap<>(Material.class);
@@ -68,16 +59,6 @@ public class Resource implements Listener {
         }
     }
 
-    /** 矿石 -> 被粗金属块降级覆盖时恢复应变成的粗金属块（非降级矿石返回 null） */
-    private static Material rawBlockOf(Material ore) {
-        return switch (ore) {
-            case IRON_ORE, DEEPSLATE_IRON_ORE -> Material.RAW_IRON_BLOCK;
-            case COPPER_ORE, DEEPSLATE_COPPER_ORE -> Material.RAW_COPPER_BLOCK;
-            case GOLD_ORE, DEEPSLATE_GOLD_ORE -> Material.RAW_GOLD_BLOCK;
-            default -> null;
-        };
-    }
-
     @EventHandler
     public void destroy(BlockBreakEvent e){
         if (!HappyGhastWar.arenas.containsKey(e.getBlock().getWorld().getName())) return;
@@ -96,8 +77,8 @@ public class Resource implements Listener {
 
         // ---------------------------------------------------------------
         // 资源分区（全自动，无需手动绑定）：
-        //   私有资源区 = 距任一队出生点 private-zone-radius 内 → 本队发展资源（普通恢复速度）
-        //   中立资源区 = 手动 addzone 富矿点 或 离所有队出生点都远的中部地区（中岛）→ 恢复更快+全图广播
+        //   私有资源区 = 距任一队出生点 private-zone-radius 内 → 本队发展资源
+        //   中立资源区 = 手动 addzone 富矿点 或 离所有队出生点都远的中部地区（中岛）
         // ---------------------------------------------------------------
         Arena.Teams ownerTeam = ownerTeamOf(arena, block.getLocation());
         boolean manualNeutral = isInManualNeutralZone(arena, block.getLocation());
@@ -115,10 +96,20 @@ public class Resource implements Listener {
             }
         }
 
-        // 中立资源区：开采时向全图广播争夺消息
+        ItemStack dropTemplate = RESOURCE_DROPS.get(block.getType());
+
+        // ---------------------------------------------------------------
+        // 地图不可破坏：非资源方块（含炉子/箱子等地图结构）一律取消破坏
+        // ---------------------------------------------------------------
+        if (dropTemplate == null) {
+            e.setCancelled(true);
+            return;
+        }
+
+        // 中立资源区：开采时向全图广播争夺消息（每队每局只广播一次，防刷屏）
         if (neutral) {
             Team team = arena.getPlayerTeam(player);
-            if (team != null) {
+            if (team != null && arena.neutralMiningAnnounced.add(team.getTeams())) {
                 String teamColor = team.getTeams().getColor();
                 for (Player arenaPlayer : arena.getPlayers()) {
                     Text.send(arenaPlayer, ghastWar.getLanguage(arenaPlayer).getContent("game.neutral-zone-mining")
@@ -128,65 +119,15 @@ public class Resource implements Listener {
             }
         }
 
-        if (block.getType() == Material.FURNACE || block.getType() == Material.BLAST_FURNACE) return;
-
-        if (block.getType() == Material.CHEST){
-            Chest chest = (Chest) block.getState();
-            for (ItemStack itemStack : chest.getBlockInventory().getContents()){
-                if (itemStack != null){
-                    player.getWorld().dropItem(chest.getLocation(),itemStack);
-                }
-            }
-            e.setDropItems(false);
-            return;
-        }
-
         // ---------------------------------------------------------------
-        // 自动绑定：地图内所有对应矿石/原木自动成为资源点（无需手动逐个 addzone）
-        // 挖取 -> 掉落该方块的应有资源 -> 到点恢复为原有方块
+        // 资源方块：取消原版破坏 → 方块保留原地不消失，仅产出应有掉落物
+        // 掉落物生成在挖矿玩家所在位置（玩家身体占据的必是空气格）：
+        // 地图矿石四周/上方多为实心方块，若生成在方块内会被原版
+        // "卡方块自救"一路顶到地图表面，玩家无法拾取
         // ---------------------------------------------------------------
-        ItemStack dropTemplate = RESOURCE_DROPS.get(block.getType());
-        if (dropTemplate == null) return; // 非资源方块：按原版逻辑处理
-
-        Material originalType = block.getType();
-        Material degraded = RAW_DEGRADE.get(originalType); // 粗金属块 -> 降级为对应矿石
-
-        // 资源以掉落物形式产出（走近自动拾取），不再直接塞进背包
-        e.setDropItems(false);
-        Location dropLoc = block.getLocation().clone().add(0.5, 0.5, 0.5);
-        block.getWorld().dropItemNaturally(dropLoc, dropTemplate.clone());
-
-        if (degraded != null) {
-            // 粗金属块：取消原版破坏并降级为对应矿石，到点恢复为原粗金属块
-            e.setCancelled(true);
-            block.setType(degraded);
-            arena.getRawBlocks().remove(block.getLocation());
-        } else if (arena.getRawBlocks().contains(block.getLocation())) {
-            // 该位置是粗金属块降级出的矿石：恢复时升级回原粗金属块
-            Material raw = rawBlockOf(originalType);
-            if (raw != null) {
-                originalType = raw;
-            }
-            arena.getRawBlocks().remove(block.getLocation());
-        }
-
-        arena.getResources().put(block.getLocation(), originalType);
+        e.setCancelled(true);
+        player.getWorld().dropItem(player.getLocation().add(0, 0.5, 0), dropTemplate.clone());
         arena.getStatistics().recordResourceMined(player);
-
-        // 中立资源区（中岛）恢复更快；私有资源区按普通速度；所有资源点都会自动恢复
-        int respawnSeconds = neutral
-                ? arena.getArenaConfig().getNeutralRespawnSeconds()
-                : arena.getArenaConfig().getResourceRespawnSeconds();
-
-        final Material restoreType = originalType;
-        Bukkit.getServer().getScheduler().runTaskLater(HappyGhastWar.getPlugin(HappyGhastWar.class),() -> {
-            // 仅当该位置仍登记为资源点时再生（防止世界重置后残留）
-            if (!arena.getResources().containsKey(block.getLocation())){
-                return;
-            }
-            arena.getResources().remove(block.getLocation());
-            block.getLocation().getBlock().setType(restoreType);
-        }, respawnSeconds * 20L);
 
     }
 

@@ -7,9 +7,6 @@ import org.bukkit.entity.Player;
 
 import java.util.List;
 
-/**
- * /gw gui - 打开场地选择菜单
- */
 public class GUI extends GWCommand {
 
     public GUI(){

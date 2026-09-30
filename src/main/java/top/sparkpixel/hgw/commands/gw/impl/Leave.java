@@ -33,7 +33,6 @@ public class Leave extends GWCommand {
 
         if (party != null && party.isLeader(player)) {
 
-            // 队长加入，检查整个Party
             List<Player> partyMembers = party.getOnlineMembers();
 
             for (Player member : partyMembers) {
@@ -41,8 +40,6 @@ public class Leave extends GWCommand {
                 arena.removePlayer(member);
             }
         } else {
-
-            // 如果是Party成员但不是队长，检查队长是否已经加入
             if (party != null && !party.isLeader(player)) {
                 if (arena.getPlayers().contains(party.getLeader())) {
                     player.sendMessage(

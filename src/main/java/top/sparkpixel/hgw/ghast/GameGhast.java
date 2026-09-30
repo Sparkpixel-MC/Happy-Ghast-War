@@ -1,12 +1,8 @@
 package top.sparkpixel.hgw.ghast;
 
+import org.bukkit.entity.*;
 import top.sparkpixel.hgw.ghast.armor.GhastArmorManager;
 import top.sparkpixel.hgw.ghast.skill.GhastSkillManager;
-import org.bukkit.entity.BlockDisplay;
-import org.bukkit.entity.HappyGhast;
-import org.bukkit.entity.Interaction;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.TextDisplay;
 import top.sparkpixel.hgw.util.Text;
 
 public class GameGhast {

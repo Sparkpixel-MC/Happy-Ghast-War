@@ -7,9 +7,6 @@ import org.bukkit.entity.Player;
 
 import java.util.List;
 
-/**
- * /gw stats - 查看个人本场游戏统计
- */
 public class Stats extends GWCommand {
 
     public Stats(){
@@ -32,7 +29,7 @@ public class Stats extends GWCommand {
         if (arena != null) {
             return arena;
         }
-        // 兜底：玩家已加入但尚未传送
+
         for (Arena a : HappyGhastWar.arenas.values()) {
             if (a.getPlayers().contains(player)) {
                 return a;

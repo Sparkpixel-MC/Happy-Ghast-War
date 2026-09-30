@@ -18,6 +18,7 @@ import org.bukkit.util.Vector;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Random;
 
 /**
@@ -163,7 +164,7 @@ public class GhastSkillManager {
 
         // 增加速度
         if (entity.getAttribute(Attribute.MOVEMENT_SPEED) != null) {
-            entity.getAttribute(Attribute.MOVEMENT_SPEED).setBaseValue(0.3); // 正常速度是0.2
+            Objects.requireNonNull(entity.getAttribute(Attribute.MOVEMENT_SPEED)).setBaseValue(0.3); // 正常速度是0.2
         }
 
         // 添加粒子效果
@@ -173,7 +174,7 @@ public class GhastSkillManager {
             public void run() {
                 if (duration >= 100 || !entity.isValid()) { // 5秒
                     if (entity.isValid() && entity.getAttribute(Attribute.MOVEMENT_SPEED) != null) {
-                        entity.getAttribute(Attribute.MOVEMENT_SPEED).setBaseValue(0.2);
+                        Objects.requireNonNull(entity.getAttribute(Attribute.MOVEMENT_SPEED)).setBaseValue(0.2);
                     }
                     cancel();
                     return;
@@ -258,8 +259,7 @@ public class GhastSkillManager {
 
                 // 推开附近的敌人
                 for (Entity nearby : explosionLoc.getWorld().getNearbyEntities(explosionLoc, 5, 5, 5)) {
-                    if (nearby instanceof Player && nearby != rider) {
-                        Player target = (Player) nearby;
+                    if (nearby instanceof Player target && nearby != rider) {
                         Vector direction = target.getLocation().toVector().subtract(explosionLoc.toVector()).normalize();
                         target.setVelocity(direction.multiply(2));
                         Text.send(target, "<red>被爆炸冲击击飞！");

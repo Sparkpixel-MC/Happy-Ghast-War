@@ -31,7 +31,6 @@ public class Join extends GWCommand {
         Arena arena = HappyGhastWar.arenas.get(params.getFirst());
         ArenaConfig arenaConfig = arena.getArenaConfig();
 
-        // 场地配置不完整（如还没设置等待点）时给出明确提示，而不是 NPE 崩溃
         List<String> missingSetup = arenaConfig.getMissingSetup();
         if (!missingSetup.isEmpty()){
             Text.send(player, "<red>场地 [" + params.getFirst() + "] 配置不完整，无法加入，缺少：");

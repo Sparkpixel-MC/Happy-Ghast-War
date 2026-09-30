@@ -11,9 +11,6 @@ import top.sparkpixel.hgw.ghast.GameGhast;
 
 import java.util.List;
 
-/**
- * /gw status - 查看当前场地状态（阶段/队伍/乐魂/空投/技能）
- */
 public class Status extends GWCommand {
 
     public Status(){
@@ -31,9 +28,6 @@ public class Status extends GWCommand {
         showGameStatus(player, arena);
     }
 
-    /**
-     * 显示游戏状态
-     */
     private void showGameStatus(Player player, Arena arena) {
         StringBuilder statusMessage = new StringBuilder();
 
@@ -42,26 +36,22 @@ public class Status extends GWCommand {
         statusMessage.append("<yellow>游戏阶段: <white>").append(getStageName(arena.stage)).append("\n");
         statusMessage.append("<yellow>游戏状态: <white>").append(arena.status.name()).append("\n");
 
-        // 显示时间信息
         if (arena.bossBarTime > 0) {
             statusMessage.append("<yellow>剩余时间: <white>").append(arena.bossBarTime).append("秒\n");
         }
 
-        // 显示队伍信息
         statusMessage.append("\n<gold>=== 队伍信息 ===\n");
         for (Team team : arena.getTeams()) {
-            String teamColor = team.getTeams().getColor().toString();
+            String teamColor = team.getTeams().getColor();
             statusMessage.append(teamColor).append(team.getTeams().getDisplayName())
                     .append(" <white>- 玩家: ").append(team.getPlayers().size())
                     .append(", 乐魂: ").append(team.getGhasts().size())
                     .append(", 复活: ").append(team.isCanRespawn() ? "可用" : "不可用").append("\n");
         }
 
-        // 显示空投信息
         statusMessage.append("\n<gold>=== 空投信息 ===\n");
         statusMessage.append("<yellow>活动空投: <white>").append(arena.getActiveAirdrops().size()).append(" 个\n");
 
-        // 显示技能冷却信息（如果玩家骑乘乐魂）
         for (java.util.Map.Entry<HappyGhast, GameGhast> entry : arena.getGhasts().entrySet()) {
             if (entry.getKey().getPassengers().contains(player)) {
                 statusMessage.append("\n<gold>=== 技能状态 ===\n");
@@ -74,9 +64,6 @@ public class Status extends GWCommand {
         Text.send(player, statusMessage.toString());
     }
 
-    /**
-     * 获取阶段名称
-     */
     private String getStageName(Arena.gameStage stage) {
         return switch (stage) {
             case Development -> "开发阶段";

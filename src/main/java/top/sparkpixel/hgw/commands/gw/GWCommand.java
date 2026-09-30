@@ -2,9 +2,9 @@ package top.sparkpixel.hgw.commands.gw;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
-import top.sparkpixel.hgw.HappyGhastWar;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import top.sparkpixel.hgw.HappyGhastWar;
 
 import java.io.IOException;
 import java.util.List;

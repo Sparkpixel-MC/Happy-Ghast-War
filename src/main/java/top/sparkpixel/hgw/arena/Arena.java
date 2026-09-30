@@ -146,6 +146,9 @@ public class Arena extends BukkitRunnable {
 
     public Map<Location,Material> resources = new HashMap<>();
 
+    /** 本局已广播过"开采中立矿脉"的队伍：每队每局只广播一次，防刷屏 */
+    public final Set<Teams> neutralMiningAnnounced = EnumSet.noneOf(Teams.class);
+
     public List<Location> rawBlocks = new ArrayList<>();
 
     public AlloyMaker alloyMaker;
@@ -835,6 +838,7 @@ public class Arena extends BukkitRunnable {
 
         // 重置统计（每局独立）
         statistics.cleanup();
+        neutralMiningAnnounced.clear();
 
         // 防御：异常重开时上一次对局的乐魂实体可能仍残留，先全部移除，
         // 避免旧炉子/旧乐魂堆进新对局
@@ -1273,6 +1277,7 @@ public class Arena extends BukkitRunnable {
         ghasts.clear();
         gameScoreboard.init();
         resources.clear();
+        neutralMiningAnnounced.clear();
         upgradeGUI = new UpgradeGUI(ghastWar,this);
         ghastWar.getLogger().info("Game reset successful: "+name);
         status = GameStatus.WAIT;
